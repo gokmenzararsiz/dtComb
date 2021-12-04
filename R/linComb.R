@@ -1,6 +1,6 @@
 # TODO: conf.level, ci.auc.method, nBoot, cutoff.method
 #
-# Author: serra ilayda
+# Author: serra ilayda yerlitas
 ###############################################################################
 #' @title Combine two diagnostic tests with several linear combination methods.
 #'
