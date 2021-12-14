@@ -73,13 +73,15 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "scoring", ndigits = 0, standardize = "zscore")
+#' method = "scoring", ndigits = 0, standardize = "zscore", , direction = "<", 
+#' cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
-#' method = "minmax", standardize = "range")
+#' method = "minmax", standardize = "range", direction = "<", 
+#' cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
-#' method = "logistic")
+#' method = "logistic", direction = "<", cutoff.method = "youden")
 #' 
 #' @export
 
@@ -124,44 +126,45 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
   
-  if (method %in% c("minmax", "PT", "PCL")){
+  if (method %in% c("minmax", "PT", "PCL") && (!standardize == "range")){
     
-    if(!standardize == "range")
-      warning("The used combination method requires range standardization. 
+    warning("The used combination method requires range standardization. 
             All biomarker values are standardized to a range between 0 and 1.")
     standardize <- "range"
-  }
     
-  if (standardize == "range"){
-
-    markers <- std.range(markers)
-
   }
-  else if (standardize == "zScore"){
-
-    markers <- std.zscore(markers)
-
-  }
-  else if (standardize == "tScore"){
-
-    markers <- std.tscore(markers)
-
-  }
-  else if (standardize == "mean"){
-
-    markers <- std.mean(markers)
-
-  }
-  else if (standardize == "deviance"){
-
-    markers <- std.deviance(markers)
-
-  }
-  else if (standardize == "none"){
+  
+  if(any(standardize == "none")){
     
     markers <- markers
-  
+    
   }
+  else if (any(standardize == "range")){
+      
+    markers <- std.range(markers)
+      
+   }
+  else if (any(standardize == "zScore")){
+      
+     markers <- std.zscore(markers)
+      
+  }
+  else if (any(standardize == "tScore")){
+      
+     markers <- std.tscore(markers)
+      
+   }
+   else if (any(standardize == "mean")){
+      
+    markers <- std.mean(markers)
+      
+   }
+   else if (any(standardize == "deviance")){
+      
+     markers <- std.deviance(markers)
+      
+   }
+  
 
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
