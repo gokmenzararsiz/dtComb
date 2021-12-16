@@ -1,19 +1,26 @@
+library(philentropy)
 ##implementation
 
 # data(exampleData1)
 # markers <- exampleData1[, -1]
 # status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
-# method <- "multiplication"
 # event <- "needed"
 # direction <- "<"
 # cutoff.method <- "youden"
 
-# score <-matComb(markers = markers, status = status, event = event,
+# score1 <- matComb(markers = markers, status = status, event = event,
+# method = "distmethodnames", distmethodnames ="euclidean", direction = "<", 
+# cutoff.method = "youden")
+
+# score2 <- matComb(markers = markers, status = status, event = event,
 # method = "addition", direction = "<", cutoff.method = "youden")
+
 
 matComb <- function(markers = NULL, status = NULL, event = NULL,
                     method = c("addition", "multiplication", "log.division",
-                               "subtraction", "power2", "power1"), 
+                               "subtraction", "power2", "power1", 
+                               "distmethodnames"),
+                    distmethodnames = NULL,
                     direction = c("<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
   match.arg(method)
@@ -45,7 +52,7 @@ matComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
-
+  
   
   if (method == "addition"){
     
@@ -76,7 +83,21 @@ matComb <- function(markers = NULL, status = NULL, event = NULL,
     first.power <- round((markers[, 1] ^ markers[,2]), 3)    
     comb.score <-  as.matrix(first.power)
     
+  }  else if(method == "distmethodnames"){
+    
+    distMethod <- function(params){
+      origin <-c(0,0)
+      suppressMessages(distance(rbind(origin,
+                                      params), method = distmethodnames,use.row.names = TRUE))
+    }
+    
+    comb.score <- as.matrix(unlist(apply(markers,1, distMethod,simplify = FALSE)))
+    rownames(comb.score) <- NULL
+    
+    
   }
+  
+  
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
@@ -84,10 +105,3 @@ matComb <- function(markers = NULL, status = NULL, event = NULL,
   return(allres)
 }
 
-
-
-markers <- data[, -1]
-status <- factor(data$group, levels = c("not_needed", "needed"))
-event <- "needed"
-score3 <- matComb(markers = markers, status = status, event = event,
- method = "addition", direction = "<", cutoff.method = "youden")
