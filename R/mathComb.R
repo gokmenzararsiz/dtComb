@@ -16,7 +16,7 @@ library(philentropy)
 # method = "addition", direction = "<", cutoff.method = "youden")
 
 
-matComb <- function(markers = NULL, status = NULL, event = NULL,
+mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     method = c("addition", "multiplication", "log.division",
                                "subtraction", "power2", "power1", 
                                "distmethodnames"),
