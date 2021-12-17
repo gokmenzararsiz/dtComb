@@ -8,11 +8,11 @@ library(philentropy)
 # direction <- "<"
 # cutoff.method <- "youden"
 
-# score1 <- matComb(markers = markers, status = status, event = event,
+# score1 <- mathComb(markers = markers, status = status, event = event,
 # method = "distmethodnames", distmethodnames ="euclidean", direction = "<", 
 # cutoff.method = "youden")
 
-# score2 <- matComb(markers = markers, status = status, event = event,
+# score2 <- mathComb(markers = markers, status = status, event = event,
 # method = "addition", direction = "<", cutoff.method = "youden")
 
 
