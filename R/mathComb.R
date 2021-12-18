@@ -1,0 +1,170 @@
+library(philentropy)
+##implementation
+
+# data(exampleData1)
+# markers <- exampleData1[, -1]
+# status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+# event <- "needed"
+# direction <- "<"
+# cutoff.method <- "youden"
+
+# score1 <- mathComb(markers = markers, status = status, event = event,
+# method = "distmethodnames", distmethodnames ="euclidean", direction = "<", 
+# cutoff.method = "youden")
+
+# score2 <- mathComb(markers = markers, status = status, event = event,
+# method = "poweradd", direction = "<", cutoff.method = "youden")
+
+
+mathComb <- function(markers = NULL, status = NULL, event = NULL,
+                     method = c("addition", "multiplication", "log.division",
+                                "subtraction", "powersecond", "powerfirst","poweradd",
+                                "powersub", "powermult", "powerdiv",
+                                "distmethodnames"),
+                     distmethodnames = NULL, init.param =0.1,
+                     direction = c("<", ">"), conf.level = 0.95, 
+                     cutoff.method = c("youden", "roc01")){
+  match.arg(method)
+  match.arg(direction)
+  match.arg(cutoff.method)
+  
+  if (!is.data.frame(markers)) {
+    markers <- as.data.frame(markers)
+  }
+  
+  for(i in 1:ncol(markers)) if(!is.numeric(markers[, i]))
+    stop("at least one variable is not numeric")
+  
+  if(!ncol(markers) == 2)
+    stop("the number of markers should be 2")
+  
+  if(!is.factor(status)) status <- as.factor(status)
+  
+  if(!length(levels(status)) == 2)
+    stop("the number of status levels should be 2")
+  
+  stopifnot(event %in% status)
+  levels(status)[levels(status) == "NA"] <- NA
+  stopifnot(nrow(markers) == length(status))
+  
+  status <- factor(ifelse(status == event, 1, 0))
+  
+  comp <- complete.cases(markers)
+  markers <- markers[comp, ]
+  status <- status[comp]
+  
+  
+  if (method == "addition"){
+    
+    add <- markers[ ,1] + markers[ ,2]
+    comb.score <- as.matrix(add)
+    
+  } else if (method == "multiplication") {
+    
+    mult <- markers[ ,1] * markers[ ,2]
+    comb.score <- as.matrix(mult)
+    
+  } else if (method == "log.division"){
+    
+    log.div <- log(markers[ ,1]) / log(markers[ ,2])
+    comb.score <- as.matrix(log.div)
+    
+  } else if (method == "subtraction"){
+    
+    subt <- markers[ ,1] - markers[ ,2]
+    comb.score <- as.matrix(subt)
+    
+  } else if(method == "powersecond"){
+    
+    second.power <- round((markers[, 2] ^ markers[,1]), 3)
+    comb.score <- as.matrix(second.power)
+    
+  } else if(method == "powerfirst"){
+    
+    first.power <- round((markers[, 1] ^ markers[,2]), 3)    
+    comb.score <-  as.matrix(first.power)
+    
+  }  else if(method == "distmethodnames"){
+    
+    distMethod <- function(params){
+      origin <-c(0,0)
+      suppressMessages(distance(rbind(origin,
+                                      params), method = distmethodnames,use.row.names = TRUE))
+    }
+    
+    comb.score <- as.matrix(unlist(apply(markers,1, distMethod,simplify = FALSE)))
+    rownames(comb.score) <- NULL
+    
+  }else if(method == "poweradd"){
+    
+    opt.func <- optim(par= init.param, fn = helper_power_add,  markers = markers, status = status,
+                      method = "Brent", lower = -10, upper = 10)
+    init.param <- as.numeric(opt.func$par)
+    comb.score <- as.matrix((markers[, 1] ^ init.param) + (markers[, 2] ^ init.param))
+    
+  } else if(method == "powersubt"){
+    
+    opt.func <- optim(par= init.param, fn = helper_power_subt,  markers = markers, status = status,
+                      method = "Brent", lower = -10, upper = 10)
+    init.param <- as.numeric(opt.func$par)
+    comb.score <- as.matrix((markers[, 1] ^ init.param) - (markers[, 2] ^ init.param))
+    
+  }else if(method == "powermult"){
+    
+    opt.func <- optim(par= init.param, fn = helper_power_mult,  markers = markers, status = status,
+                      method = "Brent", lower = -10, upper = 10)
+    init.param <- as.numeric(opt.func$par)
+    comb.score <- as.matrix((markers[, 1] ^ init.param) * (markers[, 2] ^ init.param))
+    
+  }else if(method == "powerdiv"){
+    
+    opt.func <- optim(par= init.param, fn = helper_power_div,  markers = markers, status = status,
+                      method = "Brent", lower = -10, upper = 10)
+    init.param <- as.numeric(opt.func$par)
+    comb.score <- as.matrix((markers[, 1] ^ init.param) / (markers[, 2] ^ init.param))
+  }
+  
+  allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
+                   event = event, direction = direction, conf.level = conf.level,
+                   cutoff.method = cutoff.method)
+  
+  return(allres)
+}
+
+
+
+
+##### Helper Functions#####
+
+helper_power_add <- function(init.param, markers, status){
+  comb.score <- (markers[, 1] ^ init.param) + (markers[, 2] ^ init.param)
+  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
+  auc_value <- as.numeric(auc(roc_obj))
+  return(-(auc_value))
+}
+
+
+helper_power_subt <- function(init.param, markers, status){
+  comb.score <- (markers[, 1] ^ init.param) - (markers[, 2] ^ init.param)
+  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
+  auc_value <- as.numeric(auc(roc_obj))
+  return(-(auc_value))
+}
+
+helper_power_mult <- function(init.param, markers, status){
+  comb.score <- (markers[, 1] ^ init.param) * (markers[, 2] ^ init.param)
+  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
+  auc_value <- as.numeric(auc(roc_obj))
+  return(-(auc_value))
+}
+
+helper_power_div <- function(init.param, markers, status){
+  comb.score <- (markers[, 1] ^ init.param) / (markers[, 2] ^ init.param)
+  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
+  auc_value <- as.numeric(auc(roc_obj))
+  return(-(auc_value))
+}
+
+
+
+
