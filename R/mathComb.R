@@ -1,4 +1,3 @@
-library(philentropy)
 ##implementation
 
 # data(exampleData1)
@@ -9,22 +8,29 @@ library(philentropy)
 # cutoff.method <- "youden"
 
 # score1 <- mathComb(markers = markers, status = status, event = event,
-# method = "distmethodnames", distmethodnames ="euclidean", direction = "<", 
-# cutoff.method = "youden")
+# method = "distance", distance ="euclidean", direction = direction, 
+# cutoff.method = cutoff.method)
 
 # score2 <- mathComb(markers = markers, status = status, event = event,
-# method = "poweradd", direction = "<", cutoff.method = "youden")
+# method = "add", log.transform = TRUE, direction = direction, cutoff.method = cutoff.method)
 
+# score2 <- mathComb(markers = markers, status = status, event = event,
+#                    method = "subtract", power.transform = TRUE, direction = direction, 
+#                    cutoff.method = cutoff.method)
 
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
-                     method = c("addition", "multiplication", "log.division",
-                                "subtraction", "powersecond", "powerfirst","poweradd",
-                                "powersub", "powermult", "powerdiv",
-                                "distmethodnames"),
-                     distmethodnames = NULL, init.param =0.1,
+                     method = c("add", "multiply", "divide", 
+                                "subtract", "distance"),
+                     distance = c("euclidean", "manhattan", "chebyshev",
+                                        "kulczynski_d", "lorentzian", "taneja",
+                                          "kumar-johnson", "avg"),
+                     standardize = c("none", "range", 
+                                     "zScore", "tScore", "mean", "deviance"),
+                     log.transform = FALSE, power.transform = FALSE, 
                      direction = c("<", ">"), conf.level = 0.95, 
                      cutoff.method = c("youden", "roc01")){
   match.arg(method)
+  match.arg(distance)
   match.arg(direction)
   match.arg(cutoff.method)
   
@@ -53,76 +59,110 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
+  if (is.null(standardize)){
+    standardize <- "none"
+  }
   
-  if (method == "addition"){
+  if(any(standardize == "none")){
     
-    add <- markers[ ,1] + markers[ ,2]
-    comb.score <- as.matrix(add)
+    markers <- markers
     
-  } else if (method == "multiplication") {
+  }
+  else if (any(standardize == "range")){
     
-    mult <- markers[ ,1] * markers[ ,2]
-    comb.score <- as.matrix(mult)
+    markers <- std.range(markers)
     
-  } else if (method == "log.division"){
+  }
+  else if (any(standardize == "zScore")){
     
-    log.div <- log(markers[ ,1]) / log(markers[ ,2])
-    comb.score <- as.matrix(log.div)
+    markers <- std.zscore(markers)
     
-  } else if (method == "subtraction"){
+  }
+  else if (any(standardize == "tScore")){
     
-    subt <- markers[ ,1] - markers[ ,2]
-    comb.score <- as.matrix(subt)
+    markers <- std.tscore(markers)
     
-  } else if(method == "powersecond"){
+  }
+  else if (any(standardize == "mean")){
     
-    second.power <- round((markers[, 2] ^ markers[,1]), 3)
-    comb.score <- as.matrix(second.power)
+    markers <- std.mean(markers)
     
-  } else if(method == "powerfirst"){
+  }
+  else if (any(standardize == "deviance")){
     
-    first.power <- round((markers[, 1] ^ markers[,2]), 3)    
-    comb.score <-  as.matrix(first.power)
+    markers <- std.deviance(markers)
     
-  }  else if(method == "distmethodnames"){
+  }
+  if(log.transform == TRUE){
     
-    distMethod <- function(params){
+    markers[, 1] <- log(markers[, 1])
+    markers[, 2] <- log(markers[, 2])
+  }
+  
+  x <- as.matrix(seq(-3, 3, 0.1))
+  n <- seq(1:nrow(x))
+  get_roc <- function(n){
+    values <- suppressMessages(pROC::roc(status , power[,n], direction = direction))
+    auc <- values$auc
+    return(auc)
+  }
+  
+  if (method == "add"){
+    
+   if(power.transform == TRUE){
+      
+      power <- apply(x, 1, power.add, simplify = TRUE)
+      
+      auc_list <- sapply(n, get_roc)
+      max_index <- which(auc_list == max(auc_list))
+      
+        if(length(max_index)>1){
+          max_index <- max_index[1]
+          }
+      
+        comb.score <- power[,max_index]
+        } 
+    
+        else {comb.score <- markers[ ,1] + markers[ ,2]}
+  
+  } else if (method == "multiply") {
+    
+   comb.score <- markers[ ,1] * markers[ ,2]
+    
+  } else if (method == "divide"){
+    
+    comb.score <- markers[ ,1] / markers[ ,2]
+    
+  } else if (method == "subtract"){
+    
+     if(power.transform == TRUE){
+    
+        power <- apply(x, 1, power.subt, simplify = TRUE)
+    
+      auc_list <- sapply(n, get_roc)
+      max_index <- which(auc_list == max(auc_list))
+      
+      if(length(max_index)>1){
+        max_index <- max_index[1]
+        }
+      comb.score <- power[,max_index]
+      }
+      else{comb.score <- (markers[ ,1] - markers[ ,2])}
+    
+  }  else if(method == "distance"){
+    
+        distMethod <- function(params){
       origin <-c(0,0)
-      suppressMessages(distance(rbind(origin,
-                                      params), method = distmethodnames,use.row.names = TRUE))
+      suppressMessages(philentropy::distance(rbind(origin, params), 
+                                method = distance, use.row.names = TRUE))
     }
     
-    comb.score <- as.matrix(unlist(apply(markers,1, distMethod,simplify = FALSE)))
+    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod, simplify = FALSE)))
     rownames(comb.score) <- NULL
     
-  }else if(method == "poweradd"){
-    
-    opt.func <- optim(par= init.param, fn = helper_power_add,  markers = markers, status = status,
-                      method = "Brent", lower = -10, upper = 10)
-    init.param <- as.numeric(opt.func$par)
-    comb.score <- as.matrix((markers[, 1] ^ init.param) + (markers[, 2] ^ init.param))
-    
-  } else if(method == "powersubt"){
-    
-    opt.func <- optim(par= init.param, fn = helper_power_subt,  markers = markers, status = status,
-                      method = "Brent", lower = -10, upper = 10)
-    init.param <- as.numeric(opt.func$par)
-    comb.score <- as.matrix((markers[, 1] ^ init.param) - (markers[, 2] ^ init.param))
-    
-  }else if(method == "powermult"){
-    
-    opt.func <- optim(par= init.param, fn = helper_power_mult,  markers = markers, status = status,
-                      method = "Brent", lower = -10, upper = 10)
-    init.param <- as.numeric(opt.func$par)
-    comb.score <- as.matrix((markers[, 1] ^ init.param) * (markers[, 2] ^ init.param))
-    
-  }else if(method == "powerdiv"){
-    
-    opt.func <- optim(par= init.param, fn = helper_power_div,  markers = markers, status = status,
-                      method = "Brent", lower = -10, upper = 10)
-    init.param <- as.numeric(opt.func$par)
-    comb.score <- as.matrix((markers[, 1] ^ init.param) / (markers[, 2] ^ init.param))
   }
+  
+  comb.score <- as.matrix(comb.score)
   
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
                    event = event, direction = direction, conf.level = conf.level,
@@ -136,33 +176,18 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
 
 ##### Helper Functions#####
 
-helper_power_add <- function(init.param, markers, status){
-  comb.score <- (markers[, 1] ^ init.param) + (markers[, 2] ^ init.param)
-  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
-  auc_value <- as.numeric(auc(roc_obj))
-  return(-(auc_value))
+power.add <- function(x){
+  power1 <- markers[,1] ^ x
+  power2 <- markers[,2] ^ x
+  
+  return (power1 + power2)
 }
 
-
-helper_power_subt <- function(init.param, markers, status){
-  comb.score <- (markers[, 1] ^ init.param) - (markers[, 2] ^ init.param)
-  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
-  auc_value <- as.numeric(auc(roc_obj))
-  return(-(auc_value))
-}
-
-helper_power_mult <- function(init.param, markers, status){
-  comb.score <- (markers[, 1] ^ init.param) * (markers[, 2] ^ init.param)
-  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
-  auc_value <- as.numeric(auc(roc_obj))
-  return(-(auc_value))
-}
-
-helper_power_div <- function(init.param, markers, status){
-  comb.score <- (markers[, 1] ^ init.param) / (markers[, 2] ^ init.param)
-  roc_obj <- suppressMessages(pROC::roc(status, comb.score))
-  auc_value <- as.numeric(auc(roc_obj))
-  return(-(auc_value))
+power.subt <- function(x){
+  power1 <- markers[,1] ^ x
+  power2 <- markers[,2] ^ x
+  
+  return (power1 - power2)
 }
 
 
