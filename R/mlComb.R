@@ -5,7 +5,7 @@
 # status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 # method <- "C5.0Tree"
 # train_method <- "repeatedcv"
-# process_type = NULL#c("center","scale")
+# preProcess = NULL#c("center","scale")
 # train_repeats <- 3
 # event <- "needed"
 # train_number <- 10
@@ -15,16 +15,16 @@
 # model <- mlComb(markers = markers, status = status, event = event,
 #                 method = method,
 #                 train_method = train_method, train_repeats = train_repeats,
-#                 process = TRUE, process_type = process_type,
+#                 preProcess = preProccess,
 #                 direction = direction, cutoff.method = cutoff.method)
 
 
 mlComb <- function(markers = NULL, status = NULL, event = NULL,
                             method = NULL, train_method = NULL, 
                             train_number = 10, train_repeats = 1,
-                            process = FALSE, process_type = NULL,
+                            preProcess = NULL, B = 10,
                             direction = c("<", ">"), conf.level = 0.95, 
-                            cutoff.method = c("youden", "roc01")){
+                            cutoff.method = c("youden", "roc01"), ...){
   
   match.arg(direction)
   match.arg(cutoff.method)
@@ -54,10 +54,92 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   
   data <- cbind(status,markers)
   
-  modelFit <- train(status ~ ., data = data, method = method,
-                    trControl = trainControl(method = train_method, number = train_number, 
-                                             repeats = train_repeats , classProbs =  TRUE), 
-                    preProcess = process_type)
+  if (is.null(train_method)){
+    train_method <- "none"
+  }
+  
+  ordinalMethods <- c("rpartScore", "ordinalRF", "polr", "vglmAdjCat",	
+                      "vglmContRatio",	"vglmCumulative")
+  
+  bagMethods <- c("bagFDA", "bagFDAGCV", "bagEarth", "bagEarthGCV", "logicBag")
+  
+  verboseMethods <- c("mlpKerasDecay",	"mlpKerasDecayCost",	"mlpKerasDropout",	
+                      "mlpKerasDropoutCost",	"deepboost",	"hda",	"mxnet",
+                      "plsRglm",	"sda",	"binda",	"gbm",	"ORFlog",	"ORFpls",
+                      "ORFridge",	"ORFsvm",	"bartMachine")
+  
+  if(method %in% ordinalMethods){
+    
+    stop("The response variable is not compatible with the given method.")
+  }
+ 
+  if(method %in% bagMethods){
+    
+    if(any(train_method == "repeatedcv")){
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                               trControl = caret::trainControl(method = train_method, 
+                                                               number = train_number, 
+                                                               repeats = train_repeats,
+                                                               classProbs =  TRUE), 
+                               preProc = preProcess, metric = "ROC", B = B, ...)
+      
+    } else{
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                               trControl = caret::trainControl(method = train_method, 
+                                                               number = train_number, 
+                                                               classProbs =  TRUE), 
+                               preProc = preProcess, metric = "ROC", B = B, ...)
+      
+    }
+    
+  }
+  
+  else if(method %in% verboseMethods){
+    
+    if(any(train_method == "repeatedcv")){
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                     trControl = caret::trainControl(method = train_method, 
+                                                     number = train_number, 
+                                                     repeats = train_repeats,
+                                                     classProbs =  TRUE), 
+                     preProc = preProcess, metric = "ROC", verbose = FALSE, ...)
+      
+    } else{
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                     trControl = caret::trainControl(method = train_method, 
+                                                     number = train_number, 
+                                                     classProbs =  TRUE), 
+                     preProc = preProcess, metric = "ROC", verbose = FALSE, ...)
+      
+    }
+    
+  }
+  
+  else{
+    
+    if(any(train_method == "repeatedcv")){
+     
+       modelFit <- caret::train(status ~ ., data = data, method = method,
+                     trControl = caret::trainControl(method = train_method, 
+                                                     number = train_number, 
+                                                     repeats = train_repeats,
+                                                     classProbs =  TRUE), 
+                               preProc = preProcess, metric = "ROC", ...)
+    } else{
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                    trControl = caret::trainControl(method = train_method, 
+                                                    number = train_number, 
+                                                    classProbs =  TRUE), 
+                               preProc = preProcess, metric = "ROC", ...)
+      
+    }
+  }
+  
   
   print(modelFit)
   
