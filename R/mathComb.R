@@ -12,25 +12,27 @@
 # cutoff.method = cutoff.method)
 
 # score2 <- mathComb(markers = markers, status = status, event = event,
-# method = "add", log.transform = TRUE, direction = direction, cutoff.method = cutoff.method)
+# method = "sec^first", transform = "log", direction = direction, cutoff.method = cutoff.method)
 
-# score2 <- mathComb(markers = markers, status = status, event = event,
-#                    method = "subtract", power.transform = TRUE, direction = direction, 
-#                    cutoff.method = cutoff.method)
+# score3 <- mathComb(markers = markers, status = status, event = event,
+# method = "subtract", power.transform = TRUE, direction = direction, 
+# cutoff.method = cutoff.method)
 
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
-                     method = c("add", "multiply", "divide", 
-                                "subtract", "distance"),
+                     method = c("add", "multiply", "divide", "subtract",
+                                  "distance", "first^sec", "sec^first"),
                      distance = c("euclidean", "manhattan", "chebyshev",
-                                        "kulczynski_d", "lorentzian", "taneja",
-                                          "kumar-johnson", "avg"),
+                                    "kulczynski_d", "lorentzian", "taneja",
+                                      "kumar-johnson", "avg"),
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
-                     log.transform = FALSE, power.transform = FALSE, 
-                     direction = c("<", ">"), conf.level = 0.95, 
-                     cutoff.method = c("youden", "roc01")){
+                     transform = c("none", "log", "exp", 
+                                    "sin", "cos","tan", "cot"), 
+                     power.transform = FALSE, direction = c("<", ">"), 
+                     conf.level = 0.95, cutoff.method = c("youden", "roc01")){
   match.arg(method)
   match.arg(distance)
+  match.arg(transform)
   match.arg(direction)
   match.arg(cutoff.method)
   
@@ -93,10 +95,34 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     markers <- std.deviance(markers)
     
   }
-  if(log.transform == TRUE){
+  if (is.null(transform)){
     
-    markers[, 1] <- log(markers[, 1])
-    markers[, 2] <- log(markers[, 2])
+    transform <- "none"
+  }
+  
+  if(any(transform == "none")){
+    
+    markers <- markers
+    
+  }
+   else if(any(transform == "log")){
+     
+    markers <- log(markers)
+  }
+    else if(any(transform == "exp")){
+    
+    markers <- exp(markers)
+    
+  }
+    else if(any(transform == "sin")){
+    
+    markers <- sin(markers)
+    
+  }
+    else {
+    
+    markers <- cos(markers)
+    
   }
   
   x <- as.matrix(seq(-3, 3, 0.1))
@@ -151,14 +177,24 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }  else if(method == "distance"){
     
-        distMethod <- function(params){
-      origin <-c(0,0)
-      suppressMessages(philentropy::distance(rbind(origin, params), 
-                                method = distance, use.row.names = TRUE))
+      distMethod <- function(params){
+       origin <-c(0,0)
+       suppressMessages(philentropy::distance(rbind(origin, params), 
+                                method = distance, 
+                                  use.row.names = TRUE))
     }
     
-    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod, simplify = FALSE)))
+    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod, 
+                                         simplify = FALSE)))
     rownames(comb.score) <- NULL
+    
+  } else if (method == "first^sec") {
+    
+    comb.score <- markers[ ,1] ^ markers[ ,2]
+    
+  } else if (method == "sec^first") {
+    
+    comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
   
