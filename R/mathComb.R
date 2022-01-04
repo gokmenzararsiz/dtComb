@@ -27,7 +27,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
                      transform = c("none", "log", "exp", 
-                                    "sin", "cos","tan", "cot"), 
+                                    "sin", "cos"), 
                      power.transform = FALSE, direction = c("<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
   match.arg(method)
