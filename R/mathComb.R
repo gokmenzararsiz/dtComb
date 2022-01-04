@@ -19,6 +19,7 @@
 # cutoff.method = cutoff.method)
 
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
+
                      method = c("add", "multiply", "divide", "subtract",
                                   "distance", "first^sec", "sec^first"),
                      distance = c("euclidean", "manhattan", "chebyshev",
@@ -30,6 +31,8 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                                     "sin", "cos"), 
                      power.transform = FALSE, direction = c("<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
+
+
   match.arg(method)
   match.arg(distance)
   match.arg(transform)
@@ -184,8 +187,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                                   use.row.names = TRUE))
     }
     
-    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod, 
-                                         simplify = FALSE)))
+    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod)))
     rownames(comb.score) <- NULL
     
   } else if (method == "first^sec") {
@@ -208,8 +210,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
 }
 
 
-
-
 ##### Helper Functions#####
 
 power.add <- function(x){
@@ -225,7 +225,3 @@ power.subt <- function(x){
   
   return (power1 - power2)
 }
-
-
-
-
