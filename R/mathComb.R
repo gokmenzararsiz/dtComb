@@ -140,7 +140,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
    if(power.transform == TRUE){
       
-      power <- apply(x, 1, power.add, simplify = TRUE)
+      power <- apply(x, 1, power.add)
       
       auc_list <- sapply(n, get_roc)
       max_index <- which(auc_list == max(auc_list))
@@ -166,7 +166,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
      if(power.transform == TRUE){
     
-        power <- apply(x, 1, power.subt, simplify = TRUE)
+        power <- apply(x, 1, power.subt)
     
       auc_list <- sapply(n, get_roc)
       max_index <- which(auc_list == max(auc_list))
