@@ -472,3 +472,4 @@ helper_TS <- function(theta, markers, status){
   
   return(-(auc_value))
 }
+

@@ -7,6 +7,7 @@
 # direction <- "<"
 # cutoff.method <- "youden"
 
+
 # score1 <- mathComb(markers = markers, status = status, event = event,
 # method = "distance", distance ="euclidean", direction = direction, 
 # cutoff.method = cutoff.method)
@@ -21,14 +22,13 @@
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
 
                      method = c("add", "multiply", "divide", "subtract",
-                                  "distance", "first^sec", "sec^first"),
+                                  "distance", "baseinexp", "expinbase"),
                      distance = c("euclidean", "manhattan", "chebyshev",
                                     "kulczynski_d", "lorentzian", "taneja",
                                       "kumar-johnson", "avg"),
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
-                     transform = c("none", "log", "exp", 
-                                    "sin", "cos"), 
+                     transform = c("none", "log", "exp", "sin", "cos"), 
                      power.transform = FALSE, direction = c("<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
 
@@ -68,11 +68,19 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
   
+  if (method %in% c("baseinexp", "expinbase") && transform == "exp" && standardize == "none"){
+    
+    var <- readline(prompt = "Please enter a standardize for this method
+(range, zScore, tScore, mean, deviance): ")
+    standardize <- var
+  }
+  
   if(any(standardize == "none")){
     
     markers <- markers
     
   }
+
   else if (any(standardize == "range")){
     
     markers <- std.range(markers)
@@ -190,11 +198,11 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- as.matrix(unlist(apply(markers, 1, distMethod)))
     rownames(comb.score) <- NULL
     
-  } else if (method == "first^sec") {
+  } else if (method == "baseinexp") {
     
     comb.score <- markers[ ,1] ^ markers[ ,2]
     
-  } else if (method == "sec^first") {
+  } else if (method == "expinbase") {
     
     comb.score <- markers[ ,2] ^ markers[ ,1]
     

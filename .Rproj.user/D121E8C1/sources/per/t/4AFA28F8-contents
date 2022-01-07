@@ -1,0 +1,134 @@
+##### WEEK3#####
+50 Kadın -> "K"
+30 Erkek -> "E"
+
+
+###Tekrarlı vektör üretme####
+x <- c("K", "E")
+t <- c(50, 30)
+
+rep(x, times = t)
+
+rep(c("K", "E"), c(50, 30))
+
+rep(c("K", "E"), each = 15)
+
+rep(c(1, 2), times = 10)  
+
+rep(c(1, 2), each = 10) 
+
+sort(rep(c(1, 2), times = 10))   #sort küçükten büyüğe sıralama yapar
+
+rep(c("K", "E", "eksik"), c(50, 30))
+
+vec1 <- c(1, 4, 7, 6, 4, 2)
+vec2 <- c(4, 4, 4, 4, 4, 2) 
+
+mat <- cbind(vec1, vec2)
+length(mat)  
+dim(mat)
+
+
+###Matris oluşturma
+vec <- 1:15
+
+
+####Satır vektörleri ile oluşturulan bir matris (byrow = TRUE)
+matR <- matrix(data = vec, nrow = 5, ncol = 3, byrow = TURE)
+
+
+
+####Sutün vektörleri ile oluşturulan bir matris (byrow = FALSE)
+matC <- matrix(data = vec, nrow = 5, ncol = 3, byrow = FALSE)
+
+1 2 3 
+4 5 6
+7 8 9
+
+1 6 11
+2 7 12
+3 8 13
+4 9 14
+5 10 15
+
+vec <- 1:13
+matrix(vec, 5)
+
+####Data frame oluşturma####
+yas = c(37, 61, 39, 41, 51)
+kilo = c(57, 90, 60, 97, 90)
+ast = c(54, 49, 97, 62, 97)
+mir99a = c(0.10, 0.02, 0.01, 6.29, 0.19)
+cinsiyet = c(rep("kadin", 3), rep("erkek", 2))
+cinsiyet
+
+veri <- cbind(yas, kilo, ast, mir99a, cinsiyet)
+class(veri)
+
+?data.frame()
+veri <- data.frame(yas, kilo, ast, mir99a, cinsiyet)
+veri <- data.frame(yas, kilo, ast, mir99a, cinsiyet, cinsiyet) #değişken 
+                                                          #isimleri aynı olamaz
+veri
+
+str(veri)
+veri <- data.frame(yas, kilo, ast, mir99a, cinsiyet, stringsAsFactors = TRUE)
+str(veri)
+
+
+mtcars
+
+iris
+str(iris)
+
+summary(veri)
+
+
+####Listeler
+list()
+
+liste <- list()
+liste
+
+length(liste)
+
+dim(liste)
+
+nrow(mat)
+
+ncol(mat)
+
+data.frame(Age =yas, Gender = cinsiyet)
+
+list(yas, cinsiyet, ast, mat, 7)
+
+liste <- list( vektor = yas,matris = mat, skaler = 7)
+
+class(liste)
+
+str(liste)
+,
+liste$vektor
+
+liste$skaler
+
+#####Ödev
+# 3 tane argüman oluşturun
+# 1 vektör
+# 1 matris
+# 1 data frame
+# Bu üç yapıyı bir listenin içerisine isim vererek saklayın.
+
+
+
+rho<-0
+m<-50
+n<-50
+y1.sd<-0.5
+y2.sd<-0.5 
+y1.mean<-2
+y2.mean<-1
+lambda <- 5
+X1X2<-mvrnorm(m, c(1,1), matrix(c(0.5,rho,rho,0.5),2,2))
+Y1Y2<-mvrnorm(n, c(y1.mean,y2.mean), matrix(c(y1.sd^2,rho*y1.sd*y2.sd, rho*y1.sd*y2.sd, y2.sd^2),2,2))
+optAUC(X1X2, Y1Y2, column.select=1)

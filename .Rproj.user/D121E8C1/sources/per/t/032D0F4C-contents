@@ -1,0 +1,159 @@
+### WEEK2
+  round(2.464576,  1.5356)  
+  round(1.5)
+
+  floor(4.5)
+  floor(3.5)
+
+  ceiling(4.5)
+  ceiling(3.5)
+
+  floor(1.01)
+  ceiling(1.01)
+
+
+  sum(sqrt(10), exp(2))
+  round(sum(sqrt(10), exp(2)), digits = 2)
+
+  sign(-7)
+  sign(2)
+  sign(pi)
+
+
+
+
+  sum(5, 7, 8)
+  sum(5, 7, #8 değeri iptal edildi.)
+
+ 
+   sum(5,       7,          8)
+  
+   "İlayda            csdcdsvsd" #Karakter olarak girilen boşluklar öenmli
+  
+  x = 10
+  y = 5  
+  x + y  
+  
+
+  x <- 10
+  10 -> x
+  x = 10
+
+  y <- 5
+  10 -> x ->  y
+  x <- 5 -> y  
+  x = 5 = y
+  5 = x
+  x = 5
+
+  
+  x * y  #iki skaler çarpımı
+  x %*% y #iki matris çarpımı
+  
+  
+
+  {
+    x <- 10
+    y <- 5
+    sum(x, y)
+  }
+  
+  
+  1:10
+  10:1  
+  1.1:10  
+  
+  x = 10; y = 5  
+
+  #### R NESNELERİ####
+  toplam <- x + y
+  
+  
+  objects() #environment 
+  ls()
+  
+  
+  #### Kaydetme ve yükleme işlemi
+  save(toplam, file = "C:/Users/user/Desktop/toplam.Rda")
+  save(toplam, file = "C:/Users/user/Desktop/toplam.R")
+  save(toplam, file = "C:/Users/user/Desktop/toplam.Rdata")
+  save(toplam, file = "saved/toplam.Rdata")
+  save(toplam, file = "saved/toplam.R")
+  
+  
+  load(file = "saved/toplam.RData")
+  ####Çalışma dizinini görme
+  getwd()
+  setwd(dir = "C:/Users/user/Desktop/")
+  
+  ####
+  
+  x = 5 # x: atomic vektör (1*1 boyutunda)
+  
+  [5]
+  
+  
+  [5, 7, 12, 9] # 1*4
+  
+  
+  [5,
+   7,
+   12,
+   9]   #4*1
+  
+  
+  ["a", "b", "b", "a", "c"]
+  ["k", "k", "e", "e", "k"]
+  [1, 1, 2, 2, 1]
+  
+  
+  [1, 3, 3, 8,
+  10, 14, 12, 7] 
+  
+  
+  [3, 3, 8, 8, 1, "2"] #Vektörler ve Matrisler homojendir
+  
+  
+  vec1 <- c(1, 4, 7, 6, 4, 2)
+  vec2 <- c(4, 4, 4, 4, 4, 4)  
+  c(vec1, vec2)
+  c(vec2, vec1)
+  
+  
+  size(vec1)
+  length(vec1) #eleman sayısını verir
+  
+  
+  cbind(vec1, vec2)
+  rbind(vec1, vec2)
+  
+  vec1 <- c(1, 4, 7, 6, 4, 2)
+  vec2 <- c(4, 1, 2, 8)  
+  cbind(vec1, vec2)
+  rbind(vec1, vec2)
+  
+  
+  vec1 <- c(1, 4, 7, 6, 4, 2)
+  vec2 <- c(4, 4, 4, 4, 4, 2)  
+  cbind(vec1, vec2)
+
+  
+  #objenin sınıfını belirlemek için  
+  class(vec1)
+  class(vec2)
+  
+  
+  1:20
+  13:6
+  
+  #1 den farklı artışlar ile dizi oluşturmak için
+  seq(from = 1, to = 20, by = 5)
+  seq(from = 1, to = 20, by = 3)
+  seq(from = 1, to = 20, length.out = 5)
+  
+  seq(from = 20, to = 1, by = -3)
+  
+  
+  
+  
+  

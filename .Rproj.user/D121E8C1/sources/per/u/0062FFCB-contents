@@ -1,0 +1,12 @@
+score1 <- mathComb(markers = markers, status = status, event = event,
+                    method = "distance", distance ="euclidean", direction = direction, 
+                    cutoff.method = cutoff.method)
+
+
+score2 <- mathComb(markers = markers, status = status, event = event,
+                   method = "baseinexp", standardize= "tScore", direction = direction, cutoff.method = cutoff.method)
+
+
+a <- exp(markers)
+a[,1] ^a[,2]
+a[,2]
