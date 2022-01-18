@@ -1,14 +1,14 @@
-data("exampleData1")
-data <- exampleData1
-
-markers <- data[, -1]
-status <- factor(data$group, levels = c("not_needed", "needed"))
-event <- "needed"
-direction <- "<"
-cutoff.method <- "youden"
-
- score3 <- nonlinComb(markers = markers, status = status, event = event, 
- method = "ridgereg", interact = FALSE, direction = "<", cutoff.method = "youden")
+# data("exampleData1")
+# data <- exampleData1
+# 
+# markers <- data[, -1]
+# status <- factor(data$group, levels = c("not_needed", "needed"))
+# event <- "needed"
+# direction <- "<"
+# cutoff.method <- "youden"
+# 
+#  score3 <- nonlinComb(markers = markers, status = status, event = event, 
+#  method = "ridgereg", interact = FALSE, direction = "<", cutoff.method = "youden")
 
 
 nonlinComb <- function(markers = NULL, status = NULL, event = NULL,

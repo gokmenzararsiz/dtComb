@@ -1,31 +1,116 @@
+# TODO: Add comment
+#
+# Author: serra ilayda yerlitas
+###############################################################################
+#' @title Combine two diagnostic tests with several mathematical operators with 
+#'  methods.
+#'
+#' @description The code{mathCom} function returns the combination results of 
+#'  two diagnostic tests with different mathematical operators, standardization,
+#'  and transform options.
+#'
+#' @param markers a \code{numeric} data frame that includes two diagnostic tests
+#'  results
+#'
+#' @param status a \code{factor} vector that includes the actual disease
+#'  status of the patients
+#'
+#' @param event a \code{character} string that indicates the event in the status
+#'  to be considered as positive event
+#'
+#' @param method a \code{character} string specifying the method used for
+#' combining the markers. The available methods are:
+#' \itemize{
+#' \item \code{add}: 
+#' \item \code{multiply}: 
+#' \item \code{divide}: 
+#' \item \code{subtract}: 
+#' \item \code{distance}: 
+#' \item \code{baseinexp}: 
+#' \item \code{expinbase}: 
+#' \item \code{TS}: Combination score obtained by using the trigonometric
+#' functions of the theta value that optimizes the AUC
+#' }
+#' 
+#' @param distance a \code{character} string specifying the method used for
+#' combining the markers. The available methods are:
+#' \itemize{
+#' \item \code{euclidean}: 
+#' \item \code{manhattan}: 
+#' \item \code{chebyshev}: 
+#' \item \code{kulczynski_d}: 
+#' \item \code{lorentzian}: 
+#' \item \code{avg}: 
+#' }
+#' 
+#' @param standardize a \code{character} string indicating the name of the
+#' standardization method. The default option is no standardization applied.
+#' Available options are:
+#' \itemize{
+#' \item \code{range}: Standardization to a range between 0 and 1
+#' \item \code{zScore}: Standardization using z scores with mean = 0
+#' and standard deviation = 1
+#' \item \code{tScore}: Standardization using T scores. The range varies between
+#'  usually 20 and 80
+#' \item \code{mean}: Standardization with sample mean = 1
+#' \item \code{deviance}: Standardization with sample standard deviation = 1
+#' }
+#' 
+#' @param transform a \code{character} string indicating the name of the
+#' standardization method. The default option is no standardization applied.
+#' Available options are:
+#' \itemize{
+#' \item \code{log}: 
+#' \item \code{exp}: 
+#' \item \code{sin}: 
+#' \item \code{cos}: 
+#' }
+#' 
+#' @param ndigits a \code{integer} value to indicate the number of decimal places
+#' to be used for rounding in Scoring method
+#'
+#' @param init.param a \code{numeric} initial value to be used for optimization
+#' in minmax, PCL, minimax and TS methods
+#' 
+#' @return A list of \code{numeric} linear combination scores calculated
+#' according to the given method and standardization option
+#'
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
+#'
+#' @examples
+
+
 ##implementation
 
-# data(exampleData1)
-# markers <- exampleData1[, -1]
-# status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
-# event <- "needed"
-# direction <- "<"
-# cutoff.method <- "youden"
+#' data(exampleData1)
+#' markers <- exampleData1[, -1]
+#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' event <- "needed"
+#' direction <- "<"
+#' cutoff.method <- "youden"
 
-
+# 
 # score1 <- mathComb(markers = markers, status = status, event = event,
-# method = "distance", distance ="euclidean", direction = direction, 
+# method = "distance", distance ="avg", direction = direction,
 # cutoff.method = cutoff.method)
 
-# score2 <- mathComb(markers = markers, status = status, event = event,
-# method = "sec^first", transform = "log", direction = direction, cutoff.method = cutoff.method)
-
+score2 <- mathComb(markers = markers, status = status, event = event,
+method = "baseinexp", transform = "exp", direction = direction,
+cutoff.method = cutoff.method)
+# 
 # score3 <- mathComb(markers = markers, status = status, event = event,
-# method = "subtract", power.transform = TRUE, direction = direction, 
+# method = "add", power.transform = FALSE, direction = direction,
 # cutoff.method = cutoff.method)
+
+
+
 
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
 
                      method = c("add", "multiply", "divide", "subtract",
                                   "distance", "baseinexp", "expinbase"),
                      distance = c("euclidean", "manhattan", "chebyshev",
-                                    "kulczynski_d", "lorentzian", "taneja",
-                                      "kumar-johnson", "avg"),
+                                    "kulczynski_d", "lorentzian", "avg"),
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
                      transform = c("none", "log", "exp", "sin", "cos"), 
@@ -65,14 +150,18 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   status <- status[comp]
   
   if (is.null(standardize)){
+    
     standardize <- "none"
+ 
   }
   
-  if (method %in% c("baseinexp", "expinbase") && transform == "exp" && standardize == "none"){
+  if (method %in% c("baseinexp", "expinbase") && transform == "exp" 
+     
+       && standardize == "none"){
     
-    var <- readline(prompt = "Please enter a standardize for this method
-(range, zScore, tScore, mean, deviance): ")
-    standardize <- var
+      var <- readline(prompt = "Please enter a standardize for this method (range, zScore, tScore, mean, deviance): ")
+   
+      standardize <- var
   }
   
   if(any(standardize == "none")){
@@ -80,7 +169,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     markers <- markers
     
   }
-
   else if (any(standardize == "range")){
     
     markers <- std.range(markers)
@@ -139,9 +227,12 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   x <- as.matrix(seq(-3, 3, 0.1))
   n <- seq(1:nrow(x))
   get_roc <- function(n){
-    values <- suppressMessages(pROC::roc(status , power[,n], direction = direction))
+    
+    values <- suppressMessages(pROC::roc(status , power[,n], 
+                                         direction = direction))
     auc <- values$auc
     return(auc)
+    
   }
   
   if (method == "add"){
@@ -158,9 +249,8 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
           }
       
         comb.score <- power[,max_index]
-        } 
-    
-        else {comb.score <- markers[ ,1] + markers[ ,2]}
+    } 
+    else {comb.score <- markers[ ,1] + markers[ ,2]}
   
   } else if (method == "multiply") {
     
@@ -179,25 +269,46 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
       auc_list <- sapply(n, get_roc)
       max_index <- which(auc_list == max(auc_list))
       
-      if(length(max_index)>1){
+      if(length(max_index)>1){ 
+        
         max_index <- max_index[1]
-        }
+        
+      }
+      
       comb.score <- power[,max_index]
+      
       }
       else{comb.score <- (markers[ ,1] - markers[ ,2])}
     
   }  else if(method == "distance"){
+
+        if(distance == "euclidean"){
+
+          comb.score <- sqrt(markers[, 1] ^ 2 + markers[, 2] ^ 2)
+
+        } else if (distance == "manhattan"){
     
-      distMethod <- function(params){
-       origin <-c(0,0)
-       suppressMessages(philentropy::distance(rbind(origin, params), 
-                                method = distance, 
-                                  use.row.names = TRUE))
-    }
+          comb.score <- markers[, 1] + markers[, 2]
     
-    comb.score <- as.matrix(unlist(apply(markers, 1, distMethod)))
-    rownames(comb.score) <- NULL
-    
+        } else if (distance == "chebyshev"){
+          
+          comb.score <- apply(markers, 1, max)
+          
+        } else if (distance == "kulczynski_d"){
+          
+          a <- abs(markers[, 1] + markers[, 2])
+          b <- min(markers)
+          comb.score <- a / b
+          
+        } else if (distance == "lorentzian"){
+          
+          comb.score <- log(abs(markers[, 1]) + 1) + log(abs(markers[, 2]) + 1)
+          
+        } else {
+          
+          comb.score <- (markers[, 1] + markers[, 2] + apply(markers, 1, max)) / 2
+          
+        }     
   } else if (method == "baseinexp") {
     
     comb.score <- markers[ ,1] ^ markers[ ,2]

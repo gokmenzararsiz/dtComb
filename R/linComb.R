@@ -43,13 +43,13 @@
 #' standardization method. The default option is no standardization applied.
 #' Available options are:
 #' \itemize{
-#' \item \code{std.range}: Standardization to a range between 0 and 1
-#' \item \code{std.zScore}: Standardization using z scores with mean = 0
+#' \item \code{range}: Standardization to a range between 0 and 1
+#' \item \code{zScore}: Standardization using z scores with mean = 0
 #' and standard deviation = 1
-#' \item \code{std.tScore}: Standardization using T scores. The range varies between
+#' \item \code{tScore}: Standardization using T scores. The range varies between
 #'  usually 20 and 80
-#' \item \code{std.mean}: Standardization with sample mean = 1
-#' \item \code{std.deviance}: Standardization with sample standard deviation = 1
+#' \item \code{mean}: Standardization with sample mean = 1
+#' \item \code{deviance}: Standardization with sample standard deviation = 1
 #' }
 #' 
 #' @param ndigits a \code{integer} value to indicate the number of decimal places
@@ -61,7 +61,7 @@
 #' @return A list of \code{numeric} linear combination scores calculated
 #' according to the given method and standardization option
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
