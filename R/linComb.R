@@ -368,8 +368,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     if(any(resample== "boot")){
       
-      colnames(markers) <- c("m1", "m2")
-      data <- cbind(status,markers) 
+      markersData <- markers
+      colnames(markersData) <- c("m1", "m2")
+      data <- cbind(status,markersData) 
       
       folds = caret::createDataPartition(status, nfolds)
       
@@ -399,8 +400,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else if(any(resample == "cv") || any(resample == "repeatedcv")){
       
-      colnames(markers) <- c("m1", "m2")
-      data <- cbind(status,markers)
+      markersData <- markers
+      colnames(markersData) <- c("m1", "m2")
+      data <- cbind(status,markersData)
       
       for(r in (1:nrepeats)){
         
