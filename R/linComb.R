@@ -266,6 +266,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                  family = binomial((link = "logit")))
       
       round.coef <- abs(round(res$coefficients, digits = ndigits))
+      parameters <- round.coef
       comb.score <- as.matrix(markers) %*% as.matrix(round.coef[-1])
       
     }
@@ -357,6 +358,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       sum.var <- var(pos.markers) + var(neg.markers)
       subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
       est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
+      parameters <- est.coef
       comb.score <- as.matrix(markers) %*% est.coef
       
     }
@@ -440,6 +442,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
+      parameters <- res
       comb.score <- as.matrix(predict(res, newdata = markers, type = "response"))
       
     }
@@ -547,6 +550,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                         lower = 0, upper = 1)
       lambda <- as.numeric(opt.func$par)
       
+      parameters <- lambda
+      
       comb.score <- as.matrix(apply(markers, 1, max) 
                               + lambda * apply(markers, 1, min))
       
@@ -635,6 +640,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       markers <- as.matrix(markers)
       model <- glm(status ~ markers, family = binomial(link = "logit"))
       lambda <- model$coefficients[3] / model$coefficients[2]
+      
+      parameters <- lambda
       
       comb.score <- as.matrix(markers[, 1] + lambda * markers[, 2])
       
@@ -744,6 +751,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       lambda <- as.numeric(opt.func$par)
       markers <- as.matrix(markers)
+      
+      parameters <- lambda
       
       comb.score <-  as.matrix(markers[ ,1] + markers[ ,2] * lambda)
       
@@ -857,6 +866,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       b.coef <- (solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
         (colMeans(pos.markers) - colMeans(neg.markers))
+      
+      parameters <- b.coef
+      
       comb.score <- as.matrix(markers) %*% b.coef
       }
     
@@ -964,6 +976,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       a1 <- sin(theta)
       a2 <- cos(theta)
       
+      parameters <- as.numeric(c(a1, a2))
+      
       comb.score <- as.matrix(a1 * markers[, 1] + a2 * markers[, 2])
       
     }
@@ -973,6 +987,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
+  
+  allres$fit <- parameters
   
   return(allres)
   
