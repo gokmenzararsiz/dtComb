@@ -86,46 +86,57 @@
 #' @export
 
 linComb <- function(markers = NULL, status = NULL, event = NULL,
-                           method = c("scoring", "SL", "logistic", "minmax", 
-                                      "PT", "PCL", "minimax", "TS"), 
-                           standardize = c("none", "range", 
-                                      "zScore", "tScore", "mean", "deviance"),
-                           ndigits = 0, init.param = 0.01,
-                           direction = c("<", ">"), conf.level = 0.95, 
-                           cutoff.method = c("youden", "roc01")){
+                    method = c("scoring", "SL", "logistic", "minmax", 
+                               "PT", "PCL", "minimax", "TS"), 
+                    resample = c("none", "cv", "repeatedcv", "boot"),
+                    nfolds = 5, nrepeats = 3,
+                    standardize = c("none", "range", 
+                                    "zScore", "tScore", "mean", "deviance"),
+                    ndigits = 0,
+                    direction = c("<", ">"), conf.level = 0.95, 
+                    cutoff.method = c("youden", "roc01")){
   match.arg(method)
   match.arg(direction)
   match.arg(cutoff.method)
-
+  
   if (!is.data.frame(markers)) {
     markers <- as.data.frame(markers)
   }
-
+  
   for(i in 1:ncol(markers)) if(!is.numeric(markers[, i]))
     stop("at least one variable is not numeric")
-
+  
   if(!ncol(markers) == 2)
     stop("the number of markers should be 2")
-
+  
   if(!is.factor(status)) status <- as.factor(status)
-
+  
   if(!length(levels(status)) == 2)
     stop("the number of status levels should be 2")
-
+  
   stopifnot(event %in% status)
   levels(status)[levels(status) == "NA"] <- NA
   stopifnot(nrow(markers) == length(status))
-
+  
   status <- factor(ifelse(status == event, 1, 0))
-
+  
   comp <- complete.cases(markers)
   markers <- markers[comp, ]
   status <- status[comp]
   
+  if (is.null(resample)){
+    resample <- "none"
+  }
+  
+  if(any(resample == "cv")){
+    nrepeats = 1
+  }
+  
+  
   if (is.null(standardize)){
     standardize <- "none"
   }
-  
+
   if (method %in% c("minmax", "PT", "PCL") && (!standardize == "range")){
     
     warning("The used combination method requires range standardization. 
@@ -140,116 +151,832 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   else if (any(standardize == "range")){
-      
+    
     markers <- std.range(markers)
-      
-   }
+    
+  }
   else if (any(standardize == "zScore")){
-      
-     markers <- std.zscore(markers)
-      
+    
+    markers <- std.zscore(markers)
+    
   }
   else if (any(standardize == "tScore")){
-      
-     markers <- std.tscore(markers)
-      
-   }
-   else if (any(standardize == "mean")){
-      
+    
+    markers <- std.tscore(markers)
+    
+  }
+  else if (any(standardize == "mean")){
+    
     markers <- std.mean(markers)
-      
-   }
-   else if (any(standardize == "deviance")){
-      
-     markers <- std.deviance(markers)
-      
-   }
+    
+  }
+  else if (any(standardize == "deviance")){
+    
+    markers <- std.deviance(markers)
+    
+  }
   
-
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
   
+  resample_results <- vector(mode = "list", length = 2)
+  names(resample_results) <- c("parameters", "AUC")
+  repeated_results <- vector(mode = "list", length = 2)
+  names(repeated_results) <- c("parameters", "AUC")
+  
   if (method == "scoring"){
-
-    res <- glm(status ~ markers[ , 1] + markers[ , 2],
-               family = binomial((link = "logit")))
-
-    round.coef <- abs(round(res$coefficients, digits = ndigits))
-    comb.score <- as.matrix(markers) %*% as.matrix(round.coef[-1])
-
-  } else if (method == "SL" ) {
-
-    sum.var <- var(pos.markers) + var(neg.markers)
-    subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
-    est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
-    comb.score <- as.matrix(markers) %*% est.coef
-
-  } else if (method == "logistic"){
-
-    res <- glm(status ~ markers[ , 1] + markers[ , 2],
-               family = binomial((link = "logit")))
-    comb.score <- as.matrix(predict(res, newdata = markers, type = "response"))
-
-  } else if (method == "minmax"){
-
-    opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
-                      pos.set = pos.markers, method = "Brent",
-                      lower = 0, upper = 1)
-    lambda <- as.numeric(opt.func$par)
-
-    comb.score <- as.matrix(apply(markers, 1, max) 
-                            + lambda * apply(markers, 1, min))
-
-  } else if(method == "PT"){
-    markers <- as.matrix(markers)
-    model <- glm(status ~ markers, family = binomial(link = "logit"))
-    lambda <- model$coefficients[3] / model$coefficients[2]
-
-    comb.score <- as.matrix(markers[, 1] + lambda * markers[, 2])
-
-  } else if(method == "PCL"){
-
-    opt.func <- optim(par = init.param, fn = helper_PCL,
-                      neg.set = neg.markers , pos.set = pos.markers,
-                      method = "Brent", lower = 0, upper = 1)
     
-    lambda <- as.numeric(opt.func$par)
-    markers <- as.matrix(markers)
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        res <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
+                   family = binomial((link = "logit")))
+        
+        round.coef <- abs(round(res$coefficients, digits = ndigits))
+        comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- round.coef
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% as.matrix(parameters[-1])
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
+          
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
+          
+          res <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
+                     family = binomial((link = "logit")))
+          
+          round.coef <- abs(round(res$coefficients, digits = ndigits))
+          comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- round.coef
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% as.matrix(parameters[-1])
+      
+    }
+    
+    else{
+      
+      res <- glm(status ~ markers[ , 1] + markers[ , 2],
+                 family = binomial((link = "logit")))
+      
+      round.coef <- abs(round(res$coefficients, digits = ndigits))
+      comb.score <- as.matrix(markers) %*% as.matrix(round.coef[-1])
+      
+    }
+    
+  } 
+  
+  else if (method == "SL" ) {
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        neg.markers <- trainMark[trainStat != 1, ]
+        pos.markers <- trainMark[trainStat == 1, ]
+        
+        sum.var <- var(pos.markers) + var(neg.markers)
+        subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
+        est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
+        comb.score <- as.matrix(testMark) %*% est.coef
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- est.coef
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% parameters
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[folds[[i]], ]
+          testMark = markers[-folds[[i]], ]
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          neg.markers <- trainMark[trainStat != 1, ]
+          pos.markers <- trainMark[trainStat == 1, ]
+          
+          sum.var <- var(pos.markers) + var(neg.markers)
+          subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
+          est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
+          comb.score <- as.matrix(testMark) %*% est.coef
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- est.coef
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% parameters
+      
+    }
+    
+    else{
+      
+      sum.var <- var(pos.markers) + var(neg.markers)
+      subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
+      est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
+      comb.score <- as.matrix(markers) %*% est.coef
+      
+    }
+  } 
+  
+  else if (method == "logistic"){
+    
+    if(any(resample== "boot")){
+      
+      colnames(markers) <- c("m1", "m2")
+      data <- cbind(status,markers) 
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        train = data[folds[[i]], ]
+        test = data[-folds[[i]], ]
+        
+        res <- glm(status ~ m1 + m2,
+                   family = binomial((link = "logit")), data = train)
+        
+        comb.score <- as.matrix(predict(res, newdata = test, type = "response"))
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(test$status, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- res
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(predict(parameters, newdata = data, type = "response"))
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      colnames(markers) <- c("m1", "m2")
+      data <- cbind(status,markers)
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          train = data[folds[[i]], ]
+          test = data[-folds[[i]], ]
+          
+          res <- glm(status ~ m1 + m2,
+                     family = binomial((link = "logit")), data = train)
+          
+          comb.score <- as.matrix(predict(res, newdata = test, type = "response"))
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(test$status, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- res
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(predict(parameters, newdata = data, type = "response"))
+      
+    }
+    
+    else{
+      
+      res <- glm(status ~ markers[ , 1] + markers[ , 2],
+                 family = binomial((link = "logit")))
+      comb.score <- as.matrix(predict(res, newdata = markers, type = "response"))
+      
+    }
+    
+  } 
+  
+  else if (method == "minmax"){
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        neg.markers <- trainMark[trainStat != 1, ]
+        pos.markers <- trainMark[trainStat == 1, ]
+        
+        init.param <- runif(1, 0, 1)
+        
+        opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
+                          pos.set = pos.markers, method = "Brent",
+                          lower = 0, upper = 1)
+        lambda <- as.numeric(opt.func$par)
+        
+        comb.score <- as.matrix(apply(testMark, 1, max) 
+                                + lambda * apply(testMark, 1, min))
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- lambda
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(apply(markers, 1, max) 
+                              + parameters * apply(markers, 1, min))
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[folds[[i]], ]
+          testMark = markers[-folds[[i]], ]
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          neg.markers <- trainMark[trainStat != 1, ]
+          pos.markers <- trainMark[trainStat == 1, ]
+          
+          init.param <- runif(1, 0, 1)
+          
+          opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
+                            pos.set = pos.markers, method = "Brent",
+                            lower = 0, upper = 1)
+          lambda <- as.numeric(opt.func$par)
+          
+          comb.score <- as.matrix(apply(testMark, 1, max) 
+                                  + lambda * apply(testMark, 1, min))
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- lambda
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(apply(markers, 1, max) 
+                              + parameters * apply(markers, 1, min))
+      
+    }
+    
+    else{
+      
+      init.param <- runif(1, 0, 1)
+      
+      opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
+                        pos.set = pos.markers, method = "Brent",
+                        lower = 0, upper = 1)
+      lambda <- as.numeric(opt.func$par)
+      
+      comb.score <- as.matrix(apply(markers, 1, max) 
+                              + lambda * apply(markers, 1, min))
+      
+    }
+    
+  } 
+  
+  else if(method == "PT"){
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = as.matrix(markers[folds[[i]], ])
+        testMark = as.matrix(markers[-folds[[i]], ])
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        model <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
+                     family = binomial(link = "logit"))
+        lambda <- as.numeric(model$coefficients[3] / model$coefficients[2])
+        
+        comb.score <- as.matrix(testMark[, 1] + lambda * testMark[, 2])
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- lambda
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers[, 1] + parameters * markers[, 2])
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = as.matrix(markers[folds[[i]], ])
+          testMark = as.matrix(markers[-folds[[i]], ])
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          model <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
+                       family = binomial(link = "logit"))
+          lambda <- as.numeric(model$coefficients[3] / model$coefficients[2])
+          
+          comb.score <- as.matrix(testMark[, 1] + lambda * testMark[, 2])
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- lambda
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers[, 1] + parameters * markers[, 2])
+      
+    }
+    
+    else{
+      
+      markers <- as.matrix(markers)
+      model <- glm(status ~ markers, family = binomial(link = "logit"))
+      lambda <- model$coefficients[3] / model$coefficients[2]
+      
+      comb.score <- as.matrix(markers[, 1] + lambda * markers[, 2])
+      
+    }
+    
+  } 
+  
+  else if(method == "PCL"){
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        neg.markers <- trainMark[trainStat != 1, ]
+        pos.markers <- trainMark[trainStat == 1, ]
+        
+        init.param <- runif(1, 0, 1)
+        
+        opt.func <- optim(par = init.param, fn = helper_PCL,
+                          neg.set = neg.markers , pos.set = pos.markers,
+                          method = "Brent", lower = 0, upper = 1)
+        
+        lambda <- as.numeric(opt.func$par)
+        markers <- as.matrix(markers)
+        
+        comb.score <-  as.matrix(testMark[ ,1] + testMark[ ,2] * lambda)
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- lambda
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers[ ,1] + markers[ ,2] * parameters)
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[folds[[i]], ]
+          testMark = markers[-folds[[i]], ]
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          neg.markers <- trainMark[trainStat != 1, ]
+          pos.markers <- trainMark[trainStat == 1, ]
+          
+          init.param <- runif(1, 0, 1)
+          
+          opt.func <- optim(par = init.param, fn = helper_PCL,
+                            neg.set = neg.markers , pos.set = pos.markers,
+                            method = "Brent", lower = 0, upper = 1)
+          
+          lambda <- as.numeric(opt.func$par)
+          markers <- as.matrix(markers)
+          
+          comb.score <-  as.matrix(testMark[ ,1] + testMark[ ,2] * lambda)
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- lambda
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers[ ,1] + markers[ ,2] * parameters)
+      
+    }
+    
+    else{
+      
+      init.param <- runif(1, 0, 1)
+      
+      opt.func <- optim(par = init.param, fn = helper_PCL,
+                        neg.set = neg.markers , pos.set = pos.markers,
+                        method = "Brent", lower = 0, upper = 1)
+      
+      lambda <- as.numeric(opt.func$par)
+      markers <- as.matrix(markers)
+      
+      comb.score <-  as.matrix(markers[ ,1] + markers[ ,2] * lambda)
+      
+    }
+    
+  } 
+  
+  else if(method == "minimax"){
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        neg.markers <- trainMark[trainStat != 1, ]
+        pos.markers <- trainMark[trainStat == 1, ]
+        
+        init.param <- runif(1, 0, 1)
+        
+        opt.func <- optim(par = init.param, fn = helper_minimax,
+                          neg.set = neg.markers , pos.set = pos.markers,
+                          markers = trainMark, status = trainStat,
+                          method = "Brent", lower = 0, upper = 1)
+        t <- as.numeric(opt.func$par)
+        
+        b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
+          (colMeans(pos.markers) - colMeans(neg.markers)))
+        comb.score <- as.matrix(testMark) %*% b.coef
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- b.coef
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% parameters
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[folds[[i]], ]
+          testMark = markers[-folds[[i]], ]
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          neg.markers <- trainMark[trainStat != 1, ]
+          pos.markers <- trainMark[trainStat == 1, ]
+          
+          init.param <- runif(1, 0, 1)
+          
+          opt.func <- optim(par = init.param, fn = helper_minimax,
+                            neg.set = neg.markers , pos.set = pos.markers,
+                            markers = trainMark, status = trainStat,
+                            method = "Brent", lower = 0, upper = 1)
+          t <- as.numeric(opt.func$par)
+          
+          b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
+                                 (colMeans(pos.markers) - colMeans(neg.markers)))
+          comb.score <- as.matrix(testMark) %*% b.coef
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- b.coef
+          resample_results$AUC[[i]] <- auc_value
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(markers) %*% parameters
+      
+    }
+    
+    else{
+      
+      init.param <- runif(1, 0, 1)
+      
+      opt.func <- optim(par = init.param, fn = helper_minimax,
+                        neg.set = neg.markers , pos.set = pos.markers,
+                        markers = markers, status = status,
+                        method = "Brent", lower = 0, upper = 1)
+      t <- as.numeric(opt.func$par)
+      
+      b.coef <- (solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
+        (colMeans(pos.markers) - colMeans(neg.markers))
+      comb.score <- as.matrix(markers) %*% b.coef
+      }
+    
+  } 
+  
+  else if(method == "TS"){
+    
+    if(any(resample== "boot")){
+      
+      folds = caret::createDataPartition(status, nfolds)
+      
+      for(i in (1:nfolds)){
+        
+        trainMark = markers[folds[[i]], ]
+        testMark = markers[-folds[[i]], ]
+        
+        trainStat = status[folds[[i]] ]
+        testStat = status[-folds[[i]] ]
+        
+        init.param <- runif(1, -1.57079633, 1.57079633)
+        
+        opt.func <- optim(par = init.param, fn = helper_TS, markers = trainMark,
+                          status = trainStat, method = "Brent",
+                          lower = -1.57079633, upper = 1.57079633)
+        theta <- as.numeric(opt.func$par)
+        
+        a1 <- sin(theta)
+        a2 <- cos(theta)
+        
+        comb.score <- as.matrix(a1 * testMark[, 1] + a2 * testMark[, 2])
 
-    comb.score <-  as.matrix(markers[ ,1] + markers[ ,2] * lambda)
-
-  } else if(method == "minimax"){
-
-    opt.func <- optim(par = init.param, fn = helper_minimax,
-                      neg.set = neg.markers , pos.set = pos.markers,
-                      marker.set = markers, status = status,
-                      method = "Brent", lower = 0, upper = 1)
-    t <- as.numeric(opt.func$par)
-
-    b.coef <- (solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
-      (colMeans(pos.markers) - colMeans(neg.markers))
-    comb.score <- as.matrix(markers) %*% b.coef
-
-  } else if(method == "TS"){
-
-    opt.func <- optim(par = init.param, fn = helper_TS, marker.set = markers,
-                      status = status, method = "Brent",
-                      lower = -1.57079633, upper = 1.57079633)
-    theta <- as.numeric(opt.func$par)
-
-    a1 <- sin(theta)
-    a2 <- cos(theta)
-
-    comb.score <- as.matrix(a1 * markers[, 1] + a2 * markers[, 2])
+        
+        auc_value <- suppressMessages(as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score))))
+        
+        resample_results$parameters[[i]] <- as.numeric(c(a1, a2))
+        resample_results$AUC[[i]] <- auc_value
+        
+      }
+      
+      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      parameters <- resample_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * markers[, 2])
+      
+    }
+    
+    else if(any(resample == "cv") || any(resample == "repeatedcv")){
+      
+      for(r in (1:nrepeats)){
+        
+        folds = caret::createFolds(status, nfolds)
+        
+        for(i in (1:nfolds)){
+          
+          trainMark = markers[folds[[i]], ]
+          testMark = markers[-folds[[i]], ]
+          
+          trainStat = status[folds[[i]] ]
+          testStat = status[-folds[[i]] ]
+          
+          init.param <- runif(1, -1.57079633, 1.57079633)
+          
+          opt.func <- optim(par = init.param, fn = helper_TS, markers = trainMark,
+                            status = trainStat, method = "Brent",
+                            lower = -1.57079633, upper = 1.57079633)
+          theta <- as.numeric(opt.func$par)
+          
+          a1 <- sin(theta)
+          a2 <- cos(theta)
+          
+          comb.score <- as.matrix(a1 * testMark[, 1] + a2 * testMark[, 2])
+          
+          
+          auc_value <- suppressMessages(as.numeric(
+            pROC::auc(testStat, as.numeric(comb.score))))
+          
+          resample_results$parameters[[i]] <- as.numeric(c(a1, a2))
+          resample_results$AUC[[i]] <- auc_value
+          
+          
+        }
+        
+        max_AUC <- which(resample_results$AUC ==
+                           max(unlist(resample_results$AUC)))
+        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC]]
+        repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        
+      }
+      
+      max_AUC <- which(repeated_results$AUC ==
+                         max(unlist(repeated_results$AUC)))
+      parameters <- repeated_results$parameters[[max_AUC]]
+      comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * markers[, 2])
+    }
+    
+    else{
+      
+      init.param <- runif(1, -1.57079633, 1.57079633)
+      
+      opt.func <- optim(par = init.param, fn = helper_TS, markers = markers,
+                        status = status, method = "Brent",
+                        lower = -1.57079633, upper = 1.57079633)
+      theta <- as.numeric(opt.func$par)
+      
+      a1 <- sin(theta)
+      a2 <- cos(theta)
+      
+      comb.score <- as.matrix(a1 * markers[, 1] + a2 * markers[, 2])
+      
+    }
+    
   }
   
-  allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
-          event = event, direction = direction, conf.level = conf.level,
-          cutoff.method = cutoff.method)
+  allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
+                   event = event, direction = direction, conf.level = conf.level,
+                   cutoff.method = cutoff.method)
   
   return(allres)
+  
 }
-
 
 #' @title Mann Whitney AUC estimator for minmax method.
 #'
@@ -285,7 +1012,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 #' stat <- helper_minmax(lambda, neg.set = neg.set, pos.set = pos.set)
 #'
 #' @export
-
+  
 helper_minmax <- function(lambda, neg.set, pos.set){
   
   Xmax <- as.matrix(apply(neg.set, 1, max))
@@ -308,8 +1035,7 @@ helper_minmax <- function(lambda, neg.set, pos.set){
   return(-W.lambda / (n * m))
 }
 
-
-#' @title Mann Whitney AUC estimator for PCL method.
+  #' @title Mann Whitney AUC estimator for PCL method.
 #'
 #' @description The \code{helper_PCL} function estimates non-parametric
 #' AUC for the given biomarkers
@@ -343,12 +1069,12 @@ helper_minmax <- function(lambda, neg.set, pos.set){
 #' stat <- helper_PCL(lambda, neg.set = neg.set, pos.set = pos.set)
 #'
 #' @export
-
+  
 helper_PCL <- function(lambda, neg.set, pos.set){
   
   YD1 <- as.matrix(pos.set[ , 1])
   YD2 <- as.matrix(pos.set[ , 2])
-
+  
   YDN1 <- as.matrix(neg.set[ , 1])
   YDN2 <- as.matrix(neg.set[ , 2])
   
@@ -370,8 +1096,7 @@ helper_PCL <- function(lambda, neg.set, pos.set){
   return(-W.lambda / (n * m))
 }
 
-
-#' @title AUC calculator for minimax method.
+  #' @title AUC calculator for minimax method.
 #'
 #' @description The \code{helper_minimax} function calculates the combination
 #' coefficient and AUC value of given biomarkers for minimax method
@@ -413,7 +1138,7 @@ helper_PCL <- function(lambda, neg.set, pos.set){
 #' @importFrom pROC auc
 #'
 #' @export
-
+  
 helper_minimax <- function(t, neg.set, pos.set, markers, status){
   
   b.coef <- (solve(t * var(pos.set)) + (1 - t) * var(neg.set)) %*%
@@ -425,7 +1150,6 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
   
   return(-(auc_value))
 }
-
 
 #' @title AUC calculator for TS method.
 #'
@@ -460,12 +1184,12 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
 #' @importFrom pROC auc
 #'
 #' @export
-
+  
 helper_TS <- function(theta, markers, status){
   
   a1 <- sin(theta)
   a2 <- cos(theta)
-  z <- a1 * marker.set[, 1] + a2 * markers[, 2]
+  z <- a1 * markers[, 1] + a2 * markers[, 2]
   
   roc_obj <- suppressMessages(pROC::roc(status, z))
   auc_value <- as.numeric(pROC::auc(roc_obj))
