@@ -124,7 +124,7 @@
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add",trans = "log", power.transform = "TRUE", direction = direction,
+#' method = "add",trans = "log", power.transform = TRUE, direction = direction,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
