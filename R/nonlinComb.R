@@ -55,14 +55,14 @@
 #'  }
 #' 
 #' @param degree1 a \code{numeric} value for polynomial based methods indicates 
-#' the degree of the feature space created for marker 1, for spline based 
-#' methods the degree of the fitted polynomial between each node for marker 1. 
-#' (3, default)
+#'  the degree of the feature space created for marker 1, for spline based 
+#'  methods the degree of the fitted polynomial between each node for marker 1. 
+#'  (3, default)
 #' 
-#'  @param degree2 a \code{numeric} value for polynomial based methods indicates 
-#' the degree of the feature space created for marker 2, for spline based 
-#' methods the degree of the fitted polynomial between each node for marker 2
-#' (3, default)
+#' @param degree2 a \code{numeric} value for polynomial based methods indicates 
+#'  the degree of the feature space created for marker 2, for spline based 
+#'  methods the degree of the fitted polynomial between each node for marker 2
+#'  (3, default)
 #' 
 #'  @param df1 a \code{numeric} value that indicates the number of knots as the
 #'   degrees of freedom in spline based methods for marker 1 (4, default)
@@ -118,8 +118,17 @@
 #' direction <- "<"
 #' cutoff.method <- "youden"
 # 
-#'  score1 <- nonlinComb(markers = markers, status = status, event = event, 
-#'  method = "ridgereg", interact = FALSE, direction = "<", cutoff.method = "youden")
+#' score1 <- nonlinComb(markers = markers, status = status, event = event, 
+#' method = "ridgereg", resample = "boot", interact = FALSE, direction = "<", 
+#' cutoff.method = "youden")
+#'  
+#' score2 <- nonlinComb(markers = markers, status = status, event = event, 
+#' method = "splines", resample = "repeatedcv", interact = FALSE, direction = "<", 
+#' cutoff.method = "youden")
+#' 
+#' score3 <- nonlinComb(markers = markers, status = status, event = event, 
+#' method = "polyreg", resample = "cv", interact = FALSE, direction = "<", 
+#' cutoff.method = "youden")
 
 
 nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
