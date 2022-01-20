@@ -124,7 +124,7 @@
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add", power.transform = TRUE, direction = direction,
+#' method = "add",trans = "log", power.transform = "TRUE", direction = direction,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
@@ -258,7 +258,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   n <- as.matrix(seq(-3, 3, 0.1))
   p <- seq(1:nrow(n))
   
-  get_roc <- function(np){
+  get_roc <- function(p){
     
     values <- suppressMessages(pROC::roc(status , power[,p], 
                                          direction = direction))
