@@ -1,0 +1,26 @@
+{
+    "id": "4D359ADF",
+    "path": "~/GitHub/dtComb/R/mathComb.R",
+    "project_path": "R/mathComb.R",
+    "type": "r_source",
+    "hash": "3159406785",
+    "contents": "",
+    "dirty": false,
+    "created": 1641384502781.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "28,62",
+        "scrollLine": "16"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1641480067,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1641480067025,
+    "read_only": false,
+    "read_only_alternatives": []
+}

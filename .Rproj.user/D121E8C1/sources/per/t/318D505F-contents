@@ -1,0 +1,124 @@
+####Listeler
+?list()
+
+liste <- list()
+liste
+
+length(liste)
+
+dim(liste)
+
+mat <- matrix(1:15, 5, byrow = TRUE)
+mat
+
+dim(mat)
+nrow(mat)
+
+ncol(mat)
+
+yas = c(37, 61, 39, 41, 51)
+kilo = c(57, 90, 60, 97, 90)
+ast = c(54, 49, 97, 62, 97)
+mir99a = c(0.10, 0.02, 0.01, 6.29, 0.19)
+cinsiyet = c(rep("kadin", 3), rep("erkek", 2))
+cinsiyet
+
+data.frame(Age =yas, Gender = cinsiyet)
+veri <- data.frame(yas, kilo, ast, mir99a, cinsiyet)
+
+
+list(yas, cinsiyet, ast, mat, 7)
+
+liste <- list( vektor = yas, matris = mat, skaler = 7)
+
+class(liste)
+
+str(liste)
+
+liste$vektor
+
+liste$mat
+
+str(liste)
+
+
+liste <- list( 
+  v = seq(from = 30, to = 100, by =25),
+  M = matrix(0, nrow = 3, ncol = 5),
+  isim = "ilayda",
+  yas = 24,
+  OgrNo = 123456
+            )
+
+#### İndeksleme,  düzenleme işlemleri####
+#### Objenin içerisinde kayıtlı olan saklanan değerleri değiştirme
+#### 1. Skaler değerlerde indeksleme ve düzenleme
+s <- 10L # L değeri integer tanımlaması için kullanılır.
+class(s)
+s <- 10 # numeric değer olarak tanımlanır.
+class(s)
+
+length(s) # Dimension: 1 * 1 "atomic vector"
+
+v <- c(1, 3, 8, 2, 6, 9)  * 1L # 6 elemanlı boyutlu bir numeric vektör.
+length(v)
+dim(v)
+
+v[3]
+v[6]
+v[10]
+
+s <- 5
+v[6] <- 0
+v[6] = 333
+
+
+### v vektörünün 1 ve 3. sıradaki elemanları alınmak istenirse?
+v[1, 3] # ???
+v[c(1, 3, 6)]
+v[1:6]
+
+### v vektöründe son eleman (6.elemanı) çıkartıp kalan 5 elemanı seçelim
+v[1:5]
+v[-6]
+v[c(-1, -6)]
+v[-c(1, 6)]
+
+
+###TRUE - FALSE logical
+secilenler <- c(T, F, F, F, T, F)
+
+v[secilenler]
+v[!secilenler]
+
+
+
+
+
+mat[1, 4]
+mat[3, 2]
+
+mat[1:3, 1]
+mat[1:3, 1:2]
+mat[-c(1:3), 1:2]
+
+
+secilenler <- upper.tri(mat)
+mat[secilenler]
+
+mat[4, 2] <- 1000
+
+mat[1, ]
+mat[ ,1]
+mat[ ,1] <- 0
+mat[-1, -3]
+
+
+
+veri
+veri[3]
+veri[3, 3]
+veri[3, "ast"]
+veri[, "cinsiyet"]
+veri[1:3, "kilo"]
+

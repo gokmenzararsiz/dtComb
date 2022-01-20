@@ -1,0 +1,52 @@
+vec <- c(1, 4, 7, 6, 4, 2, "a", 2, 7, "c", "x", 5)
+matR <- matrix(data = vec, nrow = 4, ncol = 3)
+matR
+
+
+
+vec1 <- c(1, 4, 7, 6)
+vec2 <- c(4, 2, "a", 2)
+vec3 <- c(7, "c", "x", 5)
+df <- data.frame(vec1, vec2, vec3)
+df
+
+
+
+vec <- c(1, 4, 7, 6, 4, 2, "a", 2, 7, "c", "x", 5)
+matR <- matrix(data = vec, nrow = 4, ncol = 3)
+matR
+
+
+yas = c(16, 26, 85, 31, 19, 27, 24)
+cinsiyet = c("Erkek", "Erkek", "Kadin", "Erkek", "Kadin", "Kadin", "Erkek")
+HT = c("+", "-", "-", "+", "-", "-", "+")
+kolestrol = c(200, 185, 245, 202, 168, 306, 295)
+veri <- data.frame(yas, cinsiyet, HT, kolestrol)
+veri
+
+
+(veri$yas < 35) & (veri$HT == "+")
+
+(veri$cinsiyet != "Erkek" | veri$kolestrol > 200 )
+
+
+
+HT = "-"
+kolestrol = 280
+
+if(HT == "+"){
+  kolestrol = kolestrol - 100
+} else {
+  kolestrol ^ 2
+}
+
+
+for (i in yas){
+  if (i < ){
+    print(log(i))
+    
+  } else {
+    print(exp(i))
+    
+  }
+}

@@ -1,0 +1,166 @@
+## WEEK 6
+##FONKSİYONLAR
+
+sign()
+sign
+
+x
+x <- 5
+
+mean
+
+sign <- "pozitif"
+sign(-5)
+
+rm(sign)
+sign
+
+#if mmantıksal sınamaları
+Cinsiyet <- "K"
+
+if (Cinsiyet == "K"){
+  Cinsiyet <- "Kadın"
+  print("K olarak girilmiş olan cinsiyet bilgisi \"Kadın\" olarak yeniden düzenlendi.")
+} else {
+  Cinsiyet <- "Erkek"
+  print("E olarak girilmiş olan cinsiyet bilgisi \"Erkek\" olarak yeniden düzenlendi.")
+}
+
+
+DM = "-"
+chol = 280
+
+if(DM == "+"){
+  chol = chol - 20
+} else {
+  chol ^ 2
+}
+
+if(DM == "+") chol = chol - 20 else chol ^ 2
+
+
+if(DM == "+"){
+  x  = chol - 20
+  durum = "pozitif"
+  print(durum)
+} else {
+  chol ^ 2
+  durum = "negatif"
+  print(durum)
+}
+
+
+
+
+if (){
+  
+} else if (){
+  
+} else if (){
+  
+} else {
+  
+}
+
+
+
+
+x = NA
+
+
+
+if (x == 0){
+  print("0'dan farklı bir değer girilmelidir.")
+
+  } else if (sign(x) == -1 & (x %% 2 == 0)){
+  print("Girilen dağer negatif çift sayıdır.")
+ 
+  } else if(sign(x) == -1 & (x %% 2 == 1)){
+  print("Girilen değer negatif tek sayıdır.")  
+
+  } else if (sign(x) == 1 & (x %% 2 == 0)){
+  print("Girilen değer pozitif çift sayıdır.")
+ 
+ } else {
+  print("Girilen değer pozitif tek sayıdır.")
+ }
+
+
+# x değeri tanımlanır.
+# 1.1 x değeri NA ise (boş birdeğer tanımlanmış ise)
+# .......
+# .......
+# .......
+# 1.2 x değeri ölçülmüs ise
+# 1.2.1 x değeri 0 ise
+# .......
+# 1.2.2 x değeri negatif tek sayı ise
+# .......
+# 1.2.3 x değeri negatif çift sayı ise
+# .......
+# 1.2.4 x değeri pozitif tek sayı ise
+# .......
+# 1.2.5 x değeri pozitif çift sayı ise
+# .......
+
+x <- 0
+
+# 1. kontrol kademesi
+if (is.na(x)){
+  # 1.1
+  print("x değeri boş değer girilemez.")
+} else {
+  # 1.2
+  if (x == 0){
+    # 1.2.1
+    print("0'dan farklı bir değer girilmelidir.")
+  } else if (sign(x) == -1 & (x %% 2 == 0)){
+    # 1.2.2
+    print("Girilen değer negatif çift sayıdır.")
+  } else if (sign(x) == -1 & (x %% 2 == 1)){
+    # 1.2.3
+    print("Girilen değer negatif tek sayıdır.")
+  } else if (sign(x) == 1 & (x %% 2 == 0)){
+    # 1.2.4
+    print("Girilen değer pozitif çift sayıdır.")
+  } else {
+    # 1.2.5
+    print("Girilen değer pozitif tek sayıdır.")
+  }
+}
+
+# FOR DÖNGÜSÜ
+
+5:14
+
+for (i in 1:10) {
+  print(i + 3 )
+}
+
+
+for (i in 1:10) {
+  if (i < 5){
+    print("5'den küçük")    
+  } else {
+    print("5'e eşit veya büyük")
+  }
+}
+
+
+##Döngü içerisinde yapılan şeyler ekrana yazılmaz. Yazdırmak için print kullanılır.
+for (i in c(2, 5, 8, 2, 4, 6, 12, 9)){
+  if (i < 5){
+    print(log(i))
+
+  } else {
+    print(exp(i))
+
+  }
+}
+
+x <- c(2, 4, 7, 1, 8, 6)
+sqrt(x)
+
+for (sayi in x){
+  print(sqrt(sayi))
+}
