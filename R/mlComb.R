@@ -11,7 +11,7 @@
 # nfolds <- 10
 # direction <- "<"
 # cutoff.method <- "youden"
-
+# 
 # model <- mlComb(markers = markers, status = status, event = event,
 #                 method = method,
 #                 resample = resample, nrepeats = nrepeats,
@@ -87,7 +87,7 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
          compatible with the given method.")
   }
  
-  if(method %in% bagMethods){
+  if(method %in% BMethods){
     
     if(any(resample == "repeatedcv")){
       
