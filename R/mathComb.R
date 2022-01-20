@@ -5,7 +5,7 @@
 #' @title Combine two diagnostic tests with several mathematical operators and 
 #'  distance measures.
 #'
-#' @description The code{mathCom} function returns the combination results of 
+#' @description The code{mathComb} function returns the combination results of 
 #'  two diagnostic tests with different mathematical operators, distance 
 #'  measures, standardization, and transform options.
 #'
