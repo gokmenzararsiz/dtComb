@@ -65,8 +65,8 @@
 #'  \item \code{range}: Standardization to a range between 0 and 1
 #'  \item \code{zScore}: Standardization using z scores with mean = 0
 #'  and standard deviation = 1
-#'  \item \code{tScore}: Standardization using T scores. The range varies between
-#'  usually 20 and 80
+#'  \item \code{tScore}: Standardization using T scores. The range varies 
+#'  between usually 20 and 80
 #'  \item \code{mean}: Standardization with sample mean = 1
 #'  \item \code{deviance}: Standardization with sample standard deviation = 1
 #' }
@@ -77,17 +77,17 @@
 #'  \itemize{
 #'  \item \code{log}: Applies logarithm transform to markers before calculating 
 #'  combination score
-#'  \item \code{exp}: Applies exponential transform to markers before calculating 
-#'  combination score
+#'  \item \code{exp}: Applies exponential transform to markers before 
+#'  calculating combination score
 #'  \item \code{sin}: Applies sinus trigonometric transform to markers before 
 #'  calculatin combination score
 #'  \item \code{cos}: Applies cosinus trigonometric transform to markers before 
 #'  calculating combination score
 #' }
 #' 
-#' @param power.transform a \code{logical} values  determines whether to apply
-#'  power to the markers giving the optimum AUC value in the [-3, 3] range, before 
-#'  calculating the combination score (FALSE, default).
+#' @param power.transform a \code{logical} variable that determines whether to 
+#'  apply power to the markers giving the optimum AUC value in the [-3, 3] 
+#'  range, before calculating the combination score (FALSE, default).
 #' 
 #' @param direction a \code{character} string determines in which direction the 
 #'  comparison will be made.  “>”: if the predictor values for the control group 
@@ -124,7 +124,7 @@
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add",trans = "log", power.transform = TRUE, direction = direction,
+#' method = "add", power.transform = TRUE, direction = direction,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
@@ -147,7 +147,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
 
   match.arg(method)
   match.arg(distance)
-  match.arg(transform)
   match.arg(direction)
   match.arg(cutoff.method)
   
@@ -182,18 +181,8 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
  
   }
   
-  if (method %in% c("baseinexp", "expinbase") && transform == "exp" 
-     
-       && standardize == "none"){
-      
-      promtMessages <- "Please enter a standardize for this method 
-                      (range, zScore, tScore, mean, deviance): "  
-       promtMessages <- sub("
-                      ","",promtMessages)
-      var <- readline(prompt = promtMessages)
-   
-      standardize <- var
-  }
+  if (method %in% c("baseinexp", "expinbase") && transform == "exp")   
+    stop("The exponential(exp) transformation cannot be used for this method.")
   
   if(any(standardize == "none")){
     
@@ -281,6 +270,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
            max_index <- max_index[1]
           
         }
+        max_power <- (n[max_index])
         comb.score <- power[,max_index]
     } 
     else {comb.score <- markers[ ,1] + markers[ ,2]}
@@ -307,6 +297,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
           max_index <- max_index[1]
         
        }
+       max_power <- (n[max_index])
        comb.score <- power[,max_index]
       
       }
@@ -367,12 +358,21 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
+  # model_fit <- list(Function = "mathComb",
+  #                Method = method,
+  #                Distance = distance,
+  #                Standardize = standardize,
+  #                Transform = transform,
+  #                PowerTransform = power.transform,
+  #                MaxPower = max_power)
   
   comb.score <- as.matrix(comb.score)
   
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
+  
+  # allres$fit <- model_fit
   
   return(allres)
 }
@@ -418,7 +418,7 @@ power.add <- function(n, marker.set){
 #' @title The power giving optimum AUC value for the subtraction operator
 #'
 #' @description The \code{power.subt} function calculates the nth power of the 
-#' markers for n selected in the range -3 <= n <= 3 for the subtraction  function.
+#' markers for n selected in the range -3 <= n <= 3 for the subtraction function.
 #'
 #' @param n a \code{numeric} parameter to estimate the best power.transform for 
 #' the combination score
