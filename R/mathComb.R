@@ -358,7 +358,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
-  # model_fit <- list(Function = "mathComb",
+  # model_fit <- list(CombType = "mathComb",
   #                Method = method,
   #                Distance = distance,
   #                Standardize = standardize,
