@@ -201,7 +201,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         res <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
                    family = binomial((link = "logit")))
         
-        round.coef <- abs(round(res$coefficients, digits = ndigits))
+        round.coef <- round(res$coefficients, digits = ndigits)
         comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
         
         auc_value <- suppressMessages(as.numeric(
@@ -235,7 +235,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           res <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
                      family = binomial((link = "logit")))
           
-          round.coef <- abs(round(res$coefficients, digits = ndigits))
+          round.coef <- round(res$coefficients, digits = ndigits)
           comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
           
           auc_value <- suppressMessages(as.numeric(
@@ -265,7 +265,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       
-      round.coef <- abs(round(res$coefficients, digits = ndigits))
+      round.coef <- round(res$coefficients, digits = ndigits)
       parameters <- round.coef
       comb.score <- as.matrix(markers) %*% as.matrix(round.coef[-1])
       
