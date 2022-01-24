@@ -124,6 +124,10 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
+  if (is.null(method)){
+    stop("No method provided")
+  }
+  
   if (is.null(resample)){
     resample <- "none"
   }
@@ -298,6 +302,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
+        names(est.coef) <- c("alpha", "beta")
         resample_results$parameters[[i]] <- est.coef
         resample_results$AUC[[i]] <- auc_value
         
@@ -334,6 +339,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
+          names(est.coef) <- c("alpha", "beta")
           resample_results$parameters[[i]] <- est.coef
           resample_results$AUC[[i]] <- auc_value
           
@@ -358,6 +364,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       sum.var <- var(pos.markers) + var(neg.markers)
       subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
       est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
+      names(est.coef) <- c("alpha", "beta")
       parameters <- est.coef
       comb.score <- as.matrix(markers) %*% est.coef
       
@@ -481,6 +488,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
+        names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
         
@@ -523,6 +531,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
+          names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
           
@@ -552,6 +561,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                         lower = 0, upper = 1)
       lambda <- as.numeric(opt.func$par)
       
+      names(lambda) <- "lambda"
       parameters <- lambda
       
       comb.score <- as.matrix(apply(markers, 1, max) 
@@ -584,6 +594,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
+        names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
         
@@ -618,6 +629,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
+          names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
           
@@ -643,6 +655,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       model <- glm(status ~ markers, family = binomial(link = "logit"))
       lambda <- model$coefficients[3] / model$coefficients[2]
       
+      names(lambda) <- "lambda"
       parameters <- lambda
       
       comb.score <- as.matrix(markers[, 1] + lambda * markers[, 2])
@@ -682,6 +695,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
+        names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
         
@@ -724,6 +738,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
+          names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
           
@@ -754,6 +769,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       lambda <- as.numeric(opt.func$par)
       markers <- as.matrix(markers)
       
+      names(lambda) <- "lambda"
       parameters <- lambda
       
       comb.score <-  as.matrix(markers[ ,1] + markers[ ,2] * lambda)
@@ -794,6 +810,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
+        names(b.coef) <- c("b1", "b2")
         resample_results$parameters[[i]] <- b.coef
         resample_results$AUC[[i]] <- auc_value
         
@@ -837,6 +854,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
+          names(b.coef) <- c("b1", "b2")
           resample_results$parameters[[i]] <- b.coef
           resample_results$AUC[[i]] <- auc_value
           
@@ -869,6 +887,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       b.coef <- (solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
         (colMeans(pos.markers) - colMeans(neg.markers))
       
+      names(b.coef) <- c("b1", "b2")
       parameters <- b.coef
       
       comb.score <- as.matrix(markers) %*% b.coef
@@ -906,7 +925,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         auc_value <- suppressMessages(as.numeric(
           pROC::auc(testStat, as.numeric(comb.score))))
         
-        resample_results$parameters[[i]] <- as.numeric(c(a1, a2))
+        trigFuncs <- as.numeric(c(a1, a2))
+        names(trigFuncs) <- c("sin(theta)", "cos(theta)")
+        resample_results$parameters[[i]] <- trigFuncs
         resample_results$AUC[[i]] <- auc_value
         
       }
@@ -947,7 +968,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           auc_value <- suppressMessages(as.numeric(
             pROC::auc(testStat, as.numeric(comb.score))))
           
-          resample_results$parameters[[i]] <- as.numeric(c(a1, a2))
+          trigFuncs <- as.numeric(c(a1, a2))
+          names(trigFuncs) <- c("sin(theta)", "cos(theta)")
+          resample_results$parameters[[i]] <- trigFuncs
           resample_results$AUC[[i]] <- auc_value
           
           
@@ -978,7 +1001,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       a1 <- sin(theta)
       a2 <- cos(theta)
       
-      parameters <- as.numeric(c(a1, a2))
+      trigFuncs <- as.numeric(c(a1, a2))
+      names(trigFuncs) <- c("sin(theta)", "cos(theta)")
+      parameters <- trigFuncs
       
       comb.score <- as.matrix(a1 * markers[, 1] + a2 * markers[, 2])
       
