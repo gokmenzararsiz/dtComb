@@ -1,22 +1,87 @@
-##implementation
-
-# data(exampleData1)
-# markers <- exampleData1[, -1]
-# status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
-# method <- "C5.0Tree"
-# resample <- "repeatedcv"
-# preProcess = NULL#c("center","scale")
-# nrepeats <- 3
-# event <- "needed"
-# nfolds <- 10
-# direction <- "<"
-# cutoff.method <- "youden"
-# 
-# model <- mlComb(markers = markers, status = status, event = event,
-#                 method = method,
-#                 resample = resample, nrepeats = nrepeats,
-#                 preProcess = preProcess,
-#                 direction = direction, cutoff.method = cutoff.method)
+# TODO: predict function
+#
+# Author: serra berşan gengeç
+###############################################################################
+#' @title Combine two diagnostic tests with Machine Learning Algorithms.
+#'
+#' @description The \code{mlComb} function calculates the combination
+#' scores of two diagnostic tests selected among several Machine Learning 
+#' Algorithms
+#'
+#' @param markers a \code{numeric} data frame that includes two diagnostic tests
+#' results
+#'
+#' @param status a \code{factor} vector that includes the actual disease
+#' status of the patients
+#'
+#' @param event a \code{character} string that indicates the event in the status
+#' to be considered as positive event
+#'
+#' @param method a \code{character} string specifying the method used for
+#' combining the markers. For the available methods see availableMethods()
+#' 
+#' \bold{IMPORTANT}: See https://topepo.github.io/caret/available-models.html 
+#' for further information about the methods used in this function.
+#' 
+#' @param resample a \code{character} string that indicates the resampling 
+#' method used while training the model. The available methods are "boot", 
+#' "boot632", "optimism_boot", "boot_all", "cv", "repeatedcv", "LOOCV", "LGOCV",
+#' "none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for 
+#' details of these resampling methods see ?caret::trainControl
+#' 
+#' @param nfolds a \code{numeric} value that indicates the number of folds or 
+#' the number of resampling iterations (5, default)
+#' 
+#' @param nrepeats a \code{numeric} value that indicates the number of repeats 
+#' for "repeatedcv" option of resampling methods (3, default)
+#' 
+#' @param preProcess a \code{character} string that indicates the pre-processing
+#' options to be applied in the data before training the model. Available 
+#' pre-processing methods are: "BoxCox", "YeoJohnson", "expoTrans", "center", 
+#' "scale", "range", "knnImpute", "bagImpute", "medianImpute", "pca", "ica", 
+#' "spatialSign", "corr", "zv", "nzv", and "conditionalX". For detailed 
+#' information about the methods see ?caret::preProcess
+#' 
+#' @param B a \code{numeric} value that is the number of bootstrap samples for 
+#' bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV". 
+#' (25, default)
+#' 
+#' @param direction a \code{character} string determines in which direction the 
+#' comparison will be made.  “>”: if the predictor values for the control group 
+#' are higher than the values of the case group (controls > cases). 
+#' “<”: if the predictor values for the control group are lower or equal than 
+#' the values of the case group (controls < cases). 
+#'
+#' @param conf.level a \code{numeric} value to  determine the confidence interval
+#' for the ROC curve(0.95, default).
+#' 
+#' @param cutoff.method  a \code{character} string determines the cutoff method
+#' for the ROC curve.
+#' 
+#' @param \dots optional arguments passed to selected classifiers.
+#' 
+#' @return A \code{list} of AUC values, diagnostic statistics,
+#' coordinates of the ROC curve for the combination score obtained using 
+#' Machine Learning Algorithms as well as the given biomarkers individually, a 
+#' comparison table for the AUC values of individual biomarkers and combination 
+#' score obtained and the fitted model.
+#'
+#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#'
+#' @examples
+#' #call data
+#' data(exampleData1)
+#'
+#' #define the function parameters
+#' markers <- exampleData1[, -1]
+#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' event <- "needed"
+#'
+#' model <- mlComb(markers = markers, status = status, event = event,
+#' method = "knn", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+#' preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
+#' 
+#' @export
 
 
 mlComb <- function(markers = NULL, status = NULL, event = NULL,
@@ -58,14 +123,6 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
     resample <- "none"
   }
   
-  excludedMethods <- c("glmStepAIC", "ordinalRF", "pcaNNet", "polr", 
-                       "stepLDA", "stepQDA", "vglmAdjCat", "vglmContRatio", 
-                       "vglmCumulative", "amdai", "awnb", "awtan", "binda", 
-                       "chaid", "elm", "logicBag", "logreg", "manb", "mxnet",
-                       "mxnetAdam", "nbDiscrete", "nbSearch", "randomGLM", 
-                       "rbf", "rrlda", "SLAVE", "svmBoundrangeString", 
-                       "svmExpoString", "svmSpectrumString", "tan", "tanSearch",
-                       "vbmpRadial")
   
   BMethods <- c("bagFDA", "bagFDAGCV", "bagEarth", "bagEarthGCV")
   
@@ -74,17 +131,10 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                       "hda",	"mxnet", "plsRglm",	"sda",	"ORFlog",	"ORFpls",
                       "ORFridge",	"ORFsvm",	"bartMachine")
   
-  probMethods <- c("BstLm", "bstSm", "bstTree", "C5.0Cost", "CSimca", 
-                   "FRBCS.CHI", "FH.GBML", "FRBCS.W", "lssvmLinear", 
-                   "lssvmPoly", "lssvmRadial", "lvq", "ownn", "partDSA", 
-                   "protoclass", "rFerns", "RFlda", "rfRules", "rocc", 
-                   "rpartCost", "rpartScore","RSimca", "smda", "snn",
-                   "svmLinear3", "svmLinearWeights2")
-  
-  if(method %in% excludedMethods){
+  if(!(method %in% allMethods[,1])){
     
-    stop("The response variable or the given markers are not 
-         compatible with the given method.")
+    stop("The response given method is not available for mlComb function. 
+         See availableMethods() for the list of methods available.")
   }
  
   if(method %in% BMethods){
@@ -135,50 +185,6 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
     score <- predict(modelFit, newdata = markers, type = "prob")
     
   }
-  if(method %in% probMethods){
-    
-    if(any(resample == "repeatedcv")){
-      
-      modelFit <- caret::train(status ~ ., data = data, method = method,
-                    trControl = caret::trainControl(method = resample, 
-                                                    number = nfolds, 
-                                                    repeats = nrepeats), 
-                               preProc = preProcess, ...)
-      
-    } else{
-      
-      modelFit <- caret::train(status ~ ., data = data, method = method,
-                    trControl = caret::trainControl(method = resample, 
-                                                    number = nfolds), 
-                               preProc = preProcess, ...)
-      
-    }
-    
-    score <- predict(modelFit, newdata = markers)
-    
-  }
-  if(method == "deepboost"){
-    
-    if(any(resample == "repeatedcv")){
-      
-      modelFit <- caret::train(status ~ ., data = data, method = method,
-                    trControl = caret::trainControl(method = resample, 
-                                                    number = nfolds, 
-                                                    repeats = nrepeats), 
-                               preProc = preProcess, verbose = FALSE, ...)
-      
-    } else{
-      
-      modelFit <- caret::train(status ~ ., data = data, method = method,
-                    trControl = caret::trainControl(method = resample, 
-                                                    number = nfolds), 
-                               preProc = preProcess, verbose = FALSE, ...)
-      
-    }
-    
-    score <- predict(modelFit, newdata = markers)
-    
-  }
   
   else{
     
@@ -204,9 +210,6 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
-  
-  print(modelFit)
-  
   comb.score <- as.numeric(score[,levels(status)==event])
   
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
@@ -218,4 +221,10 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   return(allres)
 }
 
-
+availableMethods <- function(){
+  
+  message("The available methods are listed below. For more information 
+about the methods see https://topepo.github.io/caret/available-models.html") 
+  print(allMethods)           
+  
+}
