@@ -93,7 +93,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                     standardize = c("none", "range", 
                                     "zScore", "tScore", "mean", "deviance"),
                     ndigits = 0,
-                    direction = c("<", ">"), conf.level = 0.95, 
+                    direction = c("auto","<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
   match.arg(method)
   match.arg(direction)
