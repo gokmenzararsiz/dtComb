@@ -88,7 +88,7 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                             method = NULL, resample = NULL, 
                             nfolds = 5, nrepeats = 3,
                             preProcess = NULL, B = 25,
-                            direction = c("auto","<", ">"), conf.level = 0.95, 
+                            direction = c("auto", "<", ">"), conf.level = 0.95, 
                             cutoff.method = c("youden", "roc01"), ...){
   
   match.arg(direction)
@@ -215,8 +215,11 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
-
-  allres$fit <- modelFit
+  
+   model_fit <- list(CombType = "mlComb",
+                     Model = modelFit)
+   
+  allres$fit <- model_fit
   
   return(allres)
 }
