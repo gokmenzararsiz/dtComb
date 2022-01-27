@@ -135,11 +135,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   if(any(resample == "cv")){
     nrepeats = 1
   }
-  
-  
-  if (is.null(standardize)){
-    standardize <- "none"
-  }
 
   if (method %in% c("minmax", "PT", "PCL") && (!standardize == "range")){
     
@@ -152,6 +147,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   if(any(standardize == "none")){
     
     markers <- markers
+    standardize <- "none"
     
   }
   else if (any(standardize == "range")){
@@ -1014,8 +1010,12 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
+   model_fit <- list(CombType = "linComb",
+                  Method = method,
+                  Standardize = standardize,
+                  Parameters = parameters)
   
-  allres$fit <- parameters
+  allres$fit <- model_fit
   
   return(allres)
   
