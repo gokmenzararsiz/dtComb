@@ -1092,6 +1092,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
+  comb.score <- as.matrix(comb.score)
+  status <- data$status
   
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                  event = event, direction = direction, conf.level = conf.level,
