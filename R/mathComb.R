@@ -175,10 +175,16 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
-  if (is.null(standardize)){
+  if (method != "distance"){
     
-    standardize <- "none"
- 
+    distance <- NULL
+    
+  }
+  
+  if (power.transform != TRUE){
+    
+    max_power <- NULL
+    
   }
   
   if (method %in% c("baseinexp", "expinbase") && transform == "exp")   
@@ -187,7 +193,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   if(any(standardize == "none")){
     
     markers <- markers
-    
+    standardize<- "none"
   }
   else if (any(standardize == "range")){
     
@@ -214,14 +220,10 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     markers <- std.deviance(markers)
     
   }
-  if (is.null(transform)){
-    
-    transform <- "none"
-  }
-  
   if(any(transform == "none")){
     
     markers <- markers
+    transform <- "none"
     
   }
    else if(any(transform == "log")){
@@ -358,13 +360,13 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
-  # model_fit <- list(CombType = "mathComb",
-  #                Method = method,
-  #                Distance = distance,
-  #                Standardize = standardize,
-  #                Transform = transform,
-  #                PowerTransform = power.transform,
-  #                MaxPower = max_power)
+  model_fit <- list(CombType = "mathComb",
+                 Method = method,
+                 Distance = distance,
+                 Standardize = standardize,
+                 Transform = transform,
+                 PowerTransform = power.transform,
+                 MaxPower = max_power)
   
   comb.score <- as.matrix(comb.score)
   
@@ -372,7 +374,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
   
-  # allres$fit <- model_fit
+   allres$fit <- model_fit
   
   return(allres)
 }
