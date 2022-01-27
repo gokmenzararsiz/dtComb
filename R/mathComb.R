@@ -141,7 +141,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
                      transform = c("none", "log", "exp", "sin", "cos"), 
-                     power.transform = FALSE, direction = c("<", ">"), 
+                     power.transform = FALSE, direction = c("auto", "<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
 
 
