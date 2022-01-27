@@ -119,7 +119,7 @@
 #' cutoff.method <- "youden"
 #' 
 #' score1 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "nsgam", resample = "boot", include.interact = FALSE, direction = "auto",
+#' method = "nsgam", resample = "boot", include.interact = FALSE, 
 #' cutoff.method = "youden")
 #'  
 #' score2 <- nonlinComb(markers = markers, status = status, event = event, 
@@ -139,7 +139,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     standardize = c("none", "range","zScore", "tScore", "mean", 
                                     "deviance"),
                     include.interact = FALSE, alpha = 0.5,  
-                    direction = c("auto","<", ">"), conf.level = 0.95, 
+                    direction = c("auto" ,"<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
   match.arg(method)
   match.arg(direction)
