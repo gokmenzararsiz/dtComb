@@ -168,23 +168,14 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
-  if (is.null(resample)){
-    resample <- "none"
-  }
-  
   if(any(resample == "cv")){
     nrepeats = 1
-  }
-  
-  
-  if (is.null(standardize)){
-    standardize <- "none"
   }
   
   if(any(standardize == "none")){
     
     markers <- markers
-    
+    standardize <- "none"
   }
   else if (any(standardize == "range")){
     
@@ -1103,7 +1094,13 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                  event = event, direction = direction, conf.level = conf.level,
                  cutoff.method = cutoff.method)
   
-  allres$fit <- parameters
+   model_fit <- list(CombType = "nonlinComb",
+                  Method = method,
+                  Standardize = standardize,
+                  Parameters = parameters
+                 )
+  
+  allres$fit <- model_fit
 
   return(allres)
 
