@@ -1,5 +1,5 @@
 rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NULL, 
-                    direction = c("<", ">"), conf.level = 0.95, 
+                    direction = c("auto", "<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
   
   roc.m1 <- suppressMessages(pROC::roc(status ~ markers[, 1], plot = TRUE, print.auc = TRUE, 
