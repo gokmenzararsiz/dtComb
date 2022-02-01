@@ -111,7 +111,7 @@
 #' @examples
 #' data("exampleData1")
 #' data <- exampleData1
-# 
+#'
 #' markers <- data[, -1]
 #' status <- factor(data$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
