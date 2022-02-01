@@ -122,12 +122,10 @@
 #' method = "nsgam", resample = "boot", include.interact = FALSE, 
 #' cutoff.method = "youden")
 #'  
-#' score2 <- nonlinComb(markers = markers, status = status, event = event, 
-#' method = "splines", resample = "repeatedcv", interact = FALSE, direction = "<", 
-#' cutoff.method = "youden")
+#'  
 #' 
 #' score3 <- nonlinComb(markers = markers, status = status, event = event, 
-#' method = "polyreg", resample = "cv", interact = FALSE, direction = "<", 
+#' method = "polyreg", resample = "cv", include.interact = FALSE, direction = "<", 
 #' cutoff.method = "youden")
 
 nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
