@@ -120,7 +120,7 @@
 #' cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
-#' method = "baseinexp", transform = "exp", direction = direction,
+#' method = "baseinexp", transform = "log", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
