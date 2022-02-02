@@ -1,3 +1,9 @@
+#' score1 <- nonlinComb(markers = markers, status = status, event = event,
+#' method = "nsgam", resample = "boot", include.interact = FALSE, 
+#' cutoff.method = "youden")
+#'
+#' comb.predict(score3, markers)
+
 comb.predict <- function(model, newdata, type = c("prob", "label")){
   
   if (!is.data.frame(newdata)) {
@@ -100,13 +106,17 @@ comb.predict <- function(model, newdata, type = c("prob", "label")){
     }
     else if(method %in% c("ridgereg", "lassoreg", "elasticreg")){
       
-      comb.score <- predict(model$fit$parameters, newx = as.matrix(dataspace), 
+      dataspace <- cbind.data.frame(poly(newdata$m1, model$fit$Degree1),
+                                    poly(newdata$m2, model$fit$Degree2))
+      
+      comb.score <- predict(model$fit$Parameters, newx = as.matrix(dataspace), 
                             type = "response")
       
     }
     else {
       
-      comb.score <- predict(model, newx = as.matrix(space), type="response")
+      comb.score <- predict(model$fit$Parameters, newx = as.matrix(newdata), 
+                            type="response")
       
     }
     
