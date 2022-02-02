@@ -1095,7 +1095,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
    model_fit <- list(CombType = "nonlinComb",
                   Method = method,
                   Standardize = standardize,
-                  Parameters = parameters
+                  Parameters = parameters,
+                  Degree1 = degree1,
+                  Degree2 = degree2
                  )
   
   allres$fit <- model_fit
