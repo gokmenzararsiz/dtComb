@@ -57,7 +57,7 @@ std.zscore <- function(testMark, trainMark){
 
   for (i in 1:ncol(testMark)){
 
-    testMark[ , i] <- (markers[ , i] - mean(trainMark[ , i])) / sd(trainMark[ , i])
+    testMark[ , i] <- (testMark[ , i] - mean(trainMark[ , i])) / sd(trainMark[ , i])
 
   }
   return(testMark)}
