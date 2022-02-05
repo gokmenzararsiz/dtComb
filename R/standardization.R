@@ -24,7 +24,7 @@
 
 std.range <- function(testMark, trainMark){
 
-  for (i in 1:ncol(markers)){
+  for (i in 1:ncol(testMark)){
 
     testMark[ , i] <- (testMark[ , i] - min(trainMark[ , i])) /
      (max(trainMark[ , i]) - min(trainMark[ , i]))
