@@ -10,7 +10,7 @@
 #'
 #' @return A \code{numeric} data frame of standardized biomarkers
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
 #' @examples
 #' #call data
@@ -22,15 +22,15 @@
 #'
 #' @export
 
-std.range <- function(markers){
+std.range <- function(testMark, trainMark){
 
   for (i in 1:ncol(markers)){
 
-   markers[ , i] <- (markers[ , i] - min(markers[ , i])) /
-     (max(markers[ , i]) - min(markers[ , i]))
+    testMark[ , i] <- (testMark[ , i] - min(trainMark[ , i])) /
+     (max(trainMark[ , i]) - min(trainMark[ , i]))
 
   }
-  return(markers)}
+  return(testMark)}
 
 #' @title Standardization with respect to z score.
 #'
@@ -41,7 +41,7 @@ std.range <- function(markers){
 #'
 #' @return A \code{numeric} data frame of standardized biomarkers
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
 #' @examples
 #' #call data
@@ -53,14 +53,14 @@ std.range <- function(markers){
 #'
 #' @export
 
-std.zscore <- function(markers){
+std.zscore <- function(testMark, trainMark){
 
-  for (i in 1:ncol(markers)){
+  for (i in 1:ncol(testMark)){
 
-    markers[ , i] <- (markers[ , i] - mean(markers[ , i])) / sd(markers[ , i])
+    testMark[ , i] <- (markers[ , i] - mean(trainMark[ , i])) / sd(trainMark[ , i])
 
   }
-  return(markers)}
+  return(testMark)}
 
 
 #' @title Standardization with respect to the sample mean.
@@ -71,7 +71,7 @@ std.zscore <- function(markers){
 #'
 #' @return A \code{numeric} data frame of standardized biomarkers
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
 #' @examples
 #' #call data
@@ -83,14 +83,14 @@ std.zscore <- function(markers){
 #'
 #' @export
 
-std.mean <- function(markers){
+std.mean <- function(testMark, trainMark){
 
-  for (i in 1:ncol(markers)){
+  for (i in 1:ncol(testMark)){
 
-    markers[ , i] <- markers[ , i] / mean(markers[ , i])
+    testMark[ , i] <- testMark[ , i] / mean(trainMark[ , i])
 
   }
-  return(markers)}
+  return(testMark)}
 
 #' @title Standardization with respect to the sample standard deviation.
 #'
@@ -101,7 +101,7 @@ std.mean <- function(markers){
 #'
 #' @return A \code{numeric} data frame of standardized biomarkers
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
 #' @examples
 #' #call data
@@ -113,14 +113,14 @@ std.mean <- function(markers){
 #'
 #' @export
 
-std.deviance <- function(markers){
+std.deviance <- function(testMark, trainMark){
 
-  for (i in 1:ncol(markers)){
+  for (i in 1:ncol(testMark)){
 
-    markers[ , i] <- markers[ , i] / sd(markers[ , i])
+    testMark[ , i] <- testMark[ , i] / sd(trainMark[ , i])
 
   }
-  return(markers)}
+  return(testMark)}
 
 
 #' @title Standardization with respect to the t score.
@@ -132,7 +132,7 @@ std.deviance <- function(markers){
 #'
 #' @return A \code{numeric} dataframe of standardized biomarkers
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
 #' @examples
 #' #call data
@@ -144,12 +144,50 @@ std.deviance <- function(markers){
 #'
 #' @export
 
-std.tscore <- function(markers){
+std.tscore <- function(testMark, trainMark){
 
-  for (i in 1:ncol(markers)){
+  for (i in 1:ncol(testMark)){
 
-    markers[ , i] <- 10 * ((markers[ , i] - mean(markers[ , i]))
-                           / sd(markers[ , i])) + 50
+    testMark[ , i] <- 10 * ((testMark[ , i] - mean(trainMark[ , i]))
+                           / sd(trainMark[ , i])) + 50
 
   }
-  return(markers)}
+  return(testMark)}
+
+
+
+stz <- function(data1, data2, standardize) {
+  
+
+  if(any(standardize == "none")){
+  
+    data1 <- data1
+  standardize <- "none"
+  
+  }
+  else if (any(standardize == "range")){
+  
+    data1 <- std.range(data1, data2)
+  
+  }
+  else if (any(standardize == "zScore")){
+  
+    data1 <- std.zscore(data1, data2)
+  
+  }
+  else if (any(standardize == "tScore")){
+  
+    data1 <- std.tscore(data1, data2)
+  
+  }
+  else if (any(standardize == "mean")){
+  
+    data1 <- std.mean(data1, data2)
+  
+  }
+  else if (any(standardize == "deviance")){
+  
+    data1 <- std.deviance(data1, data2)
+  
+  }
+}  
