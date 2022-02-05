@@ -1060,7 +1060,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 #'
 #' @return A \code{numeric} value for the estimated AUC
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1117,7 +1117,7 @@ helper_minmax <- function(lambda, neg.set, pos.set){
 #'
 #' @return A \code{numeric} value for the estimated AUC
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1183,7 +1183,7 @@ helper_PCL <- function(lambda, neg.set, pos.set){
 #'
 #' @return A \code{numeric} AUC value calculated with combination scores using t
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1238,7 +1238,7 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
 #'
 #' @return A \code{numeric} AUC value calculated with combination scores using t
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
