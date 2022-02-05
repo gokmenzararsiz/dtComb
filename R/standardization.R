@@ -156,7 +156,7 @@ std.tscore <- function(testMark, trainMark){
 
 
 
-stz <- function(data1, data2, standardize) {
+std <- function(data1, data2, standardize) {
   
 
   if(any(standardize == "none")){
