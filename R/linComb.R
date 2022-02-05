@@ -73,12 +73,12 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "scoring", ndigits = 0, standardize = "zscore", , direction = "<", 
+#' method = "scoring", ndigits = 0, standardize = "zScore", , direction = "<", 
 #' cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
 #' method = "minmax", standardize = "range", direction = "<", 
-#' cutoff.method = "youden")
+#' resample = "cv", cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
 #' method = "logistic", direction = "<", cutoff.method = "youden")
@@ -298,8 +298,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           testMark = markers[folds[[i]], ]
           testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           neg.markers <- trainMark[trainStat != 1, ]
           pos.markers <- trainMark[trainStat == 1, ]
