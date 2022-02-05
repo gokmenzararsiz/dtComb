@@ -162,8 +162,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = markers[iters[[i]], ] 
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -197,9 +197,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -234,7 +234,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
@@ -256,8 +256,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = markers[iters[[i]], ]
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -294,9 +294,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[folds[[i]] ]
           testStat = status[-folds[[i]] ]
@@ -334,7 +334,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       sum.var <- var(pos.markers) + var(neg.markers)
       subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
@@ -361,8 +361,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = data[, -1]
-        train = stz(trainMarkBase, trainMarkBase, standardize)
-        test = stz(data[, -1], trainMarkBase, standardize)
+        train = std(trainMarkBase, trainMarkBase, standardize)
+        test = std(data[, -1], trainMarkBase, standardize)
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
@@ -403,10 +403,10 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           trainMarkBase = data[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
-          train = stz(trainMarkBase, trainMarkBase, standardize)
+          train = std(trainMarkBase, trainMarkBase, standardize)
           test = data[folds[[i]], ]
           testStatus = test[, 1]
-          test = stz(test[, -1], trainMarkBase, standardize)     
+          test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
           colnames(train) <- c("status","m1", "m2")
           
@@ -442,7 +442,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
@@ -462,8 +462,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = markers[iters[[i]], ]
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -506,9 +506,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -552,7 +552,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -580,8 +580,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = as.matrix(markers[iters[[i]], ])
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(as.matrix(markers), trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(as.matrix(markers), trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -616,9 +616,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = as.matrix(markers[-folds[[i]], ])
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = as.matrix(markers[folds[[i]], ])
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -655,7 +655,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     else {
       
       markers <- as.matrix(markers)
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       model <- glm(status ~ markers, family = binomial(link = "logit"))
       lambda <- model$coefficients[3] / model$coefficients[2]
       
@@ -677,8 +677,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         ttrainMarkBase = markers[iters[[i]], ]
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -721,9 +721,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -767,7 +767,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -796,8 +796,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = markers[iters[[i]], ]
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -841,9 +841,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -888,7 +888,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      arkers <- stz(markers, markers, standardize)
+      arkers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -918,8 +918,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMarkBase = markers[iters[[i]], ]
-        trainMark = stz(trainMarkBase, trainMarkBase, standardize)
-        testMark = stz(markers, trainMarkBase, standardize)
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -962,9 +962,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         for(i in (1:nfolds)){
           
           trainMarkBase = markers[-folds[[i]], ]
-          trainMark = stz(trainMarkBase, trainMarkBase, standardize)
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
-          testMark = stz(testMark, trainMarkBase, standardize)
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -1008,7 +1008,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      markers <- stz(markers, markers, standardize)
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, -1.57079633, 1.57079633)
       
