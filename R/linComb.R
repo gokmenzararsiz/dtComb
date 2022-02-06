@@ -136,6 +136,11 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     nrepeats = 1
   }
 
+  if(any(standardize == "none")){
+    
+    standardize <- "none"
+  }
+  
   if (method %in% c("minmax", "PT", "PCL") && (!standardize == "range")){
     
     warning("The used combination method requires range standardization. 
