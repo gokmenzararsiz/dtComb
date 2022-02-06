@@ -158,14 +158,7 @@ std.tscore <- function(testMark, trainMark){
 
 std <- function(data1, data2, standardize) {
   
-
-  if(any(standardize == "none")){
-  
-    data1 <- data1
-  standardize <- "none"
-  
-  }
-  else if (any(standardize == "range")){
+ if (any(standardize == "range")){
   
     data1 <- std.range(data1, data2)
   
@@ -190,4 +183,5 @@ std <- function(data1, data2, standardize) {
     data1 <- std.deviance(data1, data2)
   
   }
+  return(data1)
 }  
