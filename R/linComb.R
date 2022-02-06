@@ -73,12 +73,12 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "scoring", ndigits = 0, standardize = "zscore", , direction = "<", 
+#' method = "scoring", ndigits = 0, standardize = "zScore", , direction = "<", 
 #' cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
 #' method = "minmax", standardize = "range", direction = "<", 
-#' cutoff.method = "youden")
+#' resample = "cv", cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
 #' method = "logistic", direction = "<", cutoff.method = "youden")
@@ -144,37 +144,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
-  if(any(standardize == "none")){
-    
-    markers <- markers
-    standardize <- "none"
-    
-  }
-  else if (any(standardize == "range")){
-    
-    markers <- std.range(markers)
-    
-  }
-  else if (any(standardize == "zScore")){
-    
-    markers <- std.zscore(markers)
-    
-  }
-  else if (any(standardize == "tScore")){
-    
-    markers <- std.tscore(markers)
-    
-  }
-  else if (any(standardize == "mean")){
-    
-    markers <- std.mean(markers)
-    
-  }
-  else if (any(standardize == "deviance")){
-    
-    markers <- std.deviance(markers)
-    
-  }
   
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
@@ -192,8 +161,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        trainMarkBase = markers[iters[[i]], ] 
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -226,8 +196,10 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
           testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -260,7 +232,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
@@ -281,8 +255,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        trainMarkBase = markers[iters[[i]], ]
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -318,11 +293,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[folds[[i]], ]
-          testMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           neg.markers <- trainMark[trainStat != 1, ]
           pos.markers <- trainMark[trainStat == 1, ]
@@ -355,7 +332,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       sum.var <- var(pos.markers) + var(neg.markers)
       subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
@@ -379,8 +358,16 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMarkBase = data[iters[[i]], ]
+        trainMarkBaseStatus = trainMarkBase[, 1]
+        trainMarkBase = data[, -1]
+        train = std(trainMarkBase, trainMarkBase, standardize)
+        test = std(data[, -1], trainMarkBase, standardize)
+        train = cbind(trainMarkBaseStatus, train)
+        colnames(train) <- c("status","m1", "m2")
+        
+        test = cbind(data[, 1], test)    
+        colnames(test) <- c("status","m1", "m2")
         
         res <- glm(status ~ m1 + m2,
                    family = binomial((link = "logit")), data = train)
@@ -413,8 +400,18 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[folds[[i]], ]
-          test = data[-folds[[i]], ]
+          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBaseStatus = trainMarkBase[, 1]
+          trainMarkBase = trainMarkBase[, -1]
+          train = std(trainMarkBase, trainMarkBase, standardize)
+          test = data[folds[[i]], ]
+          testStatus = test[, 1]
+          test = std(test[, -1], trainMarkBase, standardize)     
+          train = cbind(trainMarkBaseStatus, train)
+          colnames(train) <- c("status","m1", "m2")
+          
+          test = cbind(testStatus, test)  
+          colnames(test) <- c("status","m1", "m2")
           
           res <- glm(status ~ m1 + m2,
                      family = binomial((link = "logit")), data = train)
@@ -443,7 +440,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
@@ -462,8 +461,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        trainMarkBase = markers[iters[[i]], ]
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -505,11 +505,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[folds[[i]], ]
-          testMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           neg.markers <- trainMark[trainStat != 1, ]
           pos.markers <- trainMark[trainStat == 1, ]
@@ -548,7 +550,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -575,8 +579,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = as.matrix(markers[iters[[i]], ])
-        testMark = as.matrix(markers)
+        trainMarkBase = as.matrix(markers[iters[[i]], ])
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(as.matrix(markers), trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -610,11 +615,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = as.matrix(markers[folds[[i]], ])
-          testMark = as.matrix(markers[-folds[[i]], ])
+          trainMarkBase = as.matrix(markers[-folds[[i]], ])
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = as.matrix(markers[folds[[i]], ])
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           model <- glm(trainStat ~ trainMark[ , 1] + trainMark[ , 2],
                        family = binomial(link = "logit"))
@@ -645,9 +652,10 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
       
       markers <- as.matrix(markers)
+      markers <- std(markers, markers, standardize)
       model <- glm(status ~ markers, family = binomial(link = "logit"))
       lambda <- model$coefficients[3] / model$coefficients[2]
       
@@ -668,8 +676,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        ttrainMarkBase = markers[iters[[i]], ]
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -711,11 +720,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[folds[[i]], ]
-          testMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           neg.markers <- trainMark[trainStat != 1, ]
           pos.markers <- trainMark[trainStat == 1, ]
@@ -754,7 +765,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -782,8 +795,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        trainMarkBase = markers[iters[[i]], ]
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -826,11 +840,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[folds[[i]], ]
-          testMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           neg.markers <- trainMark[trainStat != 1, ]
           pos.markers <- trainMark[trainStat == 1, ]
@@ -870,7 +886,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      arkers <- std(markers, markers, standardize)
       
       init.param <- runif(1, 0, 1)
       
@@ -899,8 +917,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMark = markers[iters[[i]], ]
-        testMark = markers
+        trainMarkBase = markers[iters[[i]], ]
+        trainMark = std(trainMarkBase, trainMarkBase, standardize)
+        testMark = std(markers, trainMarkBase, standardize)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -942,11 +961,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMark = markers[folds[[i]], ]
-          testMark = markers[-folds[[i]], ]
+          trainMarkBase = markers[-folds[[i]], ]
+          trainMark = std(trainMarkBase, trainMarkBase, standardize)
+          testMark = markers[folds[[i]], ]
+          testMark = std(testMark, trainMarkBase, standardize)
           
-          trainStat = status[folds[[i]] ]
-          testStat = status[-folds[[i]] ]
+          trainStat = status[-folds[[i]] ]
+          testStat = status[folds[[i]] ]
           
           init.param <- runif(1, -1.57079633, 1.57079633)
           
@@ -985,7 +1006,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * markers[, 2])
     }
     
-    else{
+    else {
+      
+      markers <- std(markers, markers, standardize)
       
       init.param <- runif(1, -1.57079633, 1.57079633)
       
@@ -1037,7 +1060,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 #'
 #' @return A \code{numeric} value for the estimated AUC
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1094,7 +1117,7 @@ helper_minmax <- function(lambda, neg.set, pos.set){
 #'
 #' @return A \code{numeric} value for the estimated AUC
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1160,7 +1183,7 @@ helper_PCL <- function(lambda, neg.set, pos.set){
 #'
 #' @return A \code{numeric} AUC value calculated with combination scores using t
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -1215,7 +1238,7 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
 #'
 #' @return A \code{numeric} AUC value calculated with combination scores using t
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
