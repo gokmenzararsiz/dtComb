@@ -124,18 +124,20 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
-  if (is.null(method)){
+  if (length(method) != 1){
     stop("No method provided")
   }
   
-  if (is.null(resample)){
+  if(any(resample == "none")){
+    
     resample <- "none"
   }
   
   if(any(resample == "cv")){
+    
     nrepeats = 1
   }
-
+  
   if(any(standardize == "none")){
     
     standardize <- "none"
@@ -448,7 +450,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     else {
       
       markers <- std(markers, markers, standardize)
-      
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       parameters <- res
