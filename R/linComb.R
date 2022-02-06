@@ -682,7 +682,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        ttrainMarkBase = markers[iters[[i]], ]
+        trainMarkBase = markers[iters[[i]], ]
         trainMark = std(trainMarkBase, trainMarkBase, standardize)
         testMark = std(markers, trainMarkBase, standardize)
         
