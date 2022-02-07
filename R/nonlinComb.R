@@ -119,14 +119,14 @@
 #' cutoff.method <- "youden"
 #' 
 #' score1 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "nsgam", resample = "boot", include.interact = FALSE, 
-#' cutoff.method = "youden")
+#' method = "ridgereg", resample = "boot", include.interact = TRUE, 
+#' cutoff.method = "youden", standardize = "zScore")
 #'  
 #'  
 #' 
 #' score3 <- nonlinComb(markers = markers, status = status, event = event, 
 #' method = "polyreg", resample = "cv", include.interact = FALSE, direction = "<", 
-#' cutoff.method = "youden")
+#' cutoff.method = "youden", standardize = "zScore")
 
 nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     method = c("polyreg", "ridgereg", "lassoreg", "elasticreg",
@@ -204,7 +204,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -308,21 +308,21 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data <- std(data, data, standardize)
+      data2 <- std(data[, -1], data[, -1], standardize)
       
       if( include.interact == TRUE){
         
-        interact <- data$m1 * data$m2
+        interact <- data2$m1 * data2$m2
         
         model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2) 
-                     + interact, data = data, family = binomial(link = "logit"))
+                     + interact, data = data2, family = binomial(link = "logit"))
       } else {
         
         model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2), 
-                     data = data, family = binomial(link = "logit"))
+                     data = data2, family = binomial(link = "logit"))
       }
       
-      comb.score <- predict(model, newdata = data, type = "response")
+      comb.score <- predict(model, newdata = data2, type = "response")
       
       parameters <- model
       
@@ -334,13 +334,16 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     if(any(resample== "boot")){
       
-      iters = caret::createResample(data$status, niters)
+      markersData <- markers
+      colnames(markersData) <- c("m1", "m2")
+      data <- cbind(status,markersData)
+      iters = caret::createResample(status, niters)
       
       for(i in (1:niters)){
    
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -395,6 +398,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       max_AUC <- which(resample_results$AUC == 
                          max(unlist(resample_results$AUC)))
+      
       parameters <- resample_results$parameters[[max_AUC]]
       comb.score <- predict(parameters, newx = as.matrix(dataspace), 
                                       type = "response")
@@ -486,20 +490,22 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
+      data2 <- std(data[, -1], data[, -1], standardize)
+      
       if( include.interact == TRUE){
         
-        interact <- data$m1 * data$m2
+        interact <- data2$m1 * data2$m2
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 0, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 0, 
                            family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2))
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 0, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 0, 
@@ -524,7 +530,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -668,22 +674,24 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-    else{
+    else {
+      
+      data2 <- std(data[, -1], data[, -1], standardize)
       
       if( include.interact == TRUE){
         
-        interact <- data$m1 * data$m2
+        interact <- data2$m1 * data2$m2
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 1, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 1, 
                            family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2))
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 1, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 1, 
@@ -708,7 +716,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -853,20 +861,22 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
+      data2 <- std(data[, -1], data[, -1], standardize)
+      
       if( include.interact == TRUE){
         
-        interact <- data$m1 * data$m2
+        interact <- data2$m1 * data2$m2
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = alpha, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = alpha, 
                           family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data$m1, degree1),
-                                  poly(data$m2, degree2))
+        space <- cbind.data.frame(poly(data2$m1, degree1),
+                                  poly(data2$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = alpha, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = alpha, 
@@ -891,7 +901,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -977,9 +987,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
+      data2 <- std(data[, -1], data[, -1], standardize)
+      
       model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
                      splines::bs(m2,degree = degree2, df = df2), 
-                   data = data, family = binomial)
+                   data = data2, family = binomial)
       
       comb.score <- predict(model,newdata = markers, type="response")
       
@@ -999,7 +1011,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -1085,9 +1097,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
+      data2 <- std(data[, -1], data[, -1], standardize)
+      
       model <- gam::gam(status ~ gam::s(m1, df = df1) + 
                      gam::s(m2, df = df2), 
-                   data = data, family = binomial)
+                   data = data2, family = binomial)
       
       comb.score <- predict(model, newdata = markers, type="response")
       
@@ -1107,7 +1121,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         
         train = cbind(trainMarkBaseStatus, train)
@@ -1193,9 +1207,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
+      data2 <- std(data[, -1], data[, -1], standardize)
+      
       model <- gam::gam(status ~ splines::ns(m1, df = df1) + 
                      splines::ns(m2, df = df2), 
-                   data = data, family = binomial)
+                   data = data2, family = binomial)
       
       comb.score <- predict(model, newdata = markers, type="response")
       
