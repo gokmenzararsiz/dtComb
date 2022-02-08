@@ -124,18 +124,25 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
-  if (is.null(method)){
+  if (length(method) != 1){
     stop("No method provided")
   }
   
-  if (is.null(resample)){
+  if(any(resample == "none")){
+    
     resample <- "none"
   }
   
   if(any(resample == "cv")){
+    
     nrepeats = 1
   }
-
+  
+  if(any(standardize == "none")){
+    
+    standardize <- "none"
+  }
+  
   if (method %in% c("minmax", "PT", "PCL") && (!standardize == "range")){
     
     warning("The used combination method requires range standardization. 
@@ -360,7 +367,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         test = std(data[, -1], trainMarkBase, standardize)
         train = cbind(trainMarkBaseStatus, train)
@@ -443,7 +450,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     else {
       
       markers <- std(markers, markers, standardize)
-      
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       parameters <- res
@@ -676,7 +682,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        ttrainMarkBase = markers[iters[[i]], ]
+        trainMarkBase = markers[iters[[i]], ]
         trainMark = std(trainMarkBase, trainMarkBase, standardize)
         testMark = std(markers, trainMarkBase, standardize)
         
