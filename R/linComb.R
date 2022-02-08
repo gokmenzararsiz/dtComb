@@ -367,7 +367,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         trainMarkBase = data[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = data[, -1]
+        trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
         test = std(data[, -1], trainMarkBase, standardize)
         train = cbind(trainMarkBaseStatus, train)
