@@ -73,15 +73,15 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "scoring", ndigits = 0, standardize = "zScore", , direction = "<", 
-#' cutoff.method = "youden")
+#' method = "scoring", ndigits = 0, resample = "repeatedcv", 
+#' standardize = "zScore", direction = "<", cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
-#' method = "minmax", standardize = "range", direction = "<", 
-#' resample = "cv", cutoff.method = "youden")
+#' method = "minmax", resample = "boot", standardize = "range", direction = "<", 
+#' cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
-#' method = "logistic", direction = "<", cutoff.method = "youden")
+#' method = "logistic", resample = "cv", direction = "<", cutoff.method = "youden")
 #' 
 #' @export
 
