@@ -116,15 +116,15 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="kumar-johnson", direction = direction,
+#' method = "distance", distance ="taneja", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
-#' method = "baseinexp", transform = "log", direction = direction,
+#' method = "expinbase", transform = "none", standardize = "deviance", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add", power.transform = TRUE, direction = direction,
+#' method = "add", transform = "log", direction = direction,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
@@ -132,19 +132,19 @@
 
 
 mathComb <- function(markers = NULL, status = NULL, event = NULL,
-
+                     
                      method = c("add", "multiply", "divide", "subtract",
-                                  "distance", "baseinexp", "expinbase"),
+                                "distance", "baseinexp", "expinbase"),
                      distance = c("euclidean", "manhattan", "chebyshev",
-                                    "kulczynski_d", "lorentzian", "avg", 
-                                      "taneja","kumar-johnson"),
+                                  "kulczynski_d", "lorentzian", "avg", 
+                                  "taneja","kumar-johnson"),
                      standardize = c("none", "range", 
                                      "zScore", "tScore", "mean", "deviance"),
                      transform = c("none", "log", "exp", "sin", "cos"), 
                      power.transform = FALSE, direction = c("auto", "<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
-
-
+  
+  
   match.arg(method)
   match.arg(distance)
   match.arg(direction)
@@ -175,6 +175,10 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   markers <- markers[comp, ]
   status <- status[comp]
   
+  if (length(method) != 1){
+    stop("No method provided")
+  }
+  
   if (method != "distance"){
     
     distance <- NULL
@@ -187,60 +191,52 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
-  if (method %in% c("baseinexp", "expinbase") && transform == "exp")   
-    stop("The exponential(exp) transformation cannot be used for this method.")
-  
   if(any(standardize == "none")){
     
-    markers <- markers
-    standardize<- "none"
+    standardize <- "none"
   }
-  else if (any(standardize == "range")){
-    
-    markers <- std.range(markers)
-    
-  }
-  else if (any(standardize == "zScore")){
-    
-    markers <- std.zscore(markers)
-    
-  }
-  else if (any(standardize == "tScore")){
-    
-    markers <- std.tscore(markers)
-    
-  }
-  else if (any(standardize == "mean")){
-    
-    markers <- std.mean(markers)
-    
-  }
-  else if (any(standardize == "deviance")){
-    
-    markers <- std.deviance(markers)
-    
-  }
+  
+  if (method %in% c("baseinexp", "expinbase") && transform %in% c("exp", "sin", "cos")){   
+    transform <- "none"}
+  
+  if (method %in% "divide" && standardize == "range"){   
+    standardize <- "none"}
+  
+  if (method %in% "distance" && distance %in% c("kulczynski_d", "taneja") && standardize == "range"){   
+    standardize <- "none"}
+ 
+  if (method %in% "distance" && distance %in% "taneja" && transform == "log"){   
+    transform <- "none"}
+  
+  if (method %in% "distance" && distance %in% c("taneja", "kumar-johnson") && (transform == "exp" || standardize == "zScore")){   
+    transform <- "none"
+    standardize <- "none"}
+  
+  if (method %in% "distance" && distance %in% c("taneja", "kumar-johnson") && transform %in% c("sin", "cos")){   
+    transform <- "none"}
+  
+  
   if(any(transform == "none")){
     
     markers <- markers
     transform <- "none"
     
   }
-   else if(any(transform == "log")){
-     
+  else if(any(transform == "log")){
+    
     markers <- log(markers)
   }
-    else if(any(transform == "exp")){
+  else if(any(transform == "exp")){
     
     markers <- exp(markers)
     
   }
-    else if(any(transform == "sin")){
+  else if(any(transform == "sin")){
     
     markers <- sin(markers)
     
   }
-    else {
+  else {
     
     markers <- cos(markers)
     
@@ -254,119 +250,133 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     values <- suppressMessages(pROC::roc(status , power[,p], 
                                          direction = direction))
     auc <- values$auc
-  
+    
     return(auc)
     
   }
   if (method == "add"){
     
-   if(power.transform == TRUE){
+    markers <- std(markers, markers, standardize)
+    
+    if(power.transform == TRUE){
       
       power <- apply(n, 1, power.add)
       
       auc_list <- sapply(p, get_roc)
       max_index <- which(auc_list == max(auc_list))
       
-        if(length(max_index)>1){
-         
-           max_index <- max_index[1]
-          
-        }
-        max_power <- (n[max_index])
-        comb.score <- power[,max_index]
+      if(length(max_index)>1){
+        
+        max_index <- max_index[1]
+        
+      }
+      max_power <- (n[max_index])
+      comb.score <- power[,max_index]
     } 
     else {comb.score <- markers[ ,1] + markers[ ,2]}
-  
+    
   } else if (method == "multiply") {
     
-   comb.score <- markers[ ,1] * markers[ ,2]
+    markers <- std(markers, markers, standardize)
+    
+    comb.score <- markers[ ,1] * markers[ ,2]
     
   } else if (method == "divide"){
+    
+    markers <- std(markers, markers, standardize)
     
     comb.score <- markers[ ,1] / markers[ ,2]
     
   } else if (method == "subtract"){
     
-     if(power.transform == TRUE){
+    markers <- std(markers, markers, standardize)
     
+    if(power.transform == TRUE){
+      
       power <- apply(n, 1, power.subt)
-    
+      
       auc_list <- sapply(p, get_roc)
       max_index <- which(auc_list == max(auc_list))
       
-       if(length(max_index)>1){ 
+      if(length(max_index)>1){ 
         
-          max_index <- max_index[1]
+        max_index <- max_index[1]
         
-       }
-       max_power <- (n[max_index])
-       comb.score <- power[,max_index]
-      
       }
-      else{comb.score <- (markers[ ,1] - markers[ ,2])}
+      max_power <- (n[max_index])
+      comb.score <- power[,max_index]
+      
+    }
+    else{comb.score <- (markers[ ,1] - markers[ ,2])}
     
   }  else if(method == "distance"){
-
-        if(distance == "euclidean"){
-
-          comb.score <- sqrt(markers[, 1] ^ 2 + markers[, 2] ^ 2)
-
-        } else if (distance == "manhattan"){
     
-          comb.score <- markers[, 1] + markers[, 2]
+    markers <- std(markers, markers, standardize)
     
-        } else if (distance == "chebyshev"){
-          
-          comb.score <- apply(markers, 1, max)
-          
-        } else if (distance == "kulczynski_d"){
-          
-          a <- abs(markers[, 1] + markers[, 2])
-          b <- min(markers)
-          comb.score <- a / b
-          
-        } else if (distance == "lorentzian"){
-          
-          comb.score <- log(abs(markers[, 1]) + 1) + log(abs(markers[, 2]) + 1)
-          
-        } else if (distance == "taneja"){
-          
-          epsilon <- 0.00001
-          z1 <- (markers[, 1] + 0.00001) / 2
-          z2 <- (markers[, 2] + 0.00001) / 2
-          score <- (z1 / 2) * log(z * sqrt(markers[, 1] * epsilon)) +
-                       (z2 / 2) * log(z * sqrt(markers[, 2] * epsilon))
-          
-        } else if (distance == "kumar-johnson"){
-          
-          epsilon <- 0.00001
-          z1 <- (((markers[, 1] ^ 2) - (epsilon ^ 2)) ^ 2) /
-            2 * ((markers[, 1] * epsilon) ^ 1.5) 
-          z2 <- (((markers[, 2] ^ 2) - (epsilon ^ 2)) ^ 2) /
-            2 * ((markers[, 2] * epsilon) ^ 1.5) 
-          comb.score <- z1 + z2
-          
-        } else {
-          
-          comb.score <- (markers[, 1] + markers[, 2] + apply(markers, 1, max)) / 2
-          
-        }     
+    if(distance == "euclidean"){
+      
+      comb.score <- sqrt(markers[, 1] ^ 2 + markers[, 2] ^ 2)
+      
+    } else if (distance == "manhattan"){
+      
+      comb.score <- markers[, 1] + markers[, 2]
+      
+    } else if (distance == "chebyshev"){
+      
+      comb.score <- apply(markers, 1, max)
+      
+    } else if (distance == "kulczynski_d"){
+      
+      a <- abs(markers[, 1] + markers[, 2])
+      b <- min(markers)
+      comb.score <- a / b
+      
+    } else if (distance == "lorentzian"){
+      
+      comb.score <- log(abs(markers[, 1]) + 1) + log(abs(markers[, 2]) + 1)
+      
+    } else if (distance == "taneja"){
+      
+      epsilon <- 0.00001
+      z1 <- (markers[, 1] + 0.00001) / 2
+      z2 <- (markers[, 2] + 0.00001) / 2
+      comb.score <- (z1 / 2) * log(z1 * sqrt(markers[, 1] * epsilon)) +
+        (z2 / 2) * log(z2 * sqrt(markers[, 2] * epsilon))
+      
+    } else if (distance == "kumar-johnson"){
+      
+      epsilon <- 0.00001
+      z1 <- (((markers[, 1] ^ 2) - (epsilon ^ 2)) ^ 2) /
+        2 * ((markers[, 1] * epsilon) ^ 1.5) 
+      z2 <- (((markers[, 2] ^ 2) - (epsilon ^ 2)) ^ 2) /
+        2 * ((markers[, 2] * epsilon) ^ 1.5) 
+      comb.score <- z1 + z2
+      
+    } else {
+      
+      comb.score <- (markers[, 1] + markers[, 2] + apply(markers, 1, max)) / 2
+      
+    }     
   } else if (method == "baseinexp") {
+    
+    markers <- std(markers, markers, standardize)
     
     comb.score <- markers[ ,1] ^ markers[ ,2]
     
   } else if (method == "expinbase") {
     
+    markers <- std(markers, markers, standardize)
+    
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
   model_fit <- list(CombType = "mathComb",
-                 Method = method,
-                 Distance = distance,
-                 Standardize = standardize,
-                 Transform = transform,
-                 PowerTransform = power.transform,
-                 MaxPower = max_power)
+                    Method = method,
+                    Distance = distance,
+                    Standardize = standardize,
+                    Transform = transform,
+                    PowerTransform = power.transform,
+                    MaxPower = max_power)
   
   comb.score <- as.matrix(comb.score)
   
@@ -374,7 +384,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
   
-   allres$fit <- model_fit
+  allres$fit <- model_fit
   
   return(allres)
 }
@@ -453,4 +463,3 @@ power.subt <- function(n, marker.set){
   
   return (power1 - power2)
 }
-
