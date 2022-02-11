@@ -66,7 +66,7 @@
 #' comparison table for the AUC values of individual biomarkers and combination 
 #' score obtained and the fitted model.
 #'
-#' @author Serra Bersan Gengec, Ilayda Serra Yerlitas
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -77,7 +77,7 @@
 #' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
 #'
-#' model <- mlComb(markers = markers, status = status, event = event,
+#' score1 <- mlComb(markers = markers, status = status, event = event,
 #' method = "knn", resample = "boot632",  niters = 15,
 #' preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
 #' 
