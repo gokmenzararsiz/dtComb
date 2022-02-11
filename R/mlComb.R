@@ -78,7 +78,7 @@
 #' event <- "needed"
 #'
 #' model <- mlComb(markers = markers, status = status, event = event,
-#' method = "knn", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+#' method = "knn", resample = "boot632",  niters = 15,
 #' preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
 #' 
 #' @export
@@ -86,7 +86,7 @@
 
 mlComb <- function(markers = NULL, status = NULL, event = NULL,
                             method = NULL, resample = NULL, 
-                            nfolds = 5, nrepeats = 3,
+                            niters = 5, nfolds = 5, nrepeats = 3,
                             preProcess = NULL, B = 25,
                             direction = c("auto", "<", ">"), conf.level = 0.95, 
                             cutoff.method = c("youden", "roc01"), ...){
@@ -148,7 +148,15 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                                                    classProbs =  TRUE), 
                                preProc = preProcess, B = B, ...)
       
-    } else{
+    } else if (resample %in%  c("boot", "boot632", "optimism_boot", "boot_all")){
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                               trControl = caret::trainControl(method = resample, 
+                                                               number = niters,
+                                                               classProbs =  TRUE), 
+                               preProc = preProcess, B = B, ...)
+      
+    } else {
       
       modelFit <- caret::train(status ~ ., data = data, method = method,
                     trControl = caret::trainControl(method = resample, 
@@ -172,7 +180,15 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                                                      classProbs =  TRUE), 
                      preProc = preProcess, verbose = FALSE, ...)
       
-    } else{
+    } else if (resample %in%  c("boot", "boot632", "optimism_boot", "boot_all")){
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                               trControl = caret::trainControl(method = resample, 
+                                                               number = niters,
+                                                               classProbs =  TRUE), 
+                               preProc = preProcess, verbose = FALSE, ...)
+      
+    } else {
       
       modelFit <- caret::train(status ~ ., data = data, method = method,
                      trControl = caret::trainControl(method = resample, 
@@ -196,7 +212,15 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                                                      repeats = nrepeats,
                                                      classProbs =  TRUE), 
                                preProc = preProcess, ...)
-    } else{
+    } else if (resample %in%  c("boot", "boot632", "optimism_boot", "boot_all")){
+      
+      modelFit <- caret::train(status ~ ., data = data, method = method,
+                               trControl = caret::trainControl(method = resample, 
+                                                               number = niters,
+                                                               classProbs =  TRUE), 
+                               preProc = preProcess, ...)
+      
+    } else {
       
       modelFit <- caret::train(status ~ ., data = data, method = method,
                     trControl = caret::trainControl(method = resample, 
