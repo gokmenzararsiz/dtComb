@@ -119,12 +119,12 @@
 #' cutoff.method <- "youden"
 #' 
 #' score1 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "polyreg", resample = "none", include.interact = TRUE, 
+#' method = "polyreg", resample = "cv", include.interact = TRUE, 
 #' cutoff.method = "youden", standardize = "none")
 #'  
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "sgam", resample = "boot", cutoff.method = "youden", 
-#' standardize = "zScore")
+#' method = "splines", resample = "boot", cutoff.method = "youden", 
+#' standardize = "none")
 #' 
 #' score3 <- nonlinComb(markers = markers, status = status, event = event, 
 #' method = "lassoreg", resample = "repeatedcv", include.interact = TRUE, 
@@ -1075,7 +1075,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                      splines::bs(m2,degree = degree2, df = df2), 
                    data = data2, family = binomial)
       
-      comb.score <- predict(model,newdata = markers, type="response")
+      comb.score <- predict(model,newdata = markersData, type="response")
       
       parameters <- model
       
