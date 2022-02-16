@@ -116,7 +116,7 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="taneja", direction = direction,
+#' method = "distance", distance ="taneja", direction = "auto",
 #' cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,

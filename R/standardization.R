@@ -22,15 +22,29 @@
 #'
 #' @export
 
-std.range <- function(testMark, trainMark){
-
-  for (i in 1:ncol(testMark)){
-
-    testMark[ , i] <- (testMark[ , i] - min(trainMark[ , i])) /
-     (max(trainMark[ , i]) - min(trainMark[ , i]))
-
+std.range <- function(newdata, model, type = TRUE){
+  if(type == TRUE){
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- (newdata[ , i] - min(model[ , i])) /
+        (max(model[ , i]) - min(model[ , i]))
+      
+    }
+    return(newdata)
+} else {
+  
+    
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 3] /
+                          model$fit$Std[i, 4] - model$fit$Std[i, 3])
+      
+    }
+    return(newdata)}
   }
-  return(testMark)}
+
+
+ 
 
 #' @title Standardization with respect to z score.
 #'
@@ -53,14 +67,28 @@ std.range <- function(testMark, trainMark){
 #'
 #' @export
 
-std.zscore <- function(testMark, trainMark){
+std.zscore <- function(newdata, model, type = TRUE){
 
-  for (i in 1:ncol(testMark)){
+ if(type == TRUE){ 
+   
+   for (i in 1:ncol(newdata)){
 
-    testMark[ , i] <- (testMark[ , i] - mean(trainMark[ , i])) / sd(trainMark[ , i])
+     newdata[ , i] <- (newdata[ , i] - mean(model[ , i])) / sd(model[ , i])
 
   }
-  return(testMark)}
+  return(newdata)
+ }
+  else {
+    
+      
+      for (i in 1:ncol(newdata)){
+        
+        newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 1] / model$fit$Std[i, 2])
+        
+      }
+      return(newdata)
+  }
+}
 
 
 #' @title Standardization with respect to the sample mean.
@@ -83,14 +111,26 @@ std.zscore <- function(testMark, trainMark){
 #'
 #' @export
 
-std.mean <- function(testMark, trainMark){
-
-  for (i in 1:ncol(testMark)){
-
-    testMark[ , i] <- testMark[ , i] / mean(trainMark[ , i])
-
+std.mean <- function(newdata, model, type = TRUE){
+  if (type == TRUE){
+    
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- newdata[ , i] / mean(model[ , i])
+      
+    }
+    return(newdata)}
+  else {
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- newdata[ , i] / model$fit$Std[i, 1]
+      
+    }
+    return(newdata)}
   }
-  return(testMark)}
+  
+
+  
 
 #' @title Standardization with respect to the sample standard deviation.
 #'
@@ -113,14 +153,27 @@ std.mean <- function(testMark, trainMark){
 #'
 #' @export
 
-std.deviance <- function(testMark, trainMark){
-
-  for (i in 1:ncol(testMark)){
-
-    testMark[ , i] <- testMark[ , i] / sd(trainMark[ , i])
+std.deviance <- function(newdata, model, type = TRUE){
+  if (type == TRUE){
+    
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- newdata[ , i] / sd(model[ , i])
+      
+    }
+    return(newdata)
+    
+  } 
+  else {
+    for (i in 1:ncol(newdata)){
+      
+      newdata[, i] <- newdata[ , i] / model$fit$Std[i, 2]
+      
+    }
+    return(newdata)
+  }
 
   }
-  return(testMark)}
 
 
 #' @title Standardization with respect to the t score.
@@ -144,44 +197,135 @@ std.deviance <- function(testMark, trainMark){
 #'
 #' @export
 
-std.tscore <- function(testMark, trainMark){
+std.tscore <- function(newdata, model,type = TRUE){
 
-  for (i in 1:ncol(testMark)){
+  if(type == TRUE){
 
-    testMark[ , i] <- 10 * ((testMark[ , i] - mean(trainMark[ , i]))
-                           / sd(trainMark[ , i])) + 50
-
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- 10 * ((newdata[ , i] - mean(model[ , i]))
+                              / sd(model[ , i])) + 50
+      
+    }
+    return(newdata)
+    
   }
-  return(testMark)}
+  else{
+
+    for (i in 1:ncol(newdata)){
+      
+      newdata[ , i] <- 10 * ((newdata[ , i] - model$fit$Std[i, 1])
+                             / model$fit$Std[i, 2]) + 50
+      
+    }
+    return(newdata)
+  }
+ }
 
 
 
-std <- function(data1, data2, standardize) {
+std <- function(newdata, model, standardize = NULL, type = TRUE) {
+
+  if (any(standardize == "range")){
   
- if (any(standardize == "range")){
-  
-    data1 <- std.range(data1, data2)
+   newdata <- std.range(newdata, model,type)
   
   }
   else if (any(standardize == "zScore")){
   
-    data1 <- std.zscore(data1, data2)
+    newdata <- std.zscore(newdata, model,type)
   
   }
   else if (any(standardize == "tScore")){
-  
-    data1 <- std.tscore(data1, data2)
+    
+    newdata <- std.tscore(newdata, model,type)
   
   }
   else if (any(standardize == "mean")){
   
-    data1 <- std.mean(data1, data2)
+    newdata <- std.mean(newdata, model,type)
   
   }
   else if (any(standardize == "deviance")){
   
-    data1 <- std.deviance(data1, data2)
+    newdata <- std.deviance(newdata, model,type)
   
   }
-  return(data1)
-}  
+  
+  return(newdata)
+  }
+
+
+
+# std <- function(newdata, model) {
+#  
+#   if (any(model$fit$Standardize == "range")){
+#     
+#     std.range <- function(newdata, model){
+#       
+#       for (i in 1:ncol(newdata)){
+#         
+#         newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 3] /
+#                       model$fit$Std[i, 4] - model$fit$Std[i, 3])
+#         
+#       }
+#       return(newdata)}
+#     newdata <- std.range(newdata, model)
+#     
+#   }
+#   else if (any(model$fit$Standardize == "zScore")){
+#     
+#     std.zscore <- function(newdata, model){
+#       
+#       for (i in 1:ncol(newdata)){
+#         
+#         newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 1] / model$fit$Std[i, 2])
+#         
+#       }
+#       return(newdata)}
+#     newdata <- std.zscore(newdata, model)
+#     
+#   }
+#   else if (any(model$fit$Standardize == "tScore")){
+#     
+#     std.tscore <- function(newdata, model){
+#       
+#       for (i in 1:ncol(newdata)){
+#         
+#         newdata[ , i] <- 10 * ((newdata[ , i] - model$fit$Std[i, 1])
+#                                 / model$fit$Std[i, 2]) + 50
+#         
+#       }
+#       return(newdata)}
+#     newdata <- std.tscore(newdata, model)
+#     
+#   }
+#   else if (any(model$fit$Standardize == "mean")){
+#     
+#     std.mean <- function(newdata, model){
+#       
+#       for (i in 1:ncol(newdata)){
+#         
+#         newdata[ , i] <- newdata[ , i] / model$fit$Std[i, 1]
+#         
+#       }
+#       return(newdata)}
+#     newdata <- std.mean(newdata, model)
+#     
+#   }
+#   else if (any(model$fit$Standardize == "deviance")){
+#     
+#     
+#     std.deviance <- function(newdata, model){
+#       
+#       for (i in 1:ncol(newdata)){
+#         
+#         newdata[, i] <- newdata[ , i] / model$fit$Std[i, 2]
+#         
+#       }
+#       return(newdata)}
+#     newdata <- std.deviance(newdata, model) 
+#     
+#   }
+#   return(newdata)
+# }

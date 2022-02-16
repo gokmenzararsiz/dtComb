@@ -79,7 +79,7 @@
 #'
 #' score1 <- mlComb(markers = markers, status = status, event = event,
 #' method = "knn", resample = "boot632",  niters = 15,
-#' preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
+#' preProcess = "center", direction = "<", cutoff.method ="youden")
 #' 
 #' @export
 

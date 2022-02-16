@@ -237,6 +237,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -294,6 +295,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -307,6 +309,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -411,6 +414,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -491,6 +495,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -504,6 +509,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -614,6 +620,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -692,6 +699,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -705,6 +713,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -815,6 +824,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -893,6 +903,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -906,6 +917,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -988,6 +1000,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -1036,6 +1049,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -1049,6 +1063,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -1115,6 +1130,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -1163,6 +1179,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
 
@@ -1176,6 +1193,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -1242,6 +1260,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
+        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -1290,6 +1309,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
+          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -1303,6 +1323,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         repeated_results$parameters[[r]] <- 
           resample_results$parameters[[max_AUC]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC]]
+        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -1343,11 +1364,44 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                  event = event, direction = direction, conf.level = conf.level,
                  cutoff.method = cutoff.method)
   
-   model_fit <- list(CombType = "nonlinComb",
-                  Method = method,
-                  Standardize = standardize,
-                  Parameters = parameters
-                 )
+  std = matrix(,2,4)
+  colnames(std) <- c("mean", "sd", "min", "max")
+  
+  max_AUC <- c()
+  trainMarkBase <- data.frame()
+  if(resample == "boot"){
+    
+    max_AUC <- which(resample_results$AUC ==
+                       max(unlist(resample_results$AUC)))
+    trainMarkBase <- resample_results$trainMarks[[max_AUC[1]]]
+    
+  } else {
+    
+    max_AUC <- which(repeated_results$AUC ==
+                       max(unlist(repeated_results$AUC)))
+    trainMarkBase <- repeated_results$trainMarks[[max_AUC[1]]]
+    
+  }
+  
+  
+  for (j in 1:2) {
+    
+    std[, j]
+    for (i in 1:ncol(trainMarkBase)) {
+      
+      std[i, ] = cbind(mean(trainMarkBase[, i]),sd(trainMarkBase[, i]), 
+                       min(trainMarkBase[, i]),max(trainMarkBase[, i]))
+      
+    }
+  }
+  
+  model_fit <- list(CombType = "linComb",
+                    Method = method,
+                    Standardize = standardize,
+                    Parameters = parameters,
+                    Std = std
+                    
+  )
   
   allres$fit <- model_fit
 
