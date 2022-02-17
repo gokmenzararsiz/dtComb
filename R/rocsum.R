@@ -86,11 +86,11 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                           best.method = cutoff.method)
   best.c <- pROC::coords(roc.c, "best", ret = c("threshold","tp","tn","fp","fn"), 
                          best.method = cutoff.method)
-  best.m1.tbl <- as.table(matrix(c(best.m1$tp, best.m1$fn, best.m1$fp, best.m1$tn), 
+  best.m1.tbl <- as.table(matrix(c(best.m1$tp, best.m1$fp, best.m1$fn, best.m1$tn), 
                                  nrow = 2, byrow = TRUE))
-  best.m2.tbl <- as.table(matrix(c(best.m2$tp, best.m2$fn, best.m2$fp, best.m2$tn), 
+  best.m2.tbl <- as.table(matrix(c(best.m2$tp, best.m2$fp, best.m2$fn, best.m2$tn), 
                                  nrow = 2, byrow = TRUE))
-  best.c.tbl <- as.table(matrix(c(best.c$tp, best.c$fn, best.c$fp, best.c$tn), 
+  best.c.tbl <- as.table(matrix(c(best.c$tp, best.c$fp, best.c$fn, best.c$tn), 
                                 nrow = 2, byrow = TRUE))
   DiagStatMarker1 <- epiR::epi.tests(best.m1.tbl, conf.level = conf.level)
   DiagStatMarker2 <- epiR::epi.tests(best.m2.tbl, conf.level = conf.level)
