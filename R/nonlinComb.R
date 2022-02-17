@@ -1395,7 +1395,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     }
   }
   
-  model_fit <- list(CombType = "linComb",
+  model_fit <- list(CombType = "nonlinComb",
                     Method = method,
                     Standardize = standardize,
                     Parameters = parameters,
