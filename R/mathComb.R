@@ -116,11 +116,11 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="taneja", direction = "auto",
+#' method = "distance", distance ="taneja", direction = "auto", standardize = "range",
 #' cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
-#' method = "expinbase", transform = "none", standardize = "deviance", direction = direction,
+#' method = "expinbase", transform = "exp", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
@@ -143,12 +143,14 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      transform = c("none", "log", "exp", "sin", "cos"), 
                      power.transform = FALSE, direction = c("auto", "<", ">"), 
                      conf.level = 0.95, cutoff.method = c("youden", "roc01")){
-  
-  
+
   match.arg(method)
   match.arg(distance)
   match.arg(direction)
   match.arg(cutoff.method)
+  
+  raw.markers <- markers
+  raw.status <- status
   
   if (!is.data.frame(markers)) {
     markers <- as.data.frame(markers)
@@ -195,26 +197,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
     standardize <- "none"
   }
-  
-  if (method %in% c("baseinexp", "expinbase") && transform %in% c("exp", "sin", "cos")){   
-    transform <- "none"}
-  
-  if (method %in% "divide" && standardize == "range"){   
-    standardize <- "none"}
-  
-  if (method %in% "distance" && distance %in% c("kulczynski_d", "taneja") && standardize == "range"){   
-    standardize <- "none"}
- 
-  if (method %in% "distance" && distance %in% "taneja" && transform == "log"){   
-    transform <- "none"}
-  
-  if (method %in% "distance" && distance %in% c("taneja", "kumar-johnson") && (transform == "exp" || standardize == "zScore")){   
-    transform <- "none"
-    standardize <- "none"}
-  
-  if (method %in% "distance" && distance %in% c("taneja", "kumar-johnson") && transform %in% c("sin", "cos")){   
-    transform <- "none"}
-  
   
   if(any(transform == "none")){
     
@@ -370,6 +352,26 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
+  if(length(which(is.infinite(comb.score))) > 0 && standardize != "none"){
+    warning("Since inifinity is generated in markers, standardize has been 
+            changed to 'none'.")
+    return(mathComb(markers = raw.markers, status = raw.status, event = event, 
+                    method = method, distance = distance, direction = direction,
+                    standardize = "none", cutoff.method = cutoff.method, 
+                    transform = transform, power.transform = power.transform,
+                    conf.level = conf.level))
+  }
+  
+  if(length(which(is.infinite(comb.score)) ) > 0 && transform != "none"){
+    warning("Since inifinity is generated in markers, transform has been changed
+            to 'none'.")
+    return(mathComb(markers = raw.markers, status = raw.status, event = event,
+                    method = method, distance = distance, direction = direction,
+                    standardize = standardize, cutoff.method = cutoff.method, 
+                    transform = "none", power.transform = power.transform,
+                    conf.level = conf.level))
+  }
+
   model_fit <- list(CombType = "mathComb",
                     Method = method,
                     Distance = distance,
@@ -385,7 +387,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                    cutoff.method = cutoff.method)
   
   allres$fit <- model_fit
-  
+
   return(allres)
 }
 
