@@ -353,8 +353,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   if(length(which(is.infinite(comb.score))) > 0 && standardize != "none"){
-    warning("Since inifinity is generated in markers, standardize has been 
-            changed to 'none'.")
+    warning("Since inifinity is generated in markers, standardize changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event, 
                     method = method, distance = distance, direction = direction,
                     standardize = "none", cutoff.method = cutoff.method, 
@@ -363,8 +362,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   }
   
   if(length(which(is.infinite(comb.score)) ) > 0 && transform != "none"){
-    warning("Since inifinity is generated in markers, transform has been changed
-            to 'none'.")
+    warning("Since inifinity is generated in markers, transform changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event,
                     method = method, distance = distance, direction = direction,
                     standardize = standardize, cutoff.method = cutoff.method, 
