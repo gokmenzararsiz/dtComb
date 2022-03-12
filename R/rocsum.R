@@ -96,12 +96,14 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
   DiagStatMarker2 <- epiR::epi.tests(best.m2.tbl, conf.level = conf.level)
   DiagStatCombined <- epiR::epi.tests(best.c.tbl, conf.level = conf.level)
   
-  allres <- list(ROC_coordinates = ROC_coordinates, 
+  allres <- list(
+    #ROC_coordinates = ROC_coordinates, 
                  AUC_table = AUC_table,
                  MultComp_table = MultComp_table,
                  DiagStatMarker1 = DiagStatMarker1,
                  DiagStatMarker2 = DiagStatMarker2,
-                 DiagStatCombined = DiagStatCombined)
+                 DiagStatCombined = DiagStatCombined,
+                 ThresholdCombined = best.c$threshold)
   
   return(allres)
 }
