@@ -187,7 +187,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
 
-  markersData <- markers
+  markersData <- std(markers, markers, standardize) 
   colnames(markersData) <- c("m1", "m2")
   data <- cbind(status,markersData) 
   
@@ -329,18 +329,16 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      
       if( include.interact == TRUE){
         
-        interact <- data2$m1 * data2$m2
+        interact <- data$m1 * data$m2
         
         model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2) 
-                     + interact, data = data2, family = binomial(link = "logit"))
+                     + interact, data = data, family = binomial(link = "logit"))
       } else {
         
         model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2), 
-                     data = data2, family = binomial(link = "logit"))
+                     data = data, family = binomial(link = "logit"))
       }
       
       comb.score <- predict(model, newdata = data, type = "response")
@@ -529,23 +527,20 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
       if( include.interact == TRUE){
         
-        interact <- data2$m1 * data2$m2
+        interact <- data$m1 * data$m2
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 0, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 0, 
                            family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2))
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 0, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 0, 
@@ -733,23 +728,20 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
       if( include.interact == TRUE){
         
-        interact <- data2$m1 * data2$m2
+        interact <- data$m1 * data$m2
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 1, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 1, 
                            family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2))
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = 1, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = 1, 
@@ -937,23 +929,20 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
       if( include.interact == TRUE){
         
-        interact <- data2$m1 * data2$m2
+        interact <- data$m1 * data$m2
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2), interact)
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2), interact)
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = alpha, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = alpha, 
                           family = "binomial", lambda = cv.model$lambda.min)
       } else {
         
-        space <- cbind.data.frame(poly(data2$m1, degree1),
-                                  poly(data2$m2, degree2))
+        space <- cbind.data.frame(poly(data$m1, degree1),
+                                  poly(data$m2, degree2))
         cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = status, 
                                       alpha = alpha, family = "binomial")
         model <- glmnet::glmnet(x = space, y = status, alpha = alpha, 
@@ -1083,12 +1072,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
       model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
                      splines::bs(m2,degree = degree2, df = df2), 
-                   data = data2, family = binomial)
+                   data = data, family = binomial)
       
       comb.score <- predict(model,newdata = markersData, type="response")
       
@@ -1213,12 +1199,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
       model <- gam::gam(status ~ gam::s(m1, df = df1) + 
                      gam::s(m2, df = df2), 
-                   data = data2, family = binomial)
+                   data = data, family = binomial)
       
       comb.score <- predict(model, newdata = markersData, type="response")
       
@@ -1341,13 +1324,10 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      data2 <- std(data[, -1], data[, -1], standardize)
-      colnames(data2) <- c("m1", "m2")
-      
+
       model <- gam::gam(status ~ splines::ns(m1, df = df1) + 
                      splines::ns(m2, df = df2), 
-                   data = data2, family = binomial)
+                   data = data, family = binomial)
       
       comb.score <- predict(model, newdata = markersData, type="response")
       
