@@ -151,6 +151,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
+  markers <- std(markers, markers, standardize) 
   
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
@@ -244,9 +245,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize)
-      
+  
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       
@@ -347,9 +346,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize)
-      
+
       sum.var <- var(pos.markers) + var(neg.markers)
       subs_mean <- colMeans(pos.markers) - colMeans(neg.markers)
       est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
@@ -458,8 +455,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize)
+
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       parameters <- res
@@ -570,9 +566,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize)
-      
+
       init.param <- runif(1, 0, 1)
       
       opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
@@ -677,7 +671,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     else {
       
       markers <- as.matrix(markers)
-      markers <- std(markers, markers, standardize)
       model <- glm(status ~ markers, family = binomial(link = "logit"))
       lambda <- model$coefficients[3] / model$coefficients[2]
       
@@ -791,9 +784,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize)
-      
+
       init.param <- runif(1, 0, 1)
       
       opt.func <- optim(par = init.param, fn = helper_PCL,
@@ -916,8 +907,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else {
       
-      arkers <- std(markers, markers, standardize)
-      
       init.param <- runif(1, 0, 1)
       
       opt.func <- optim(par = init.param, fn = helper_minimax,
@@ -1036,8 +1025,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
     else {
-      
-      markers <- std(markers, markers, standardize, TRUE)
       
       init.param <- runif(1, -1.57079633, 1.57079633)
       
