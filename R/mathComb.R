@@ -348,7 +348,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   } else if (method == "expinbase") {
     
     markers <- std(markers, markers, standardize)
-    
+     
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
