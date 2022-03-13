@@ -191,6 +191,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   colnames(markersData) <- c("m1", "m2")
   data <- cbind(status,markersData) 
   
+  colnames(markers) <- c("m1", "m2")
+  database <- cbind(status,markers) 
+  
   resample_results <- vector(mode = "list", length = 2)
   names(resample_results) <- c("parameters", "AUC")
   repeated_results <- vector(mode = "list", length = 2)
@@ -204,7 +207,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -212,9 +215,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         if(include.interact == TRUE){
@@ -262,11 +265,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -353,14 +356,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     if(any(resample== "boot")){
       
-      markersData <- markers
-      colnames(markersData) <- c("m1", "m2")
-      data <- cbind(status,markersData)
       iters = caret::createResample(status, niters)
       
       for(i in (1:niters)){
    
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -368,9 +368,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         if( include.interact == TRUE){
@@ -434,15 +434,15 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(r in (1:nrepeats)){
         
-        folds = caret::createFolds(data$status, nfolds)
+        folds = caret::createFolds(database$status, nfolds)
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -559,11 +559,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     
     if(any(resample== "boot")){
       
-      iters = caret::createResample(data$status, niters)
+      iters = caret::createResample(database$status, niters)
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -571,9 +571,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         if( include.interact == TRUE){
@@ -636,15 +636,15 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(r in (1:nrepeats)){
         
-        folds = caret::createFolds(data$status, nfolds)
+        folds = caret::createFolds(database$status, nfolds)
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -672,6 +672,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2), interact)
+
           } else {
             
             space <- cbind.data.frame(poly(train$m1, degree1),
@@ -764,7 +765,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -772,9 +773,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         if( include.interact == TRUE){
@@ -841,11 +842,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -965,7 +966,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -973,9 +974,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
@@ -1014,11 +1015,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -1092,7 +1093,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -1100,9 +1101,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         model <- gam::gam(status ~ gam::s(m1, df = df1) + 
@@ -1141,11 +1142,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -1219,7 +1220,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
+        trainMarkBase = database[iters[[i]], ]
         trainMarkBaseStatus = trainMarkBase[, 1]
         trainMarkBase = trainMarkBase[, -1]
         train = std(trainMarkBase, trainMarkBase, standardize)
@@ -1227,9 +1228,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         train = cbind(trainMarkBaseStatus, train)
         colnames(train) <- c("status","m1", "m2")
         
-        test = std(data[, -1], trainMarkBase, standardize)
+        test = std(database[, -1], trainMarkBase, standardize)
         
-        test = cbind(data[, 1], test)    
+        test = cbind(database[, 1], test)    
         colnames(test) <- c("status","m1", "m2")
         
         model <- gam::gam(status ~ splines::ns(m1, df = df1) + 
@@ -1268,11 +1269,11 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
+          trainMarkBase = database[-folds[[i]], ]
           trainMarkBaseStatus = trainMarkBase[, 1]
           trainMarkBase = trainMarkBase[, -1]
           train = std(trainMarkBase, trainMarkBase, standardize)
-          test = data[folds[[i]], ]
+          test = database[folds[[i]], ]
           testStatus = test[, 1]
           test = std(test[, -1], trainMarkBase, standardize)     
           train = cbind(trainMarkBaseStatus, train)
@@ -1379,6 +1380,10 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     Method = method,
                     Standardize = standardize,
                     Parameters = parameters,
+                    Degree1 = degree1,
+                    Degree2 = degree2,
+                    Resample = resample,
+                    Interact = include.interact,
                     Std = std
                     
   )
