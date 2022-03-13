@@ -37,8 +37,8 @@ std.range <- function(newdata, model, type = TRUE){
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 3] /
-                          model$fit$Std[i, 4] - model$fit$Std[i, 3])
+      newdata[ , i] <- ((newdata[ , i] - model$fit$Std[i, 3]) /
+                          (model$fit$Std[i, 4] - model$fit$Std[i, 3]))
       
     }
     return(newdata)}
@@ -85,7 +85,7 @@ std.zscore <- function(newdata, model, type = TRUE){
       
       for (i in 1:ncol(newdata)){
         
-        newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 1] / model$fit$Std[i, 2])
+        newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 1]) /  model$fit$Std[i, 2]
         
       }
       return(newdata)
@@ -206,8 +206,8 @@ std.tscore <- function(newdata, model,type = TRUE){
 
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- 10 * ((newdata[ , i] - mean(model[ , i]))
-                              / sd(model[ , i])) + 50
+      newdata[ , i] <- (10 * ((newdata[ , i] - mean(model[ , i]))
+                              / sd(model[ , i]))) + 50
       
     }
     return(newdata)
@@ -217,8 +217,8 @@ std.tscore <- function(newdata, model,type = TRUE){
 
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- 10 * ((newdata[ , i] - model$fit$Std[i, 1])
-                             / model$fit$Std[i, 2]) + 50
+      newdata[ , i] <- (10 * ((newdata[ , i] - model$fit$Std[i, 1])
+                             / model$fit$Std[i, 2])) + 50
       
     }
     return(newdata)
