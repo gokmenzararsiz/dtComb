@@ -376,7 +376,8 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     Standardize = standardize,
                     Transform = transform,
                     PowerTransform = power.transform,
-                    MaxPower = max_power)
+                    MaxPower = max_power,
+                    Resample = "none")
   
   comb.score <- as.matrix(comb.score)
   
