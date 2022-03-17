@@ -224,6 +224,22 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
+  std = matrix(,2,4)
+  colnames(std) <- c("mean", "sd", "min", "max")
+  
+  for (j in 1:2) {
+    
+    std[, j]
+    for (i in 1:ncol(markers)) {
+      
+      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
+                       min(markers[, i]),max(markers[, i]))
+      
+    }
+  }
+  
+  markers <- std.train(markers, standardize) #Once std mi transform mu?
+  
   n <- as.matrix(seq(-3, 3, 0.1))
   p <- seq(1:nrow(n))
   
@@ -237,8 +253,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   if (method == "add"){
-    
-    markers <- std(markers, markers, standardize)
     
     if(power.transform == TRUE){
       
@@ -259,19 +273,13 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     
   } else if (method == "multiply") {
     
-    markers <- std(markers, markers, standardize)
-    
     comb.score <- markers[ ,1] * markers[ ,2]
     
   } else if (method == "divide"){
     
-    markers <- std(markers, markers, standardize)
-    
     comb.score <- markers[ ,1] / markers[ ,2]
     
   } else if (method == "subtract"){
-    
-    markers <- std(markers, markers, standardize)
     
     if(power.transform == TRUE){
       
@@ -292,8 +300,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     else{comb.score <- (markers[ ,1] - markers[ ,2])}
     
   }  else if(method == "distance"){
-    
-    markers <- std(markers, markers, standardize)
     
     if(distance == "euclidean"){
       
@@ -341,13 +347,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     }     
   } else if (method == "baseinexp") {
     
-    markers <- std(markers, markers, standardize)
-    
     comb.score <- markers[ ,1] ^ markers[ ,2]
     
   } else if (method == "expinbase") {
-    
-    markers <- std(markers, markers, standardize)
      
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
@@ -377,7 +379,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     Transform = transform,
                     PowerTransform = power.transform,
                     MaxPower = max_power,
-                    Resample = "none")
+                    Std = std)
   
   comb.score <- as.matrix(comb.score)
   
