@@ -151,8 +151,21 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
-  markersBase <- markers
-  markers <- std(markers, markers, standardize) 
+  std = matrix(,2,4)
+  colnames(std) <- c("mean", "sd", "min", "max")
+  
+  for (j in 1:2) {
+    
+    std[, j]
+    for (i in 1:ncol(markers)) {
+      
+      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
+                       min(markers[, i]),max(markers[, i]))
+      
+    }
+  }
+  
+  markers <- std.train(markers, standardize) 
   
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
@@ -171,9 +184,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ] 
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark = markers[iters[[i]], ] 
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -189,7 +201,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- round.coef
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -207,10 +218,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -226,7 +235,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- round.coef
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
+
           
         }
         
@@ -234,7 +243,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -266,9 +274,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ]
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark = markers[iters[[i]], ]
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -287,7 +294,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(est.coef) <- c("alpha", "beta")
         resample_results$parameters[[i]] <- est.coef
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -305,10 +311,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -327,7 +331,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(est.coef) <- c("alpha", "beta")
           resample_results$parameters[[i]] <- est.coef
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -335,7 +338,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -362,7 +364,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     if(any(resample== "boot")){
       
-      markersData <- markersBase
+      markersData <- markers
       colnames(markersData) <- c("m1", "m2")
       data <- cbind(status,markersData) 
       
@@ -370,16 +372,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = data[iters[[i]], ]
-        trainMarkBaseStatus = trainMarkBase[, 1]
-        trainMarkBase = trainMarkBase[, -1]
-        train = std(trainMarkBase, trainMarkBase, standardize)
-        test = std(data[, -1], trainMarkBase, standardize)
-        train = cbind(trainMarkBaseStatus, train)
-        colnames(train) <- c("status","m1", "m2")
-        
-        test = cbind(data[, 1], test)    
-        colnames(test) <- c("status","m1", "m2")
+        train = data[iters[[i]], ]
+        test = data
         
         res <- glm(status ~ m1 + m2,
                    family = binomial((link = "logit")), data = train)
@@ -391,7 +385,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         resample_results$parameters[[i]] <- res
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -403,7 +396,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
     else if(any(resample == "cv") || any(resample == "repeatedcv")){
       
-      markersData <- markersBase
+      markersData <- markers
       colnames(markersData) <- c("m1", "m2")
       data <- cbind(status,markersData)
       
@@ -413,18 +406,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = data[-folds[[i]], ]
-          trainMarkBaseStatus = trainMarkBase[, 1]
-          trainMarkBase = trainMarkBase[, -1]
-          train = std(trainMarkBase, trainMarkBase, standardize)
+          train = data[-folds[[i]], ]
           test = data[folds[[i]], ]
-          testStatus = test[, 1]
-          test = std(test[, -1], trainMarkBase, standardize)     
-          train = cbind(trainMarkBaseStatus, train)
-          colnames(train) <- c("status","m1", "m2")
-          
-          test = cbind(testStatus, test)  
-          colnames(test) <- c("status","m1", "m2")
           
           res <- glm(status ~ m1 + m2,
                      family = binomial((link = "logit")), data = train)
@@ -436,7 +419,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           resample_results$parameters[[i]] <- res
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -444,7 +426,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -474,9 +455,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ]
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark= markers[iters[[i]], ]
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -500,7 +480,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -519,10 +498,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
+
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -546,7 +524,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -554,7 +531,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -593,9 +569,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = as.matrix(markersBase[iters[[i]], ])
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(as.matrix(markersBase), trainMarkBase, standardize)
+        trainMark = as.matrix(markers[iters[[i]], ])
+        testMark = as.matrix(markers)
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -612,7 +587,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -630,10 +604,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = as.matrix(markersBase[-folds[[i]], ])
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = as.matrix(markersBase[folds[[i]], ])
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = as.matrix(markers[-folds[[i]], ])
+          testMark = as.matrix(markers[folds[[i]], ])
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -650,7 +622,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -658,7 +629,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -692,9 +662,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ]
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark = markers[iters[[i]], ]
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -719,7 +688,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -737,10 +705,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -765,7 +731,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -773,7 +738,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -812,9 +776,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ]
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark = markers[iters[[i]], ]
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -840,7 +803,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(b.coef) <- c("b1", "b2")
         resample_results$parameters[[i]] <- b.coef
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
         
       }
       
@@ -858,10 +820,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -887,7 +847,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(b.coef) <- c("b1", "b2")
           resample_results$parameters[[i]] <- b.coef
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -895,7 +854,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
         
       }
       
@@ -935,9 +893,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        trainMarkBase = markersBase[iters[[i]], ]
-        trainMark = std(trainMarkBase, trainMarkBase, standardize)
-        testMark = std(markersBase, trainMarkBase, standardize)
+        trainMark = markers[iters[[i]], ]
+        testMark = markers
         
         trainStat = status[iters[[i]] ]
         testStat = status
@@ -962,7 +919,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         names(trigFuncs) <- c("sin(theta)", "cos(theta)")
         resample_results$parameters[[i]] <- trigFuncs
         resample_results$AUC[[i]] <- auc_value
-        resample_results$trainMarks[[i]] <- trainMarkBase
       }
       
       max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
@@ -979,10 +935,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          trainMarkBase = markersBase[-folds[[i]], ]
-          trainMark = std(trainMarkBase, trainMarkBase, standardize, TRUE)
-          testMark = markersBase[folds[[i]], ]
-          testMark = std(testMark, trainMarkBase, standardize, TRUE)
+          trainMark = markers[-folds[[i]], ]
+          testMark = markers[folds[[i]], ]
           
           trainStat = status[-folds[[i]] ]
           testStat = status[folds[[i]] ]
@@ -1007,7 +961,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           names(trigFuncs) <- c("sin(theta)", "cos(theta)")
           resample_results$parameters[[i]] <- trigFuncs
           resample_results$AUC[[i]] <- auc_value
-          resample_results$trainMarks[[i]] <- trainMarkBase
           
         }
         
@@ -1015,7 +968,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                            max(unlist(resample_results$AUC)))
         repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
-        repeated_results$trainMarks[[r]] <- resample_results$trainMarks[[max_AUC[1]]]
+
       }
       
       max_AUC <- which(repeated_results$AUC ==
@@ -1050,36 +1003,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
-  std = matrix(,2,4)
-  colnames(std) <- c("mean", "sd", "min", "max")
-
-  max_AUC <- c()
-  trainMarkBase <- data.frame()
-  if(resample == "boot"){
-    
-    max_AUC <- which(resample_results$AUC ==
-                       max(unlist(resample_results$AUC)))
-    trainMarkBase <- resample_results$trainMarks[[max_AUC[1]]]
-    
-  } else {
-    
-    max_AUC <- which(repeated_results$AUC ==
-                       max(unlist(repeated_results$AUC)))
-    trainMarkBase <- repeated_results$trainMarks[[max_AUC[1]]]
-    
-  }
-  
-  
-  for (j in 1:2) {
-    
-    std[, j]
-    for (i in 1:ncol(trainMarkBase)) {
-      
-      std[i, ] = cbind(mean(trainMarkBase[, i]),sd(trainMarkBase[, i]), 
-                       min(trainMarkBase[, i]),max(trainMarkBase[, i]))
-      
-    }
-  }
 
    model_fit <- list(CombType = "linComb",
                   Method = method,
