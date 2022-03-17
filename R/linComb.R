@@ -171,9 +171,9 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   pos.markers <- markers[status == 1, ]
   
   resample_results <- vector(mode = "list", length = 3)
-  names(resample_results) <- c("parameters", "AUC","trainMarks")
+  names(resample_results) <- c("parameters", "AUC")
   repeated_results <- vector(mode = "list", length = 3)
-  names(repeated_results) <- c("parameters", "AUC","trainMarks")
+  names(repeated_results) <- c("parameters", "AUC")
   
   
   if (method == "scoring"){
@@ -1008,7 +1008,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                   Method = method,
                   Standardize = standardize,
                   Parameters = parameters,
-                  Resample = resample,
                   Std = std)
    
   
