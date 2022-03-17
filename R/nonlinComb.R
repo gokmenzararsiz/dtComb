@@ -218,26 +218,26 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMark = data[iters[[i]], ]
+        testMark = data
         
         if(include.interact == TRUE){
           
-          interact <- train$m1 * train$m2
+          interact <- trainMark$m1 * trainMark$m2
           
           model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2) 
-                   + interact, data = train, family = binomial(link = "logit"))
+                   + interact, data = trainMark, family = binomial(link = "logit"))
         } else {
           
           model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2), 
-                       data = train, family = binomial(link = "logit"))
+                       data = trainMark, family = binomial(link = "logit"))
         }
         
-        interact <- test$m1 * test$m2
-        comb.score <- predict(model, newdata = test, type = "response")
+        interact <- testMark$m1 * testMark$m2
+        comb.score <- predict(model, newdata = testMark, type = "response")
         interact <- data$m1 * data$m2
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -266,26 +266,26 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train= data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
 
           if( include.interact == TRUE){
             
-            interact <- train$m1 * train$m2
+            interact <- trainMark$m1 * trainMark$m2
             
             model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2) 
-                    + interact, data = train, family = binomial(link = "logit"))
+                    + interact, data = trainMark, family = binomial(link = "logit"))
           } else {
             
             model <- glm(status ~ poly(m1, degree1) + poly(m2, degree2), 
-                         data = train, family = binomial(link = "logit"))
+                         data = trainMark, family = binomial(link = "logit"))
           }
           
-          interact <- test$m1 * test$m2
-          comb.score <- predict(model, newdata = test, type = "response")
+          interact <- testMark$m1 * testMark$m2
+          comb.score <- predict(model, newdata = testMark, type = "response")
           interact <- data$m1 * data$m2
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -349,41 +349,41 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
    
-        train = data[iters[[i]], ]
+        trainMark = data[iters[[i]], ]
         
-        test = data
+        testMark = data
         
         if( include.interact == TRUE){
           
-          interact <- train$m1 * train$m2
+          interact <- trainMark$m1 * trainMark$m2
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2), interact)
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2), interact)
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = 0, family = "binomial")
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = 0, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 0, 
                             family = "binomial", lambda = cv.model$lambda.min)
-          interact <- test$m1 * test$m2
+          interact <- testMark$m1 * testMark$m2
           
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2), interact)
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2), interact)
           interact <- data$m1 * data$m2
           
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2), interact)
         } else {
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2))
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2))
           
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = 0, family = "binomial")
           
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = 0, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 0, 
                             family = "binomial", lambda = cv.model$lambda.min)
           
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2))
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2))
           
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2))
@@ -392,7 +392,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         comb.score<-predict(model, newx = as.matrix(testspace), type="response")
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -421,40 +421,40 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
 
-          test = data
+          testMark = data
             
           if( include.interact == TRUE){
             
-            interact <- train$m1 * train$m2
+            interact <- trainMark$m1 * trainMark$m2
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2), interact)
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2), interact)
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = 0, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = 0, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 0, 
                             family = "binomial", lambda = cv.model$lambda.min)
             
-            interact <- test$m1 * test$m2
+            interact <- testMark$m1 * testMark$m2
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2), interact)
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2), interact)
             interact <- data$m1 * data$m2
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2), interact)
           } else {
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2))
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2))
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = 0, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = 0, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 0, 
                              family = "binomial", lambda = cv.model$lambda.min)
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2))
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2))
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2))
@@ -463,7 +463,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           comb.score<-predict(model, newx = as.matrix(testspace), type="response")
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -535,38 +535,38 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
+        trainMark = data[iters[[i]], ]
 
-        test = data
+        testMark = data
         
         if( include.interact == TRUE){
           
-          interact <- train$m1 * train$m2
+          interact <- trainMark$m1 * trainMark$m2
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2), interact)
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2), interact)
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = 1, family = "binomial")
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = 1, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 1, 
                                   family = "binomial", lambda = cv.model$lambda.min)
-          interact <- test$m1 * test$m2
+          interact <- testMark$m1 * testMark$m2
           
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2), interact)
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2), interact)
           interact <- data$m1 * data$m2
           
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2), interact)
         } else {
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2))
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2))
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = 1, family = "binomial")
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = 1, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 1, 
                                   family = "binomial", lambda = cv.model$lambda.min) 
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2))
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2))
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2))
         } 
@@ -574,7 +574,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         comb.score<-predict(model, newx = as.matrix(testspace), type="response")
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -602,25 +602,25 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
 
-          test = data[folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           if( include.interact == TRUE){
             
-            interact <- train$m1 * train$m2
+            interact <- trainMark$m1 * trainMark$m2
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2), interact)
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2), interact)
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = 1, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = 1, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 1, 
                                     family = "binomial", lambda = cv.model$lambda.min)
             
-            interact <- test$m1 * test$m2
+            interact <- testMark$m1 * testMark$m2
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2), interact)
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2), interact)
             interact <- data$m1 * data$m2
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
@@ -628,15 +628,15 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
 
           } else {
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2))
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2))
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = 1, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = 1, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = 1, 
                                     family = "binomial", lambda = cv.model$lambda.min)
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2))
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2))
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2))
           } 
@@ -644,7 +644,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           comb.score<-predict(model, newx = as.matrix(testspace), type ="response")
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -716,45 +716,45 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMark = data[iters[[i]], ]
+        testMark = data
         
         if( include.interact == TRUE){
           
-          interact <- train$m1 * train$m2
+          interact <- trainMark$m1 * trainMark$m2
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2), interact)
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2), interact)
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = alpha, family = "binomial")
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = alpha, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = alpha, 
                              family = "binomial", lambda = cv.model$lambda.min)
-          interact <- test$m1 * test$m2
+          interact <- testMark$m1 * testMark$m2
           
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2), interact)
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2), interact)
           interact <- data$m1 * data$m2
           
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2), interact)
         } else {
           
-          space <- cbind.data.frame(poly(train$m1, degree1),
-                                    poly(train$m2, degree2))
-          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+          space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                    poly(trainMark$m2, degree2))
+          cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                         alpha = alpha, family = "binomial")
-          model <- glmnet::glmnet(x = space, y = train$status, alpha = alpha, 
+          model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = alpha, 
                             family = "binomial", lambda = cv.model$lambda.min) 
           
-          testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                        poly(test$m2, degree2))
+          testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                        poly(testMark$m2, degree2))
           dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                         poly(data$m2, degree2))
         }
         
         comb.score <- predict(model, newx = as.matrix(testspace), type="response")
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -782,39 +782,39 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           if( include.interact == TRUE){
             
-            interact <- train$m1 * train$m2
+            interact <- trainMark$m1 * trainMark$m2
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2), interact)
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2), interact)
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = alpha, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = alpha, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = alpha, 
                                     family = "binomial", lambda = cv.model$lambda.min)
             
-            interact <- test$m1 * test$m2
+            interact <- testMark$m1 * testMark$m2
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2), interact)
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2), interact)
             interact <- data$m1 * data$m2
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2), interact)
           } else {
             
-            space <- cbind.data.frame(poly(train$m1, degree1),
-                                      poly(train$m2, degree2))
-            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = train$status, 
+            space <- cbind.data.frame(poly(trainMark$m1, degree1),
+                                      poly(trainMark$m2, degree2))
+            cv.model <- glmnet::cv.glmnet(x = as.matrix(space), y = trainMark$status, 
                                           alpha = alpha, family = "binomial")
-            model <- glmnet::glmnet(x = space, y = train$status, alpha = alpha, 
+            model <- glmnet::glmnet(x = space, y = trainMark$status, alpha = alpha, 
                                     family = "binomial", lambda = cv.model$lambda.min)
             
-            testspace <- cbind.data.frame(poly(test$m1, degree1),
-                                          poly(test$m2, degree2))
+            testspace <- cbind.data.frame(poly(testMark$m1, degree1),
+                                          poly(testMark$m2, degree2))
             
             dataspace <- cbind.data.frame(poly(data$m1, degree1),
                                           poly(data$m2, degree2))
@@ -822,7 +822,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score<-predict(model, newx = as.matrix(testspace), type="response")
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -894,17 +894,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test =data
+        trainMark = data[iters[[i]], ]
+        testMark =data
         
         model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
                        splines::bs(m2,degree = degree2, df = df2), 
-                     data = train, family = binomial)
+                     data = trainMark, family = binomial)
         
-        comb.score <- predict(model,newdata = test,type="response")
+        comb.score <- predict(model,newdata = testMark,type="response")
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -932,17 +932,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
                          splines::bs(m2,degree = degree2, df = df2), 
-                       data = train, family = binomial)
+                       data = trainMark, family = binomial)
           
-          comb.score <- predict(model,newdata = test,type="response")
+          comb.score <- predict(model,newdata = testMark,type="response")
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -998,17 +998,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMark = data[iters[[i]], ]
+        testMark = data
         
         model <- gam::gam(status ~ gam::s(m1, df = df1) + 
                        gam::s(m2, df = df2), 
-                     data = train, family = binomial)
+                     data = trainMark, family = binomial)
         
-        comb.score <- predict(model,newdata = test,type="response")
+        comb.score <- predict(model,newdata = testMark,type="response")
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -1036,17 +1036,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           model <- gam::gam(status ~ gam::s(m1, df = df1) + 
                          gam::s(m2, df = df2), 
-                       data = train, family = binomial)
+                       data = trainMark, family = binomial)
           
-          comb.score <- predict(model,newdata = test,type="response")
+          comb.score <- predict(model,newdata = testMark,type="response")
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -1102,17 +1102,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMark = data[iters[[i]], ]
+        testMark = data
         
         model <- gam::gam(status ~ splines::ns(m1, df = df1) + 
                        splines::ns(m2, df = df2), 
-                     data = train, family = binomial)
+                     data = trainMark, family = binomial)
         
-        comb.score <- predict(model, newdata = test, type="response")
+        comb.score <- predict(model, newdata = testMark, type="response")
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -1140,17 +1140,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           model <- gam::gam(status ~ splines::ns(m1, df = df1) + 
                          splines::ns(m2, df = df2), 
-                       data = train, family = binomial)
+                       data = trainMark, family = binomial)
           
-          comb.score <- predict(model, newdata = test, type="response")
+          comb.score <- predict(model, newdata = testMark, type="response")
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
