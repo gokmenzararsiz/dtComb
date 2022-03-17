@@ -372,16 +372,16 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       for(i in (1:niters)){
         
-        train = data[iters[[i]], ]
-        test = data
+        trainMark = data[iters[[i]], ]
+        testMark = data
         
         res <- glm(status ~ m1 + m2,
-                   family = binomial((link = "logit")), data = train)
+                   family = binomial((link = "logit")), data = trainMark)
         
-        comb.score <- as.matrix(predict(res, newdata = test, type = "response"))
+        comb.score <- as.matrix(predict(res, newdata = testMark, type = "response"))
         
         auc_value <- suppressMessages(as.numeric(
-          pROC::auc(test$status, as.numeric(comb.score))))
+          pROC::auc(testMark$status, as.numeric(comb.score))))
         
         resample_results$parameters[[i]] <- res
         resample_results$AUC[[i]] <- auc_value
@@ -406,16 +406,16 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         for(i in (1:nfolds)){
           
-          train = data[-folds[[i]], ]
-          test = data[folds[[i]], ]
+          trainMark = data[-folds[[i]], ]
+          testMark = data[folds[[i]], ]
           
           res <- glm(status ~ m1 + m2,
-                     family = binomial((link = "logit")), data = train)
+                     family = binomial((link = "logit")), data = trainMark)
           
-          comb.score <- as.matrix(predict(res, newdata = test, type = "response"))
+          comb.score <- as.matrix(predict(res, newdata = testMark, type = "response"))
           
           auc_value <- suppressMessages(as.numeric(
-            pROC::auc(test$status, as.numeric(comb.score))))
+            pROC::auc(testMark$status, as.numeric(comb.score))))
           
           resample_results$parameters[[i]] <- res
           resample_results$AUC[[i]] <- auc_value
@@ -1009,8 +1009,40 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                   Standardize = standardize,
                   Parameters = parameters,
                   Std = std)
+   #################
+   xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
+                          as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
+   xtab <- xtab[-3,]
+   diagonal.counts <- diag(xtab)
+   N <- sum(xtab)
+   row.marginal.props <- rowSums(xtab)/N
+   col.marginal.props <- colSums(xtab)/N
+   # Compute kappa (k)
+   Po <- sum(diagonal.counts)/N
+   Pe <- sum(row.marginal.props*col.marginal.props)
+   k <- (Po - Pe)/(1 - Pe)
+
+   accuracy = sum(diagonal.counts) / N
    
-  
+   ####################
+  print_model = list(Method = method,
+                     rowcount = nrow(markers),
+                     colcount = ncol(markers),
+                     event = levels(status),
+                     Pre_processing = standardize,
+                     Resampling = resample,
+                     niters = niters,
+                     nfolds = nfolds,
+                     nrepeats = nrepeats,
+                     Accuracy = accuracy,
+                     Kappa = k,
+                     AUC_table = allres$AUC_table,
+                     MultComp_table = allres$MultComp_table,
+                     DiagStatCombined = allres$DiagStatCombined
+                     
+  )
+   print(print_model)
+   
   allres$fit <- model_fit
   
   return(allres)
