@@ -1225,14 +1225,13 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   N <- sum(xtab)
   row.marginal.props <- rowSums(xtab)/N
   col.marginal.props <- colSums(xtab)/N
-  # Compute kappa (k)
+
   Po <- sum(diagonal.counts)/N
   Pe <- sum(row.marginal.props*col.marginal.props)
   k <- (Po - Pe)/(1 - Pe)
   
   accuracy = sum(diagonal.counts) / N
   
-  ####################
   print_model = list(CombType = "nonlinComb",
                      Method = method,
                      rowcount = nrow(markers),
