@@ -287,7 +287,7 @@ std.train <- function(data, standardize = NULL, type = TRUE) {
 
 
 
-std.test<- function(newdata, model, standardize) {
+std.test <- function(newdata, model, standardize) {
   
   if (any(standardize == "range")){
     
