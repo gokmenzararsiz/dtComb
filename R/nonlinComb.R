@@ -28,7 +28,7 @@
 #'  the polynomial feature space created from two biomarkers. For the 
 #'  implementation of the method, glmnet library [8] is used with two functions:
 #'  cv.glmnet() to run a cross validation  model to determine the tuning 
-#'  parameter Î» and glmnet() to fit the model with the selected tuning parameter. 
+#'  parameter ?? and glmnet() to fit the model with the selected tuning parameter. 
 #'  \item \code{lassoreg}: Lasso regression is also a shrinkage method with one
 #'  difference is that at the end this method returns the coefficients of some 
 #'  features as 0, makes this method useful for feature elimination as well. 
@@ -36,7 +36,7 @@
 #'  parameter selection and model fit are implemented with glmnet library.
 #'  \item \code{elasticreg}: Elastic Net regression is obtained by combining the 
 #'  penalties of Ridge and Lasso regression to get the best of both models. The 
-#'  model again includes a tuning parameter Î» as well as a mixing parameter Î± 
+#'  model again includes a tuning parameter ?? as well as a mixing parameter ?? 
 #'  taken form the user which takes a value between 0 (ridge) and 1 (lasso) to 
 #'  determine the weights of the loss functions of Ridge and Lasso regressions.
 #'  \item \code{splines}: With the applications of regression models in a 
@@ -92,9 +92,9 @@
 #' Regression method (0.5, default)
 #' 
 #' @param direction a \code{character} string determines in which direction the 
-#'  comparison will be made.  â€œ>â€: if the predictor values for the control group 
+#'  comparison will be made.  “>”: if the predictor values for the control group 
 #'  are higher than the values of the case group (controls > cases). 
-#'  â€œ<â€: if the predictor values for the control group are lower or equal than 
+#'  “<”: if the predictor values for the control group are lower or equal than 
 #'  the values of the case group (controls < cases). 
 #'
 #' @param conf.level a \code{numeric} values determines the confidens interval
