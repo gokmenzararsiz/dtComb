@@ -1215,6 +1215,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     Degree2 = degree2,
                     Interact = include.interact,
                     Std = std)
+  
+   allres$fit <- model_fit
   #################
   xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
                          as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
@@ -1248,8 +1250,6 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                      
   )
   print_allres(print_model)
-  
-  allres$fit <- model_fit
 
   return(allres)
 
