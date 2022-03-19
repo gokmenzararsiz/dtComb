@@ -171,6 +171,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   levels(status)[levels(status) == "NA"] <- NA
   stopifnot(nrow(markers) == length(status))
   
+  status_levels <- levels(status)
   status <- factor(ifelse(status == event, 1, 0))
   
   comp <- complete.cases(markers)
@@ -198,6 +199,22 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
   
+  std = matrix(,2,4)
+  colnames(std) <- c("mean", "sd", "min", "max")
+  
+  for (j in 1:2) {
+    
+    std[, j]
+    for (i in 1:ncol(markers)) {
+      
+      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
+                       min(markers[, i]),max(markers[, i]))
+      
+    }
+  }
+  
+  markers <- std.train(markers, standardize) 
+  
   if(any(transform == "none")){
     
     markers <- markers
@@ -223,22 +240,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     markers <- cos(markers)
     
   }
-  
-  std = matrix(,2,4)
-  colnames(std) <- c("mean", "sd", "min", "max")
-  
-  for (j in 1:2) {
-    
-    std[, j]
-    for (i in 1:ncol(markers)) {
-      
-      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
-                       min(markers[, i]),max(markers[, i]))
-      
-    }
-  }
-  
-  markers <- std.train(markers, standardize) #Once std mi transform mu?
   
   n <- as.matrix(seq(-3, 3, 0.1))
   p <- seq(1:nrow(n))
@@ -371,6 +372,12 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     transform = "none", power.transform = power.transform,
                     conf.level = conf.level))
   }
+  
+  comb.score <- as.matrix(comb.score)
+  
+  allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
+                   event = event, direction = direction, conf.level = conf.level,
+                   cutoff.method = cutoff.method)
 
   model_fit <- list(CombType = "mathComb",
                     Method = method,
@@ -381,13 +388,41 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     MaxPower = max_power,
                     Std = std)
   
-  comb.score <- as.matrix(comb.score)
-  
-  allres <- rocsum(markers = markers, comb.score = comb.score, status = status, 
-                   event = event, direction = direction, conf.level = conf.level,
-                   cutoff.method = cutoff.method)
-  
   allres$fit <- model_fit
+  #################
+  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
+                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
+  xtab <- xtab[-3,]
+  diagonal.counts <- diag(xtab)
+  N <- sum(xtab)
+  row.marginal.props <- rowSums(xtab)/N
+  col.marginal.props <- colSums(xtab)/N
+  # Compute kappa (k)
+  Po <- sum(diagonal.counts)/N
+  Pe <- sum(row.marginal.props*col.marginal.props)
+  k <- (Po - Pe)/(1 - Pe)
+  
+  accuracy = sum(diagonal.counts) / N
+  
+  ####################
+  print_model = list(Method = method,
+                     rowcount = nrow(markers),
+                     colcount = ncol(markers),
+                     classification = status_levels,
+                     Pre_processing = standardize,
+                     Resampling = resample,
+                     niters = niters,
+                     nfolds = nfolds,
+                     nrepeats = nrepeats,
+                     Accuracy = accuracy,
+                     Kappa = k,
+                     AUC_table = allres$AUC_table,
+                     MultComp_table = allres$MultComp_table,
+                     DiagStatCombined = allres$DiagStatCombined
+                     
+  )
+  
+  print_allres(print_model)
 
   return(allres)
 }
