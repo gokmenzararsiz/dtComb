@@ -1,17 +1,17 @@
 print_allres <- function(print_model) {
 
 
- cat("Method : ", print_model$Method,"\n")
+ cat("Method: ", print_model$Method,"\n")
   
 if(print_model$Method == "distance"){
   
-  cat(paste("Distance", print_model$Distance, sep = " : "),"\n")
+  cat(paste("Distance", print_model$Distance, sep = ": "),"\n")
   
 }
- cat(paste("Samples", print_model$rowcount, sep = " : "),"\n")
- cat(paste("Markers", print_model$colcount, sep = " : "),"\n")
- cat("Event :", paste(print_model$classification,collapse = ", "),"\n")
- cat(paste("Standardization", print_model$Pre_processing, sep = " : "),"\n")
+ cat(paste("Samples", print_model$rowcount, sep = ": "),"\n")
+ cat(paste("Markers", print_model$colcount, sep = ": "),"\n")
+ cat("Event:", paste(print_model$classification,collapse = ", "),"\n")
+ cat(paste("Standardization", print_model$Pre_processing, sep = ": "),"\n")
 
 if(print_model$CombType != "mathComb"){
   if(print_model$Resampling == "boot"){
