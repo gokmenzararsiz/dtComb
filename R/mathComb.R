@@ -149,9 +149,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   match.arg(direction)
   match.arg(cutoff.method)
   
-  raw.markers <- markers
-  raw.status <- status
-  
   if (!is.data.frame(markers)) {
     markers <- as.data.frame(markers)
   }
