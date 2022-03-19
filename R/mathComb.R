@@ -406,15 +406,12 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   accuracy = sum(diagonal.counts) / N
   
   ####################
-  print_model = list(Method = method,
+  print_model = list(CombType = "mathComb",
+                     Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
                      classification = status_levels,
                      Pre_processing = standardize,
-                     Resampling = resample,
-                     niters = niters,
-                     nfolds = nfolds,
-                     nrepeats = nrepeats,
                      Accuracy = accuracy,
                      Kappa = k,
                      AUC_table = allres$AUC_table,
