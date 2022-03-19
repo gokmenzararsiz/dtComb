@@ -1233,7 +1233,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   accuracy = sum(diagonal.counts) / N
   
   ####################
-  print_model = list(Method = method,
+  print_model = list(CombType = "nonlinComb",
+                     Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
                      classification = status_levels,
