@@ -1,6 +1,6 @@
 # TODO: predict function
 #
-# Author: serra berþan gengeç
+# Author: serra bersan gengec
 ###############################################################################
 #' @title Combine two diagnostic tests with Machine Learning Algorithms.
 #'
@@ -66,7 +66,7 @@
 #' comparison table for the AUC values of individual biomarkers and combination 
 #' score obtained and the fitted model.
 #'
-#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec
+#' @author Ilayda Serra Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
@@ -112,6 +112,9 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   stopifnot(event %in% status)
   levels(status)[levels(status) == "NA"] <- NA
   stopifnot(nrow(markers) == length(status))
+  
+  status_levels <- levels(status)
+  status <- factor(ifelse(status == event, 1, 0))
   
   comp <- complete.cases(markers)
   markers <- markers[comp, ]
@@ -240,9 +243,9 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
   
-   model_fit <- list(CombType = "mlComb",
-                     Model = modelFit)
-   
+  model_fit <- list(CombType = "mlComb",
+                    Model = modelFit)
+  
   allres$fit <- model_fit
   
   return(allres)
