@@ -210,6 +210,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     }
   }
   
+  raw.markers <- markers
+  raw.status <- status
+  
   markers <- std.train(markers, standardize) 
   
   if(any(transform == "none")){
