@@ -120,7 +120,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   stopifnot(nrow(markers) == length(status))
   
   status_levels <- levels(status)
-  
   status <- factor(ifelse(status == event, 1, 0))
   
   comp <- complete.cases(markers)
@@ -1012,6 +1011,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                   Standardize = standardize,
                   Parameters = parameters,
                   Std = std)
+   
+   allres$fit <- model_fit
    #################
    xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
                           as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
@@ -1045,8 +1046,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                      
   )
    print_allres(print_model)
-   
-  allres$fit <- model_fit
   
   return(allres)
   
