@@ -36,26 +36,26 @@
 #'  \item \code{euclidean}: The euclidean distance is (named after Euclid) a 
 #'  straight line distance between two points. Euclid argued that the shortest 
 #'  distance between two points is always a line. 
-#'  Euclidean: d = sqrt( ??? | P_i - Q_i |^2)
+#'  Euclidean: d = sqrt( ∑ | P_i - Q_i |^2)
 #'  \item \code{manhattan}: The Manhattan distance, also called the Taxicab 
 #'  distance or the City Block distance, calculates the distance between two 
 #'  real-valued vectors.
-#'  Manhattan : d = ??? | P_i - Q_i |
+#'  Manhattan : d = ∑ | P_i - Q_i |
 #'  \item \code{chebyshev}: Chebyshev distance (or Tchebychev distance), maximum 
-#'  metric, or L??? metric is a metric defined on a vector space where the 
+#'  metric, or L∞ metric is a metric defined on a vector space where the 
 #'  distance between two vectors is the greatest of their differences along any 
 #'  coordinate dimension.
 #'  Chebyshev : $d = max | P_i - Q_i |$
 #'  \item \code{kulczynski_d}: 
-#'  Kulczynski d : d = ??? | P_i - Q_i | / ??? min(P_i , Q_i)
+#'  Kulczynski d : d = ∑ | P_i - Q_i | / ∑ min(P_i , Q_i)
 #'  \item \code{lorentzian}: 
-#'  Lorentzian : d = ??? ln(1 + | P_i - Q_i |)
+#'  Lorentzian : d = ∑ ln(1 + | P_i - Q_i |)
 #'  \item \code{avg}: 
-#'  Avg(L_1, L_n) : d = ??? | P_i - Q_i| + max{ | P_i - Q_i |} / 2
+#'  Avg(L_1, L_n) : d = ∑ | P_i - Q_i| + max{ | P_i - Q_i |} / 2
 #'  \item \code{taneja}:
-#'  Taneja : d = ??? ( P_i + Q_i / 2) * log( P_i + Q_i / ( 2 * sqrt( P_i * Q_i)) )
+#'  Taneja : d = ∑ ( P_i + Q_i / 2) * log( P_i + Q_i / ( 2 * sqrt( P_i * Q_i)) )
 #'  \item \code{kumar-johnson}: 
-#'  Kumar-Johnson : d = ??? (P_i^2 - Q_i^2)^2 / 2 * (P_i * Q_i)^1.5
+#'  Kumar-Johnson : d = ∑ (P_i^2 - Q_i^2)^2 / 2 * (P_i * Q_i)^1.5
 #' }
 #' 
 #' @param standardize a \code{character} string indicating the name of the
@@ -90,9 +90,9 @@
 #'  range, before calculating the combination score (FALSE, default).
 #' 
 #' @param direction a \code{character} string determines in which direction the 
-#'  comparison will be made.  �>�: if the predictor values for the control group 
+#'  comparison will be made.  “>”: if the predictor values for the control group 
 #'  are higher than the values of the case group (controls > cases). 
-#'  �<�: if the predictor values for the control group are lower or equal than 
+#'  “<”: if the predictor values for the control group are lower or equal than 
 #'  the values of the case group (controls < cases). 
 #'
 #' @param conf.level a \code{numeric} values determines the confidens interval
