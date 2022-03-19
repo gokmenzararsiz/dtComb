@@ -124,7 +124,7 @@
 #'  
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "splines", resample = "boot", cutoff.method = "youden", 
-#' standardize = "none")
+#' standardize = "tScore")
 #' 
 #' score3 <- nonlinComb(markers = markers, status = status, event = event, 
 #' method = "lassoreg", resample = "repeatedcv", include.interact = TRUE, 
@@ -163,6 +163,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   stopifnot(event %in% status)
   levels(status)[levels(status) == "NA"] <- NA
   stopifnot(nrow(markers) == length(status))
+  
+  status_levels <- levels(status)
+  status <- factor(ifelse(status == event, 1, 0))
   
   comp <- complete.cases(markers)
   markers <- markers[comp, ]
@@ -1211,9 +1214,40 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     Degree1 = degree1,
                     Degree2 = degree2,
                     Interact = include.interact,
-                    Std = std
-                    
+                    Std = std)
+  #################
+  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
+                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
+  xtab <- xtab[-3,]
+  diagonal.counts <- diag(xtab)
+  N <- sum(xtab)
+  row.marginal.props <- rowSums(xtab)/N
+  col.marginal.props <- colSums(xtab)/N
+  # Compute kappa (k)
+  Po <- sum(diagonal.counts)/N
+  Pe <- sum(row.marginal.props*col.marginal.props)
+  k <- (Po - Pe)/(1 - Pe)
+  
+  accuracy = sum(diagonal.counts) / N
+  
+  ####################
+  print_model = list(Method = method,
+                     rowcount = nrow(markers),
+                     colcount = ncol(markers),
+                     classification = status_levels,
+                     Pre_processing = standardize,
+                     Resampling = resample,
+                     niters = niters,
+                     nfolds = nfolds,
+                     nrepeats = nrepeats,
+                     Accuracy = accuracy,
+                     Kappa = k,
+                     AUC_table = allres$AUC_table,
+                     MultComp_table = allres$MultComp_table,
+                     DiagStatCombined = allres$DiagStatCombined
+                     
   )
+  print_allres(print_model)
   
   allres$fit <- model_fit
 
