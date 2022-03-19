@@ -81,7 +81,8 @@
 #' cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
-#' method = "logistic", resample = "cv", direction = "<", cutoff.method = "youden")
+#' method = "logistic", resample = "repeatedcv", direction = "<", 
+#' cutoff.method = "youden")
 #' 
 #' @export
 
@@ -117,6 +118,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   stopifnot(event %in% status)
   levels(status)[levels(status) == "NA"] <- NA
   stopifnot(nrow(markers) == length(status))
+  
+  status_levels <- levels(status)
   
   status <- factor(ifelse(status == event, 1, 0))
   
@@ -1028,7 +1031,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   print_model = list(Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
-                     event = as.character(levels(status)),
+                     classification = status_levels,
                      Pre_processing = standardize,
                      Resampling = resample,
                      niters = niters,
@@ -1041,7 +1044,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                      DiagStatCombined = allres$DiagStatCombined
                      
   )
-   print(print_model)
+   print_allres(print_model)
    
   allres$fit <- model_fit
   
