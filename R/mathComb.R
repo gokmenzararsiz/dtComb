@@ -408,6 +408,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   ####################
   print_model = list(CombType = "mathComb",
                      Method = method,
+                     Distance = distance,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
                      classification = status_levels,
