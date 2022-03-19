@@ -1,6 +1,6 @@
 # TODO: predict function
 #
-# Author: serra berÅŸan gengeÃ§
+# Author: serra berþan gengeç
 ###############################################################################
 #' @title Combine two diagnostic tests with Machine Learning Algorithms.
 #'
@@ -47,9 +47,9 @@
 #' (25, default)
 #' 
 #' @param direction a \code{character} string determines in which direction the 
-#' comparison will be made.  â€œ>â€: if the predictor values for the control group 
+#' comparison will be made.  “>”: if the predictor values for the control group 
 #' are higher than the values of the case group (controls > cases). 
-#' â€œ<â€: if the predictor values for the control group are lower or equal than 
+#' “<”: if the predictor values for the control group are lower or equal than 
 #' the values of the case group (controls < cases). 
 #'
 #' @param conf.level a \code{numeric} value to  determine the confidence interval
