@@ -1217,7 +1217,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     Std = std)
   
    allres$fit <- model_fit
-  #################
+
   xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
                          as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
   xtab <- xtab[-3,]
