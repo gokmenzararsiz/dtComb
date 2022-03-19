@@ -287,9 +287,9 @@ std.train <- function(data, standardize = NULL, type = TRUE) {
 
 
 
-std.test <- function(newdata, model, standardize) {
+std.test <- function(newdata, model) {
   
-  if (any(standardize == "range")){
+  if (any(model$standardize == "range")){
     
     for (i in 1:ncol(newdata)){
       
@@ -299,7 +299,7 @@ std.test <- function(newdata, model, standardize) {
     }
     
   }
-  else if (any(standardize == "zScore")){
+  else if (any(model$standardize == "zScore")){
     
     for (i in 1:ncol(newdata)){
       
@@ -308,7 +308,7 @@ std.test <- function(newdata, model, standardize) {
     }
     
   }
-  else if (any(standardize == "tScore")){
+  else if (any(model$standardize == "tScore")){
     
     for (i in 1:ncol(newdata)){
       
@@ -318,7 +318,7 @@ std.test <- function(newdata, model, standardize) {
     }
     
   }
-  else if (any(standardize == "mean")){
+  else if (any(model$standardize == "mean")){
     
     for (i in 1:ncol(newdata)){
       
@@ -327,7 +327,7 @@ std.test <- function(newdata, model, standardize) {
     }
     
   }
-  else if (any(standardize == "deviance")){
+  else if (any(model$standardize == "deviance")){
     
     for (i in 1:ncol(newdata)){
       
