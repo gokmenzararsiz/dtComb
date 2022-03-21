@@ -1232,7 +1232,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   
   accuracy = sum(diagonal.counts) / N
   
-  print_model = list(CombType = "nonlinComb",
+  print.train = list(CombType = "nonlinComb",
                      Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
