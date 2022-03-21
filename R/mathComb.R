@@ -398,12 +398,12 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   xtab <- xtab[-3,]
   diagonal.counts <- diag(xtab)
   N <- sum(xtab)
-  row.marginal.props <- rowSums(xtab)/N
-  col.marginal.props <- colSums(xtab)/N
+  row.marginal.props <- rowSums(xtab) / N
+  col.marginal.props <- colSums(xtab) / N
 
-  Po <- sum(diagonal.counts)/N
-  Pe <- sum(row.marginal.props*col.marginal.props)
-  k <- (Po - Pe)/(1 - Pe)
+  Po <- sum(diagonal.counts) / N
+  Pe <- sum(row.marginal.props * col.marginal.props)
+  k <- (Po - Pe) / (1 - Pe)
   
   accuracy = sum(diagonal.counts) / N
   
