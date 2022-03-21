@@ -1,7 +1,7 @@
 print.train <- function(print_model) {
 
 
- cat("Method: ", print_model$Method,"\n")
+ cat("Method:", print_model$Method,"\n")
   
 if(print_model$Method == "distance"){
   
@@ -12,6 +12,14 @@ if(print_model$Method == "distance"){
  cat(paste("Markers", print_model$colcount, sep = ": "),"\n")
  cat("Event:", paste(print_model$classification,collapse = ", "),"\n")
  cat(paste("Standardization", print_model$Pre_processing, sep = ": "),"\n")
+ 
+ if(print_model$CombType == "mathComb"){
+   
+   cat(paste("Transform", print_model$Transform, sep = ": "),"\n")
+   if(print_model$PowerTransform == TRUE)
+   cat(paste("MaxPower", print_model$MaxPower, sep = ": "),"\n")
+   
+ }
 
 if(print_model$CombType != "mathComb"){
   if(print_model$Resampling == "boot"){
@@ -41,10 +49,10 @@ if(print_model$CombType != "mathComb"){
  cat("\n")
  cat("Confusion matrix: ","\n")
  print(print_model$DiagStatCombined)
-
  cat("\n")
  
  cat(" Kappa ","   "," Accuracy ","\n",print_model$Kappa," ",print_model$Accuracy)
+ cat("\n")
  
  
 }
