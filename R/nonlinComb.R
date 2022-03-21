@@ -119,7 +119,7 @@
 #' cutoff.method <- "youden"
 #' 
 #' score1 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "polyreg", resample = "cv", include.interact = TRUE, 
+#' method = "polyreg", resample = "boot", include.interact = TRUE, 
 #' cutoff.method = "youden", standardize = "none")
 #'  
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
@@ -204,15 +204,17 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     }
   }
   
-  markers <- std.train(markers, standardize) 
-  colnames(markers) <- c("m1", "m2")
-  data <- cbind(status,markers) 
+  markersData <- std.train(markers, standardize) 
+  colnames(markersData) <- c("m1", "m2")
+  data <- cbind(status,markersData) 
   
   resample_results <- vector(mode = "list", length = 2)
   names(resample_results) <- c("parameters", "AUC")
   repeated_results <- vector(mode = "list", length = 2)
   names(repeated_results) <- c("parameters", "AUC")
   
+  suppressMessages(
+  suppressWarnings({
   if(method == "polyreg"){
     
     if(any(resample== "boot")){
@@ -239,8 +241,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         interact <- testMark$m1 * testMark$m2
         comb.score <- predict(model, newdata = testMark, type = "response")
         interact <- data$m1 * data$m2
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -256,8 +258,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -287,8 +288,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           interact <- testMark$m1 * testMark$m2
           comb.score <- predict(model, newdata = testMark, type = "response")
           interact <- data$m1 * data$m2
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -317,8 +318,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- repeated_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -394,8 +394,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score<-predict(model, newx = as.matrix(testspace), type="response")
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -411,8 +411,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       }
       
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newx = as.matrix(dataspace), 
-                                      type = "response")
+      comb.score <- predict(parameters, newx = as.matrix(dataspace),
+                            type = "response")
       
     }
     
@@ -465,8 +465,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score<-predict(model, newx = as.matrix(testspace), type="response")
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -496,7 +496,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       }
       parameters <- repeated_results$parameters[[max_AUC]]
       comb.score <- predict(parameters, newx = as.matrix(dataspace), 
-                                      type = "response")
+                            type = "response")
       
     }
     
@@ -522,7 +522,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                            family = "binomial", lambda = cv.model$lambda.min) 
       } 
       
-      comb.score<-predict(model, newx = as.matrix(space), type="response")
+      comb.score <- predict(model, newx = as.matrix(space), type ="response")
       
       parameters <- model
       
@@ -576,8 +576,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score<-predict(model, newx = as.matrix(testspace), type="response")
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -592,8 +592,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- (predict(parameters, newx = as.matrix(dataspace), 
-                                      type = "response"))
+      comb.score <- predict(parameters, newx = as.matrix(dataspace), 
+                            type = "response")
       
     }
     
@@ -646,8 +646,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score<-predict(model, newx = as.matrix(testspace), type ="response")
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -677,7 +677,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       }
       parameters <- repeated_results$parameters[[max_AUC]]
       comb.score <- predict(parameters, newx = as.matrix(dataspace), 
-                                      type = "response")
+                            type = "response")
       
     }
     
@@ -756,8 +756,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         }
         
         comb.score <- predict(model, newx = as.matrix(testspace), type="response")
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -772,8 +771,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newx = as.matrix(dataspace), 
-                                      type = "response")
+      comb.score <- predict(parameters,  newx = as.matrix(dataspace), 
+                            type = "response")
       
     }
     
@@ -824,8 +823,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           } 
           
           comb.score<-predict(model, newx = as.matrix(testspace), type="response")
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -898,16 +897,15 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       for(i in (1:niters)){
         
         trainMark = data[iters[[i]], ]
-        testMark =data
+        testMark = data
         
-        model <- glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
-                       splines::bs(m2,degree = degree2, df = df2), 
-                     data = trainMark, family = binomial)
-        
+        model <-  glm(status ~ splines::bs(m1,degree = degree1, df = df1) + 
+                        splines::bs(m2,degree = degree2, df = df2), 
+                      data = trainMark, family = binomial)
+
         comb.score <- predict(model,newdata = testMark,type="response")
-        
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -944,8 +942,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score <- predict(model,newdata = testMark,type="response")
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -974,8 +972,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- repeated_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data,
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -990,7 +987,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
       parameters <- model
       
     }
-    
+  
   }
   
   else if (method == "sgam"){
@@ -1010,8 +1007,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score <- predict(model,newdata = testMark,type="response")
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -1026,8 +1023,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -1048,8 +1044,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score <- predict(model,newdata = testMark,type="response")
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -1078,8 +1074,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- repeated_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -1114,8 +1109,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score <- predict(model, newdata = testMark, type="response")
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- model
         resample_results$AUC[[i]] <- auc_value
@@ -1130,8 +1125,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- resample_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -1152,8 +1146,8 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score <- predict(model, newdata = testMark, type="response")
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- model
           resample_results$AUC[[i]] <- auc_value
@@ -1181,8 +1175,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       parameters <- repeated_results$parameters[[max_AUC]]
-      comb.score <- predict(parameters, newdata = data, 
-                                      type = "response")
+      comb.score <- predict(parameters, newdata = data, type = "response")
       
     }
     
@@ -1199,7 +1192,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     }
     
   }
-  
+  }))
   comb.score <- as.matrix(comb.score)
   status <- data$status
   
@@ -1223,12 +1216,12 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   xtab <- xtab[-3,]
   diagonal.counts <- diag(xtab)
   N <- sum(xtab)
-  row.marginal.props <- rowSums(xtab)/N
-  col.marginal.props <- colSums(xtab)/N
+  row.marginal.props <- rowSums(xtab) / N
+  col.marginal.props <- colSums(xtab) / N
 
-  Po <- sum(diagonal.counts)/N
-  Pe <- sum(row.marginal.props*col.marginal.props)
-  k <- (Po - Pe)/(1 - Pe)
+  Po <- sum(diagonal.counts) / N
+  Pe <- sum(row.marginal.props * col.marginal.props)
+  k <- (Po - Pe) / (1 - Pe)
   
   accuracy = sum(diagonal.counts) / N
   
