@@ -177,7 +177,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   repeated_results <- vector(mode = "list", length = 3)
   names(repeated_results) <- c("parameters", "AUC")
   
-  
+  suppressMessages(
   if (method == "scoring"){
     
     if(any(resample== "boot")){
@@ -198,8 +198,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         round.coef <- round(res$coefficients, digits = ndigits)
         comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(
+          pROC::auc(testStat, as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- round.coef
         resample_results$AUC[[i]] <- auc_value
@@ -232,8 +232,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           round.coef <- round(res$coefficients, digits = ndigits)
           comb.score <- as.matrix(testMark) %*% as.matrix(round.coef[-1])
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- round.coef
           resample_results$AUC[[i]] <- auc_value
@@ -243,7 +242,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -290,8 +290,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
         comb.score <- as.matrix(testMark) %*% est.coef
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         names(est.coef) <- c("alpha", "beta")
         resample_results$parameters[[i]] <- est.coef
@@ -299,7 +298,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
       comb.score <- as.matrix(markers) %*% parameters
       
@@ -327,8 +327,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           est.coef <- as.numeric(abs(solve(sum.var) %*% subs_mean))
           comb.score <- as.matrix(testMark) %*% est.coef
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           names(est.coef) <- c("alpha", "beta")
           resample_results$parameters[[i]] <- est.coef
@@ -338,7 +337,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -380,19 +380,22 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         res <- glm(status ~ m1 + m2,
                    family = binomial((link = "logit")), data = trainMark)
         
-        comb.score <- as.matrix(predict(res, newdata = testMark, type = "response"))
+        comb.score <- as.matrix(predict(res, newdata = 
+                                          testMark, type = "response"))
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testMark$status, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                          as.numeric(comb.score)))
         
         resample_results$parameters[[i]] <- res
         resample_results$AUC[[i]] <- auc_value
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
-      comb.score <- as.matrix(predict(parameters, newdata = data, type = "response"))
+      comb.score <- as.matrix(predict(parameters, newdata = data, 
+                                      type = "response"))
       
     }
     
@@ -414,10 +417,11 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           res <- glm(status ~ m1 + m2,
                      family = binomial((link = "logit")), data = trainMark)
           
-          comb.score <- as.matrix(predict(res, newdata = testMark, type = "response"))
+          comb.score <- as.matrix(predict(res, newdata = testMark, 
+                                          type = "response"))
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testMark$status, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testMark$status, 
+                                            as.numeric(comb.score)))
           
           resample_results$parameters[[i]] <- res
           resample_results$AUC[[i]] <- auc_value
@@ -426,7 +430,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -434,7 +439,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       max_AUC <- which(repeated_results$AUC ==
                          max(unlist(repeated_results$AUC)))
       parameters <- repeated_results$parameters[[max_AUC[1]]]
-      comb.score <- as.matrix(predict(parameters, newdata = data, type = "response"))
+      comb.score <- as.matrix(predict(parameters, newdata = data, 
+                                      type = "response"))
       
     }
     
@@ -443,7 +449,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       res <- glm(status ~ markers[ , 1] + markers[ , 2],
                  family = binomial((link = "logit")))
       parameters <- res
-      comb.score <- as.matrix(predict(res, newdata = markers, type = "response"))
+      comb.score <- as.matrix(predict(res, newdata = markers, 
+                                      type = "response"))
       
     }
     
@@ -468,16 +475,15 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         init.param <- runif(1, 0, 1)
         
-        opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
-                          pos.set = pos.markers, method = "Brent",
-                          lower = 0, upper = 1)
+        opt.func <- optim(par = init.param, fn = helper_minmax, 
+                          neg.set = neg.markers, pos.set = pos.markers, 
+                          method = "Brent", lower = 0, upper = 1)
         lambda <- as.numeric(opt.func$par)
         
         comb.score <- as.matrix(apply(testMark, 1, max) 
                                 + lambda * apply(testMark, 1, min))
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
@@ -485,7 +491,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
       comb.score <- as.matrix(apply(markers, 1, max) 
                               + parameters * apply(markers, 1, min))
@@ -512,16 +519,15 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           init.param <- runif(1, 0, 1)
           
-          opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
-                            pos.set = pos.markers, method = "Brent",
-                            lower = 0, upper = 1)
+          opt.func <- optim(par = init.param, fn = helper_minmax, 
+                            neg.set = neg.markers, pos.set = pos.markers, 
+                            method = "Brent", lower = 0, upper = 1)
           lambda <- as.numeric(opt.func$par)
           
           comb.score <- as.matrix(apply(testMark, 1, max) 
                                   + lambda * apply(testMark, 1, min))
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
@@ -531,7 +537,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -548,7 +555,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 
       init.param <- runif(1, 0, 1)
       
-      opt.func <- optim(par = init.param, fn = helper_minmax, neg.set = neg.markers,
+      opt.func <- optim(par = init.param, fn = helper_minmax, 
+                        neg.set = neg.markers,
                         pos.set = pos.markers, method = "Brent",
                         lower = 0, upper = 1)
       lambda <- as.numeric(opt.func$par)
@@ -583,8 +591,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score <- as.matrix(testMark[, 1] + lambda * testMark[, 2])
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
@@ -592,7 +599,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
       comb.score <- as.matrix(markers[, 1] + parameters * markers[, 2])
       
@@ -618,8 +626,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score <- as.matrix(testMark[, 1] + lambda * testMark[, 2])
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
@@ -629,7 +636,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -684,8 +692,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         comb.score <-  as.matrix(testMark[ ,1] + testMark[ ,2] * lambda)
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         names(lambda) <- "lambda"
         resample_results$parameters[[i]] <- lambda
@@ -693,7 +700,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
       comb.score <- as.matrix(markers[ ,1] + markers[ ,2] * parameters)
       
@@ -727,8 +735,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           comb.score <-  as.matrix(testMark[ ,1] + testMark[ ,2] * lambda)
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           names(lambda) <- "lambda"
           resample_results$parameters[[i]] <- lambda
@@ -738,7 +745,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -795,12 +803,12 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                           method = "Brent", lower = 0, upper = 1)
         t <- as.numeric(opt.func$par)
         
-        b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
-          (colMeans(pos.markers) - colMeans(neg.markers)))
+        b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * 
+                            var(neg.markers)) %*%(colMeans(pos.markers) - 
+                                                  colMeans(neg.markers)))
         comb.score <- as.matrix(testMark) %*% b.coef
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         names(b.coef) <- c("b1", "b2")
         resample_results$parameters[[i]] <- b.coef
@@ -808,7 +816,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
       }
       
-      max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
+      max_AUC <- which(resample_results$AUC == 
+                         max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
       comb.score <- as.matrix(markers) %*% parameters
       
@@ -839,12 +848,12 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                             method = "Brent", lower = 0, upper = 1)
           t <- as.numeric(opt.func$par)
           
-          b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * var(neg.markers)) %*%
-                                 (colMeans(pos.markers) - colMeans(neg.markers)))
+          b.coef <- as.numeric((solve(t * var(pos.markers)) + (1 - t) * 
+                                  var(neg.markers)) %*% (colMeans(pos.markers) - 
+                                                         colMeans(neg.markers)))
           comb.score <- as.matrix(testMark) %*% b.coef
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           names(b.coef) <- c("b1", "b2")
           resample_results$parameters[[i]] <- b.coef
@@ -854,7 +863,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
         
       }
@@ -914,8 +924,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         comb.score <- as.matrix(a1 * testMark[, 1] + a2 * testMark[, 2])
 
         
-        auc_value <- suppressMessages(as.numeric(
-          pROC::auc(testStat, as.numeric(comb.score))))
+        auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
         
         trigFuncs <- as.numeric(c(a1, a2))
         names(trigFuncs) <- c("sin(theta)", "cos(theta)")
@@ -925,7 +934,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
       max_AUC <- which(resample_results$AUC == max(unlist(resample_results$AUC)))
       parameters <- resample_results$parameters[[max_AUC[1]]]
-      comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * markers[, 2])
+      comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * 
+                                markers[, 2])
       
     }
     
@@ -945,7 +955,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           
           init.param <- runif(1, -1.57079633, 1.57079633)
           
-          opt.func <- optim(par = init.param, fn = helper_TS, markers = trainMark,
+          opt.func <- optim(par = init.param, fn = helper_TS, 
+                            markers = trainMark,
                             status = trainStat, method = "Brent",
                             lower = -1.57079633, upper = 1.57079633)
           theta <- as.numeric(opt.func$par)
@@ -956,8 +967,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
           comb.score <- as.matrix(a1 * testMark[, 1] + a2 * testMark[, 2])
           
           
-          auc_value <- suppressMessages(as.numeric(
-            pROC::auc(testStat, as.numeric(comb.score))))
+          auc_value <- as.numeric(pROC::auc(testStat, as.numeric(comb.score)))
           
           trigFuncs <- as.numeric(c(a1, a2))
           names(trigFuncs) <- c("sin(theta)", "cos(theta)")
@@ -968,7 +978,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
         
         max_AUC <- which(resample_results$AUC ==
                            max(unlist(resample_results$AUC)))
-        repeated_results$parameters[[r]] <- resample_results$parameters[[max_AUC[1]]]
+        repeated_results$parameters[[r]] <- 
+          resample_results$parameters[[max_AUC[1]]]
         repeated_results$AUC[[r]] <- resample_results$AUC[[max_AUC[1]]]
 
       }
@@ -977,7 +988,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                          max(unlist(repeated_results$AUC)))
       parameters <- repeated_results$parameters[[max_AUC[1]]]
       
-      comb.score <- as.matrix(parameters[1] * markers[, 1] + parameters[2] * markers[, 2])
+      comb.score <- as.matrix(parameters[1] * markers[, 1] + 
+                                parameters[2] * markers[, 2])
     }
     
     else {
@@ -1000,7 +1012,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
       
     }
     
-  }
+  })
   
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
@@ -1019,12 +1031,12 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
    xtab <- xtab[-3,]
    diagonal.counts <- diag(xtab)
    N <- sum(xtab)
-   row.marginal.props <- rowSums(xtab)/N
-   col.marginal.props <- colSums(xtab)/N
+   row.marginal.props <- rowSums(xtab) / N
+   col.marginal.props <- colSums(xtab) / N
 
-   Po <- sum(diagonal.counts)/N
-   Pe <- sum(row.marginal.props*col.marginal.props)
-   k <- (Po - Pe)/(1 - Pe)
+   Po <- sum(diagonal.counts) / N
+   Pe <- sum(row.marginal.props * col.marginal.props)
+   k <- (Po - Pe) / (1 - Pe)
 
    accuracy = sum(diagonal.counts) / N
    
