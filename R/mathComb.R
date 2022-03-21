@@ -405,7 +405,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   
   accuracy = sum(diagonal.counts) / N
   
-  print_model = list(CombType = "mathComb",
+  print.train = list(CombType = "mathComb",
                      Method = method,
                      Distance = distance,
                      rowcount = nrow(markers),
