@@ -262,7 +262,7 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   
   accuracy = sum(diagonal.counts) / N
   
-  print.train = list(CombType = "mlComb",
+  print_model = list(CombType = "mlComb",
                      Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
