@@ -1028,7 +1028,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 
    accuracy = sum(diagonal.counts) / N
    
-  print_model = list(CombType = "linComb",
+   print.train = list(CombType = "linComb",
                      Method = method,
                      rowcount = nrow(markers),
                      colcount = ncol(markers),
