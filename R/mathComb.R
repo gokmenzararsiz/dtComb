@@ -420,7 +420,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      
   )
   
-  print_allres(print_model)
+  print.train(print_model)
 
   return(allres)
 }
