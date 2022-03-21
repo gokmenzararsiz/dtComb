@@ -114,7 +114,6 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   stopifnot(nrow(markers) == length(status))
   
   status_levels <- levels(status)
-  status <- factor(ifelse(status == event, 1, 0))
   
   comp <- complete.cases(markers)
   markers <- markers[comp, ]
@@ -244,9 +243,44 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
                    cutoff.method = cutoff.method)
   
   model_fit <- list(CombType = "mlComb",
-                    Model = modelFit)
+                    Method = method,
+                    Standardize = preProcess)
   
   allres$fit <- model_fit
+  
+  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
+                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
+  xtab <- xtab[-3,]
+  diagonal.counts <- diag(xtab)
+  N <- sum(xtab)
+  row.marginal.props <- rowSums(xtab)/N
+  col.marginal.props <- colSums(xtab)/N
+  
+  Po <- sum(diagonal.counts)/N
+  Pe <- sum(row.marginal.props*col.marginal.props)
+  k <- (Po - Pe)/(1 - Pe)
+  
+  accuracy = sum(diagonal.counts) / N
+  
+  print.train = list(CombType = "mlComb",
+                     Method = method,
+                     rowcount = nrow(markers),
+                     colcount = ncol(markers),
+                     classification = status_levels,
+                     Pre_processing = preProcess,
+                     Resampling = resample,
+                     niters = niters,
+                     nfolds = nfolds,
+                     nrepeats = nrepeats,
+                     Accuracy = accuracy,
+                     Kappa = k,
+                     AUC_table = allres$AUC_table,
+                     MultComp_table = allres$MultComp_table,
+                     DiagStatCombined = allres$DiagStatCombined
+                     
+  )
+  
+  print_allres(print_model)
   
   return(allres)
 }
