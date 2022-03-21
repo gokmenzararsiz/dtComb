@@ -1249,7 +1249,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                      DiagStatCombined = allres$DiagStatCombined
                      
   )
-  print_allres(print_model)
+  print.train(print_model)
 
   return(allres)
 
