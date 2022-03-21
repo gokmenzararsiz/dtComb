@@ -116,15 +116,15 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="taneja", direction = "auto", standardize = "range",
+#' method = "distance", distance ="euclidean", direction = "auto", standardize = "range",
 #' cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
-#' method = "expinbase", transform = "exp", direction = direction,
+#' method = "expinbase", transform = "cos", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add", transform = "log", direction = direction,
+#' method = "add", transform = "exp", direction = direction, power.transform = TRUE,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
@@ -356,8 +356,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
-  if(length(which(is.infinite(comb.score))) > 0 && standardize != "none"){
-    warning("Since inifinity is generated in markers, standardize changed to 'none'.")
+  if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
+                                              standardize != "none"){
+    warning("Since inifinity or NaN is generated in markers, standardize changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event, 
                     method = method, distance = distance, direction = direction,
                     standardize = "none", cutoff.method = cutoff.method, 
@@ -365,8 +366,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     conf.level = conf.level))
   }
   
-  if(length(which(is.infinite(comb.score)) ) > 0 && transform != "none"){
-    warning("Since inifinity is generated in markers, transform changed to 'none'.")
+  if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
+                                              transform != "none"){
+    warning("Since inifinity or NaN is generated in markers, transform changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event,
                     method = method, distance = distance, direction = direction,
                     standardize = standardize, cutoff.method = cutoff.method, 
@@ -412,6 +414,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      colcount = ncol(markers),
                      classification = status_levels,
                      Pre_processing = standardize,
+                     Transform = transform,
+                     PowerTransform = power.transform,
+                     MaxPower = max_power,
                      Accuracy = accuracy,
                      Kappa = k,
                      AUC_table = allres$AUC_table,
