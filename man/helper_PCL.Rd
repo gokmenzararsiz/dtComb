@@ -40,5 +40,5 @@ stat <- helper_PCL(lambda, neg.set = neg.set, pos.set = pos.set)
 
 }
 \author{
-Serra Bersan Gengec, Ilayda Serra Yerlitas
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }
