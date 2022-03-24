@@ -190,21 +190,9 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
 
-  std = matrix(,2,4)
-  colnames(std) <- c("mean", "sd", "min", "max")
+  std.model <- std.train(markers, standardize) 
+  markersData <- std.model$data
   
-  for (j in 1:2) {
-    
-    std[, j]
-    for (i in 1:ncol(markers)) {
-      
-      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
-                       min(markers[, i]),max(markers[, i]))
-      
-    }
-  }
-  
-  markersData <- std.train(markers, standardize) 
   colnames(markersData) <- c("m1", "m2")
   data <- cbind(status,markersData) 
   
@@ -1206,8 +1194,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                     Parameters = parameters,
                     Degree1 = degree1,
                     Degree2 = degree2,
-                    Interact = include.interact,
-                    Std = std)
+                    Interact = include.interact)
   
    allres$fit <- model_fit
 
@@ -1242,7 +1229,7 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                      DiagStatCombined = allres$DiagStatCombined
                      
   )
-  print.train(print_model)
+  print_train(print_model)
 
   return(allres)
 
