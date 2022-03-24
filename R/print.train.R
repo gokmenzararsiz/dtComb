@@ -21,7 +21,7 @@ if(print_model$Method == "distance"){
    
  }
 
-if(print_model$CombType != "mathComb"){
+if(print_model$CombType == "linComb" || print_model$CombType == "nonlinComb"){
   if(print_model$Resampling == "boot"){
    
    cat("Resampling: boot (niters:",paste(print_model$niters,")",sep=""))
@@ -36,7 +36,10 @@ if(print_model$CombType != "mathComb"){
    cat("Resampling: repeatedcv (nfolds:",print_model$nfolds,",","nrepeats:",paste(print_model$nrepeats,")",sep=""))
    
   }
- }
+}
+ 
+ cat("\n")
+ cat(" Kappa ","   "," Accuracy ","\n",print_model$Kappa," ",print_model$Accuracy)
  
  cat("\n")
  cat("\n")
@@ -51,8 +54,7 @@ if(print_model$CombType != "mathComb"){
  print(print_model$DiagStatCombined)
  cat("\n")
  
- cat(" Kappa ","   "," Accuracy ","\n",print_model$Kappa," ",print_model$Accuracy)
- cat("\n")
+
  
  
 }
