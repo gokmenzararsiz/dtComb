@@ -46,5 +46,5 @@ marker.set = markers, status)
 
 }
 \author{
-Serra Bersan Gengec, Ilayda Serra Yerlitas
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }
