@@ -199,22 +199,8 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     standardize <- "none"
   }
   
-  std = matrix(,2,4)
-  colnames(std) <- c("mean", "sd", "min", "max")
-  
-  for (j in 1:2) {
-    
-    std[, j]
-    for (i in 1:ncol(markers)) {
-      
-      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
-                       min(markers[, i]),max(markers[, i]))
-      
-    }
-  }
-  
-  
-  markers <- std.train(markers, standardize) 
+  std.model <- std.train(markers, standardize) 
+  markers <- std.model$data
   
   if(any(transform == "none")){
     
@@ -388,8 +374,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     Standardize = standardize,
                     Transform = transform,
                     PowerTransform = power.transform,
-                    MaxPower = max_power,
-                    Std = std)
+                    MaxPower = max_power)
   
   allres$fit <- model_fit
 
@@ -421,11 +406,9 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      Kappa = k,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
-                     DiagStatCombined = allres$DiagStatCombined
-                     
-  )
+                     DiagStatCombined = allres$DiagStatCombined)
   
-  print.train(print_model)
+  print_train(print_model)
 
   return(allres)
 }
