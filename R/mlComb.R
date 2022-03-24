@@ -241,39 +241,20 @@ mlComb <- function(markers = NULL, status = NULL, event = NULL,
   allres <- rocsum(markers = markers, comb.score = comb.score, status = status,
                    event = event, direction = direction, conf.level = conf.level,
                    cutoff.method = cutoff.method)
-  
+
   model_fit <- list(CombType = "mlComb",
-                    Method = method,
-                    Standardize = preProcess,
                     Model = modelFit)
   
   allres$fit <- model_fit
-  
-  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
-                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
-  xtab <- xtab[-3,]
-  diagonal.counts <- diag(xtab)
-  N <- sum(xtab)
-  row.marginal.props <- rowSums(xtab) / N
-  col.marginal.props <- colSums(xtab) / N
-  
-  Po <- sum(diagonal.counts) / N
-  Pe <- sum(row.marginal.props * col.marginal.props)
-  k <- (Po - Pe) / (1 - Pe)
-  
-  accuracy = sum(diagonal.counts) / N
-  
+
   print_model = list(CombType = "mlComb",
-                     Method = method,
-                     Model = allres$fit$Model,
+                     Model = modelFit,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
-                     DiagStatCombined = allres$DiagStatCombined
-                     
-  )
-  
-  print.train(print_model)
-  
+                     DiagStatCombined = allres$DiagStatCombined)
+
+ print_train(print_model)
+
   return(allres)
 }
 
