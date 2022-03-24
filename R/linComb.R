@@ -73,8 +73,8 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "TS", resample= "cv",
-#' standardize = "tScore", direction = "<", cutoff.method = "youden")
+#' method = "scoring", resample= "none",
+#' standardize = "none", direction = "<", cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
 #' method = "TS", resample = "boot", standardize = "zScore", direction = "<", 
