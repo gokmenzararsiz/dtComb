@@ -358,7 +358,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   }
   if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
                                               standardize != "none"){
-    warning("Since inifinity or NaN is generated in markers, standardize changed to 'none'.")
+    warning("Infinity or NaN values generated in markers, standardization changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event, 
                     method = method, distance = distance, direction = direction,
                     standardize = "none", cutoff.method = cutoff.method, 
@@ -368,7 +368,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   
   if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
                                               transform != "none"){
-    warning("Since inifinity or NaN is generated in markers, transform changed to 'none'.")
+    warning("Infinity or NaN values generated in markers, transformation changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event,
                     method = method, distance = distance, direction = direction,
                     standardize = standardize, cutoff.method = cutoff.method, 
