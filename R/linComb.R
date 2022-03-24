@@ -153,21 +153,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
     
   }
   
-  std = matrix(,2,4)
-  colnames(std) <- c("mean", "sd", "min", "max")
-  
-  for (j in 1:2) {
-    
-    std[, j]
-    for (i in 1:ncol(markers)) {
-      
-      std[i, ] = cbind(mean(markers[, i]),sd(markers[, i]), 
-                       min(markers[, i]),max(markers[, i]))
-      
-    }
-  }
-  
-  markers <- std.train(markers, standardize) 
+  std.model <- std.train(markers, standardize) 
+  markers <- std.model$data
   
   neg.markers <- markers[status != 1, ]
   pos.markers <- markers[status == 1, ]
@@ -1021,8 +1008,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
    model_fit <- list(CombType = "linComb",
                   Method = method,
                   Standardize = standardize,
-                  Parameters = parameters,
-                  Std = std)
+                  Parameters = parameters)
    
    allres$fit <- model_fit
 
@@ -1054,10 +1040,8 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                      Kappa = k,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
-                     DiagStatCombined = allres$DiagStatCombined
-                     
-  )
-   print.train(print_model)
+                     DiagStatCombined = allres$DiagStatCombined)
+   print_train(print_model)
   
   return(allres)
   
