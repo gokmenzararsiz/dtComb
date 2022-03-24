@@ -9,10 +9,13 @@ linComb(
   status = NULL,
   event = NULL,
   method = c("scoring", "SL", "logistic", "minmax", "PT", "PCL", "minimax", "TS"),
+  resample = c("none", "cv", "repeatedcv", "boot"),
+  nfolds = 5,
+  nrepeats = 3,
+  niters = 10,
   standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
   ndigits = 0,
-  init.param = 0.01,
-  direction = c("<", ">"),
+  direction = c("auto", "<", ">"),
   conf.level = 0.95,
   cutoff.method = c("youden", "roc01")
 )
@@ -53,13 +56,13 @@ functions of the theta value that optimizes the AUC
 standardization method. The default option is no standardization applied.
 Available options are:
 \itemize{
-\item \code{std.range}: Standardization to a range between 0 and 1
-\item \code{std.zScore}: Standardization using z scores with mean = 0
+\item \code{range}: Standardization to a range between 0 and 1
+\item \code{zScore}: Standardization using z scores with mean = 0
 and standard deviation = 1
-\item \code{std.tScore}: Standardization using T scores. The range varies between
+\item \code{tScore}: Standardization using T scores. The range varies between
 usually 20 and 80
-\item \code{std.mean}: Standardization with sample mean = 1
-\item \code{std.deviance}: Standardization with sample standard deviation = 1
+\item \code{mean}: Standardization with sample mean = 1
+\item \code{deviance}: Standardization with sample standard deviation = 1
 }}
 
 \item{ndigits}{a \code{integer} value to indicate the number of decimal places
@@ -87,15 +90,18 @@ status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- linComb(markers = markers, status = status, event = event,
-method = "scoring", ndigits = 0, standardize = "zscore")
+method = "scoring", resample= "none",
+standardize = "none", direction = "<", cutoff.method = "youden")
 
 score2 <- linComb(markers = markers, status = status, event = event,
-method = "minmax", standardize = "range")
+method = "TS", resample = "boot", standardize = "zScore", direction = "<", 
+cutoff.method = "youden")
 
 score3 <- linComb(markers = markers, status = status, event = event,
-method = "logistic")
+method = "logistic", resample = "repeatedcv", direction = "<", 
+cutoff.method = "youden")
 
 }
 \author{
-Serra Bersan Gengec, Ilayda Serra Yerlitas
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }
