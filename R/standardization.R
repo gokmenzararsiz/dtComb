@@ -27,6 +27,20 @@
 
 
 std.train <- function(data, standardize = NULL) {
+  
+  std = matrix(,2,4)
+  colnames(std) <- c("mean", "sd", "min", "max")
+  
+  for (j in 1:2) {
+    
+    std[, j]
+    for (i in 1:ncol(data)) {
+      
+      std[i, ] = cbind(mean(data[, i]),sd(data[, i]), 
+                       min(data[, i]),max(data[, i]))
+      
+    }
+  }
 
   if (any(standardize == "range")){
   
@@ -75,8 +89,10 @@ std.train <- function(data, standardize = NULL) {
     }
   
   }
+  return_model <- list(data = data,
+                       std = std)
   
-  return(data)
+  return(return_model)
   }
 
 
@@ -110,8 +126,8 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- ((newdata[ , i] - model$fit$Std[i, 3]) /
-                          (model$fit$Std[i, 4] - model$fit$Std[i, 3]))
+      newdata[ , i] <- ((newdata[ , i] - std.model$std[i, 3]) /
+                          (std.model$std[i, 4] - std.model$std[i, 3]))
       
     }
     
@@ -120,7 +136,7 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- (newdata[ , i] - model$fit$Std[i, 1]) /  model$fit$Std[i, 2]
+      newdata[ , i] <- (newdata[ , i] - std.model$std[i, 1]) /  std.model$std[i, 2]
       
     }
     
@@ -129,8 +145,8 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- (10 * ((newdata[ , i] - model$fit$Std[i, 1])
-                              / model$fit$Std[i, 2])) + 50
+      newdata[ , i] <- (10 * ((newdata[ , i] - std.model$std[i, 1])
+                              / std.model$std[i, 2])) + 50
       
     }
     
@@ -139,7 +155,7 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- newdata[ , i] / model$fit$Std[i, 1]
+      newdata[ , i] <- newdata[ , i] / std.model$std[i, 1]
       
     }
     
@@ -148,7 +164,7 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[, i] <- newdata[ , i] / model$fit$Std[i, 2]
+      newdata[, i] <- newdata[ , i] / std.model$std[i, 2]
       
     }
     
