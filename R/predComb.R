@@ -3,19 +3,20 @@
 # standardize = "zScore", cutoff.method = "youden")
 # newdata <- markers
 #'
-#'comb.score <-  comb.predict(score2, markers)
+#'comb.score <-  comb.predict(score1, markers)
 
 comb.predict <- function(model, newdata){
 
   if (!is.data.frame(newdata)) {
     newdata <- as.data.frame(newdata)
   }
-  colnames(newdata) <- c("m1", "m2")
+
   combtype <- model$fit$CombType
   
   if(combtype != "mlComb"){
     
-    newdata = std.test(newdata, model, model$fit$Standardize)
+    colnames(newdata) <- c("m1", "m2")
+    newdata = std.test(newdata, model)
     
   }
   
