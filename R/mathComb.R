@@ -109,15 +109,15 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="euclidean", direction = "auto", standardize = "range",
-#' cutoff.method = cutoff.method)
+#' method = "distance", distance ="euclidean", direction = "auto", 
+#' standardize = "tScore", cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
-#' method = "expinbase", transform = "cos", direction = direction,
+#' method = "expinbase", transform = "exp", direction = direction,
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#' method = "add", transform = "exp", direction = direction, power.transform = TRUE,
+#' method = "add", direction = direction, power.transform = TRUE,
 #' cutoff.method = cutoff.method)
 #' 
 #' @export
@@ -194,7 +194,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   
   std.model <- std.train(markers, standardize) 
   markers <- std.model$data
-  
+
   if(any(transform == "none")){
     
     markers <- markers
@@ -238,7 +238,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     if(power.transform == TRUE){
       
       power <- apply(n, 1, power.add)
-      
+
       auc_list <- sapply(p, get_roc)
       max_index <- which(auc_list == max(auc_list))
       
@@ -250,7 +250,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
       max_power <- (n[max_index])
       comb.score <- power[,max_index]
     } 
-    else {comb.score <- markers[ ,1] + markers[ ,2]}
+    else { comb.score <- markers[ ,1] + markers[ ,2] }
     
   } else if (method == "multiply") {
     
@@ -278,7 +278,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
       comb.score <- power[,max_index]
       
     }
-    else{comb.score <- (markers[ ,1] - markers[ ,2])}
+    else{ comb.score <- (markers[ ,1] - markers[ ,2]) }
     
   }  else if(method == "distance"){
     
@@ -335,7 +335,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
     comb.score <- markers[ ,2] ^ markers[ ,1]
     
   }
-  if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
+  if((length(which(is.infinite(comb.score))) || length(which(is.nan(comb.score))))  > 0 &&
                                               standardize != "none"){
     warning("Infinity or NaN values generated in markers, standardization changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event, 
@@ -345,7 +345,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                     conf.level = conf.level))
   }
   
-  if(length(which(is.infinite(comb.score)) || which(is.nan(comb.score))) > 0 &&
+  if((length(which(is.infinite(comb.score))) || length(which(is.nan(comb.score)))) > 0 &&
                                               transform != "none"){
     warning("Infinity or NaN values generated in markers, transformation changed to 'none'.")
     return(mathComb(markers = raw.markers, status = raw.status, event = event,
@@ -364,26 +364,13 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
   model_fit <- list(CombType = "mathComb",
                     Method = method,
                     Distance = distance,
-                    Standardize = standardize,
                     Transform = transform,
                     PowerTransform = power.transform,
-                    MaxPower = max_power)
+                    MaxPower = max_power,
+                    Std.model = std.model$std,
+                    Standardize = standardize)
   
   allres$fit <- model_fit
-
-  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
-                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
-  xtab <- xtab[-3,]
-  diagonal.counts <- diag(xtab)
-  N <- sum(xtab)
-  row.marginal.props <- rowSums(xtab) / N
-  col.marginal.props <- colSums(xtab) / N
-
-  Po <- sum(diagonal.counts) / N
-  Pe <- sum(row.marginal.props * col.marginal.props)
-  k <- (Po - Pe) / (1 - Pe)
-  
-  accuracy = sum(diagonal.counts) / N
   
   print_model = list(CombType = "mathComb",
                      Method = method,
@@ -395,8 +382,6 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
                      Transform = transform,
                      PowerTransform = power.transform,
                      MaxPower = max_power,
-                     Accuracy = accuracy,
-                     Kappa = k,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
                      DiagStatCombined = allres$DiagStatCombined)
@@ -420,7 +405,7 @@ mathComb <- function(markers = NULL, status = NULL, event = NULL,
 #' @return A \code{numeric} combination score value for calculated with the 
 #' help of exponent
 #'
-#' @author Ilayda Serra Yerlitas, Serra Bersan Gengec
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' #call data
