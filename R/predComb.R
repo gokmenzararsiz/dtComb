@@ -1,29 +1,55 @@
 # TODO: 
 #
-# Author: serra ilayda yerlitas
+# Author: serra 
 ###############################################################################
-#' @title Combine two diagnostic tests with several linear combination methods.
+#' @title a function that generates predictions for each model. The function
+#' should have arguments newdata and model. The output of the function can be 
+#' combination scores (probabilities for machine learning metot) labels of 
+#' object type.
 #'
-#' @description The \code{comb.predict} 
+#' @description The \code{comb.predict} function in R is used to predict the 
+#' values based on the train data.
 #'
-#' @param newdata a \code{numeric} data frame that includes two diagnostic tests
-#' results
+#' @param newdata a \code{numeric} test set that includes biomarkers that have 
+#' not been given to the model before.
 #' 
-#' @param model a \code{string}
+#' @param model a \code{string} a object where the parameters learned and 
+#' stored from the train set are kept.
 #' 
-#' @return A data frame of \code{} 
+#' @return A \code{data.frame} predicted combination scores (or probabilities) 
+#' labels
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
 #' @examples
 #' 
-#' 
-# score1 <- nonlinComb(markers = markers, status = status, event = event,
-# method = "nsgam", resample = "boot", include.interact = FALSE,
-# standardize = "zScore", cutoff.method = "youden")
-# newdata <- markers
+#' #call data
+#' data(exampleData1)
 #'
-#'comb.score <-  comb.predict(score1, markers)
+#' #define the function parameters
+#' markers <- exampleData1[, -1]
+#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' event <- "needed"
+#'
+#' score1 <- linComb(markers = markers, status = status, event = event,
+#' method = "scoring", resample= "none",
+#' standardize = "none", direction = "<", cutoff.method = "youden")
+#' 
+#' comb.score1 <-  comb.predict(score1, markers)
+#' 
+#' score2 <- nonlinComb(markers = markers, status = status, event = event,
+#' method = "nsgam", resample = "boot", include.interact = FALSE,
+#' standardize = "zScore", cutoff.method = "youden")
+#'
+#' comb.score2 <-  comb.predict(score2, markers)
+#'
+#' score3 <- mathComb(markers = markers, status = status, event = event,
+#' method = "distance", distance ="euclidean", direction = "auto", 
+#' standardize = "tScore", cutoff.method = "youden")
+#' 
+#' comb.score3 <-  comb.predict(score3, markers)
+#' 
+#' 
 
 comb.predict <- function(model, newdata){
 
@@ -39,7 +65,7 @@ comb.predict <- function(model, newdata){
     newdata = std.test(newdata, model)
     
   }
-  
+
   if(combtype == "linComb"){
     
     method <- model$fit$Method
@@ -166,8 +192,8 @@ comb.predict <- function(model, newdata){
       
       if(power.transform == TRUE){
         
-        comb.score <- apply(max_power, 1, power.add)
-        
+        markers <- markers ^ model$fit$MaxPower
+        comb.score <- markers[, 1] + markers[, 2]
       } 
       else {comb.score <- newdata[ ,1] + newdata[ ,2]}
       
@@ -183,7 +209,8 @@ comb.predict <- function(model, newdata){
       
       if(power.transform == TRUE){
         
-        comb.score <- apply(max_power, 1, power.subt)
+        markers <- markers ^ model$fit$MaxPower
+        comb.score <- markers[, 1] - markers[, 2]
       }
       else{comb.score <- (newdata[ ,1] - newdata[ ,2])}
       
@@ -248,7 +275,6 @@ comb.predict <- function(model, newdata){
   if(combtype != "mlComb"){
 
     comb.score <- as.matrix(comb.score)
-
     labels <- (comb.score > model$ThresholdCombined)
     labels[labels==TRUE] <- "event"
     labels[labels=="FALSE"] <- "not_event"
@@ -261,20 +287,3 @@ comb.predict <- function(model, newdata){
 }
 
 
-
-power.add <- function(n, marker.set){
-  
-  power1 <- markers[,1] ^ n
-  power2 <- markers[,2] ^ n
-  
-  return (power1 + power2)
-}
-
-
-power.subt <- function(n, marker.set){
-  
-  power1 <- markers[,1] ^ n
-  power2 <- markers[,2] ^ n
-  
-  return (power1 - power2)
-}
