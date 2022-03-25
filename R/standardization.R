@@ -2,14 +2,24 @@
 #
 # Author: serra
 ###############################################################################
-#' @title Standardization with respect to the t score.
+#' @title Standardization according to the chosen method.
 #'
-#' @description The \code{std.train} standardizes using T scores. The range
-#' varies between usually 20 and 80
+#' @description The \code{std.train} 
 #'
 #' @param data a \code{numeric} dataframe of biomarkers
 #' 
-#' @param standardize a a \code{string} cdscfvf
+#' @param standardize a \code{character} string indicating the name of the
+#' standardization method. The default option is no standardization applied.
+#' Available options are:
+#' \itemize{
+#' \item \code{range}: Standardization to a range between 0 and 1
+#' \item \code{zScore}: Standardization using z scores with mean = 0
+#' and standard deviation = 1
+#' \item \code{tScore}: Standardization using T scores. The range varies between
+#'  usually 20 and 80
+#' \item \code{mean}: Standardization with sample mean = 1
+#' \item \code{deviance}: Standardization with sample standard deviation = 1
+#' }
 #'
 #' @return A \code{numeric} dataframe of standardized biomarkers
 #'
@@ -97,28 +107,18 @@ std.train <- function(data, standardize = NULL) {
 
 
 
-#' @title Standardization with respect to the t score.
+#' @title 
 #'
-#' @description The \code{std.test} standardizes using T scores. The range
-#' varies between usually 20 and 80
+#' @description The \code{std.test} 
 #'
 #' @param newdata a \code{numeric} dataframe of biomarkers
 #' 
-#' @param model a \code{string} dcdcdcdz
+#' @param model a \code{string} 
 #'
 #' @return A \code{numeric} dataframe of standardized biomarkers
 #'
 #' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
-#'
-#' @examples
-#' #call data
-#' data(exampleData1)
-#'
-#' #define the function parameters
-#' markers <- exampleData1[, -1]
-#' markers2 <- std.test(markers, score1)
-#'
-#' @export
+
 
 std.test <- function(newdata, model) {
   
