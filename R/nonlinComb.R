@@ -149,7 +149,7 @@
 #' 
 #' score1 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "polyreg", resample = "boot", include.interact = TRUE, 
-#' cutoff.method = "youden", standardize = "none")
+#' cutoff.method = "youden", standardize = "range")
 #'  
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "splines", resample = "boot", cutoff.method = "youden", 
@@ -1219,27 +1219,14 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
   
   model_fit <- list(CombType = "nonlinComb",
                     Method = method,
-                    Standardize = standardize,
                     Parameters = parameters,
                     Degree1 = degree1,
                     Degree2 = degree2,
-                    Interact = include.interact)
+                    Interact = include.interact,
+                    Std.model = std.model$std,
+                    Standardize = standardize)
   
    allres$fit <- model_fit
-
-  xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
-                         as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
-  xtab <- xtab[-3,]
-  diagonal.counts <- diag(xtab)
-  N <- sum(xtab)
-  row.marginal.props <- rowSums(xtab) / N
-  col.marginal.props <- colSums(xtab) / N
-
-  Po <- sum(diagonal.counts) / N
-  Pe <- sum(row.marginal.props * col.marginal.props)
-  k <- (Po - Pe) / (1 - Pe)
-  
-  accuracy = sum(diagonal.counts) / N
   
   print_model = list(CombType = "nonlinComb",
                      Method = method,
@@ -1251,8 +1238,6 @@ nonlinComb <- function(markers = NULL, status = NULL, event = NULL,
                      niters = niters,
                      nfolds = nfolds,
                      nrepeats = nrepeats,
-                     Accuracy = accuracy,
-                     Kappa = k,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
                      DiagStatCombined = allres$DiagStatCombined
