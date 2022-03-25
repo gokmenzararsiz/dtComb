@@ -29,8 +29,11 @@
 #' "none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for 
 #' details of these resampling methods see ?caret::trainControl
 #' 
-#' @param nfolds a \code{numeric} value that indicates the number of folds or 
-#' the number of resampling iterations (5, default)
+#' @param niters a \code{numeric} value that indicates the number resampling 
+#' iterations (10, default)
+#' 
+#' @param nfolds a \code{numeric} value that indicates the number of folds 
+#' (5, default)
 #' 
 #' @param nrepeats a \code{numeric} value that indicates the number of repeats 
 #' for "repeatedcv" option of resampling methods (3, default)
