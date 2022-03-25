@@ -1,3 +1,23 @@
+# TODO: 
+#
+# Author: serra ilayda yerlitas
+###############################################################################
+#' @title Combine two diagnostic tests with several linear combination methods.
+#'
+#' @description The \code{comb.predict} 
+#'
+#' @param newdata a \code{numeric} data frame that includes two diagnostic tests
+#' results
+#' 
+#' @param model a \code{string}
+#' 
+#' @return A data frame of \code{} 
+#'
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
+#'
+#' @examples
+#' 
+#' 
 # score1 <- nonlinComb(markers = markers, status = status, event = event,
 # method = "nsgam", resample = "boot", include.interact = FALSE,
 # standardize = "zScore", cutoff.method = "youden")
