@@ -38,7 +38,7 @@
 #' comb.score1 <-  comb.predict(score1, markers)
 #' 
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "nsgam", resample = "boot", include.interact = FALSE,
+#' method = "nsgam", resample = "cv", include.interact = FALSE,
 #' standardize = "zScore", cutoff.method = "youden")
 #'
 #' comb.score2 <-  comb.predict(score2, markers)
