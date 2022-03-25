@@ -1,27 +1,3 @@
-# TODO: Add comment
-#
-# Author: serra
-###############################################################################
-#' @title 
-#'
-#' @description The \code{print_train} 
-#' 
-#' @param print_model a a \code{string} 
-#'
-#' @return 
-#'
-#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
-#'
-#' @examples
-#' #call data
-#' data(exampleData1)
-#'
-#' #define the function parameters
-#' markers <- exampleData1[, -1]
-#' 
-#'
-#' @export
-
 print_train <- function(print_model) {
   
   
@@ -36,7 +12,7 @@ if(print_model$Method == "distance"){
 }
  cat(paste("Samples", print_model$rowcount, sep = ": "),"\n")
  cat(paste("Markers", print_model$colcount, sep = ": "),"\n")
- cat("Event:", paste(print_model$classification,collapse = ", "),"\n")
+ cat("Event:", paste(print_model$classification, collapse = ", "),"\n")
  cat(paste("Standardization", print_model$Pre_processing, sep = ": "),"\n")
  
  if(print_model$CombType == "mathComb"){
@@ -54,18 +30,22 @@ if(print_model$CombType == "linComb" || print_model$CombType == "nonlinComb"){
    
   }else if(print_model$Resampling == "cv"){
    
-   cat("Resampling: cv (nfolds:",paste(print_model$nfolds,")",sep=""))
+   cat("Resampling: cv (nfolds:", paste(print_model$nfolds, ")", sep=""))
    
    
   }else if(print_model$Resampling == "repeatedcv"){
    
-   cat("Resampling: repeatedcv (nfolds:",print_model$nfolds,",","nrepeats:",paste(print_model$nrepeats,")",sep=""))
+   cat("Resampling: repeatedcv (nfolds:", print_model$nfolds, "," ,"nrepeats:",
+       paste(print_model$nrepeats,")", sep=""))
    
     }
-  }
-
+}
+ 
+ kappa.accuracy <- kappa.accuracy(print_model$DiagStatCombined)
  cat("\n")
- cat(" Kappa ","   "," Accuracy ","\n",print_model$Kappa," ",print_model$Accuracy)
+ cat(" Kappa ","   "," Accuracy ","\n", kappa.accuracy$C.kappa," ",
+     kappa.accuracy$Accuracy)
+ 
 } else {
   
   print(print_model$Model)
@@ -74,15 +54,39 @@ if(print_model$CombType == "linComb" || print_model$CombType == "nonlinComb"){
  
  cat("\n")
  cat("\n")
- cat("Area Under the Curves of markers and combined score: ","\n")
+ cat("Area Under the Curves of markers and combined score: " ,"\n")
  print(print_model$AUC_table)
  cat("\n")
  
- cat("Area Under the Curve comparison of markers and combined score: ","\n")
+ cat("Area Under the Curve comparison of markers and combined score: " ,"\n")
  print(print_model$MultComp_table)
  cat("\n")
- cat("Confusion matrix: ","\n")
+ cat("Confusion matrix: ", "\n")
  print(print_model$DiagStatCombined)
  cat("\n")
  }
 
+
+
+
+kappa.accuracy <- function(DiagStatCombined){
+  
+  Outcome.p <- as.numeric(DiagStatCombined$tab$`   Outcome +`)
+  Outcome.n <- as.numeric(DiagStatCombined$tab$`   Outcome -`)
+  
+  xtab <- as.table(cbind(Outcome.p, Outcome.n))
+  xtab <- xtab[-3,]
+  diagonal.counts <- diag(xtab)
+  N <- sum(xtab)
+  row.marginal.props <- rowSums(xtab) / N
+  col.marginal.props <- colSums(xtab) / N
+  
+  Po <- sum(diagonal.counts) / N
+  Pe <- sum(row.marginal.props * col.marginal.props)
+  k <- (Po - Pe) / (1 - Pe)
+  
+  accuracy = sum(diagonal.counts) / N
+  res <- list(C.kappa = k,
+              Accuracy = accuracy)
+  return(res)
+}
