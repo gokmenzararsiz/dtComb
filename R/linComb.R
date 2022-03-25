@@ -82,8 +82,8 @@
 #' \item \code{deviance}: Standardization with sample standard deviation = 1
 #' }
 #' 
-#' @param ndigits a \code{integer} value to indicate the number of decimal places
-#' to be used for rounding in Scoring method
+#' @param ndigits a \code{integer} value to indicate the number of decimal 
+#' places to be used for rounding in Scoring method
 #'
 #' @param init.param a \code{numeric} initial value to be used for optimization
 #' in minmax, PCL, minimax and TS methods
@@ -116,7 +116,7 @@
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
 #' method = "scoring", resample= "none",
-#' standardize = "none", direction = "<", cutoff.method = "youden")
+#' standardize = "zScore", direction = "<", cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
 #' method = "TS", resample = "boot", standardize = "zScore", direction = "<", 
@@ -1048,26 +1048,13 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                    cutoff.method = cutoff.method)
 
    model_fit <- list(CombType = "linComb",
-                  Method = method,
-                  Standardize = standardize,
-                  Parameters = parameters)
+                     Method = method,
+                     Parameters = parameters,
+                     Std.model = std.model$std,
+                     Standardize = standardize)
    
    allres$fit <- model_fit
 
-   xtab <- as.table(cbind(as.numeric(allres$DiagStatCombined$tab$`   Outcome +`),
-                          as.numeric(allres$DiagStatCombined$tab$`   Outcome -`)))
-   xtab <- xtab[-3,]
-   diagonal.counts <- diag(xtab)
-   N <- sum(xtab)
-   row.marginal.props <- rowSums(xtab) / N
-   col.marginal.props <- colSums(xtab) / N
-
-   Po <- sum(diagonal.counts) / N
-   Pe <- sum(row.marginal.props * col.marginal.props)
-   k <- (Po - Pe) / (1 - Pe)
-
-   accuracy = sum(diagonal.counts) / N
-   
    print_model = list(CombType = "linComb",
                      Method = method,
                      rowcount = nrow(markers),
@@ -1078,8 +1065,6 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
                      niters = niters,
                      nfolds = nfolds,
                      nrepeats = nrepeats,
-                     Accuracy = accuracy,
-                     Kappa = k,
                      AUC_table = allres$AUC_table,
                      MultComp_table = allres$MultComp_table,
                      DiagStatCombined = allres$DiagStatCombined)
@@ -1089,10 +1074,10 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
   
 }
 
-#' @title Mann Whitney AUC estimator for minmax method.
+#' @title Helper function for minmax method.
 #'
-#' @description The \code{helper_minmax} function estimates non-parametric AUC
-#' for the given biomarkers
+#' @description The \code{helper_minmax} function estimates optimized value of 
+#' given biomarkers for minmax method
 #'
 #' @param lambda a \code{numeric} parameter that will be estimated in minmax
 #' method for the combination score
@@ -1103,7 +1088,7 @@ linComb <- function(markers = NULL, status = NULL, event = NULL,
 #' @param pos.set a \code{numeric} data frame that contains the observations
 #' with positive status
 #'
-#' @return A \code{numeric} value for the estimated AUC
+#' @return A \code{numeric} value for the estimated optimized value
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
@@ -1146,10 +1131,12 @@ helper_minmax <- function(lambda, neg.set, pos.set){
   return(-W.lambda / (n * m))
 }
 
-#' @title Mann Whitney AUC estimator for PCL method.
+
+
+#' @title Helper function for PCL method.
 #'
-#' @description The \code{helper_PCL} function estimates non-parametric
-#' AUC for the given biomarkers
+#' @description The \code{helper_PCL} function estimates optimized value of 
+#' given biomarkers for PCL method
 #'
 #' @param lambda a \code{numeric} parameter that will be estimated in minmax
 #' method for the combination score
@@ -1160,7 +1147,7 @@ helper_minmax <- function(lambda, neg.set, pos.set){
 #' @param pos.set a \code{numeric} data frame that contains the observation with
 #' positive status
 #'
-#' @return A \code{numeric} value for the estimated AUC
+#' @return A \code{numeric} value for the estimated optimized value
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
@@ -1207,10 +1194,10 @@ helper_PCL <- function(lambda, neg.set, pos.set){
   return(-W.lambda / (n * m))
 }
 
-#' @title AUC calculator for minimax method.
+#' @title Helper function for minimax method.
 #'
 #' @description The \code{helper_minimax} function calculates the combination
-#' coefficient and AUC value of given biomarkers for minimax method
+#' coefficient and optimized value of given biomarkers for minimax method
 #'
 #' @param t a \code{numeric} parameter that will be estimated in minimax
 #' method for the combination score
@@ -1221,12 +1208,13 @@ helper_PCL <- function(lambda, neg.set, pos.set){
 #' @param pos.set a \code{numeric} data frame that contains the observation with
 #' positive status
 #'
-#' @param marker.set a \code{numeric} data frame that contains the biomarkers
+#' @param markers a \code{numeric} data frame that contains the biomarkers
 #'
 #' @param status a \code{factor} data frame that includes the actual disease
 #' status of the patients
 #'
-#' @return A \code{numeric} AUC value calculated with combination scores using t
+#' @return A \code{numeric} Optimized value calculated with combination scores 
+#' using t
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
@@ -1257,31 +1245,26 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
   comb.score <- as.matrix(markers) %*% b.coef
   comb.score <- as.numeric(comb.score)
   
-  auc_value <- suppressMessages(as.numeric(pROC::auc(status, comb.score)))
+  value <- suppressMessages(as.numeric(pROC::auc(status, comb.score)))
   
-  return(-(auc_value))
+  return(-(value))
 }
 
-#' @title AUC calculator for minimax method.
+#' @title Helper function for TS method.
 #'
-#' @description The \code{helper_minimax} function calculates the combination
-#' coefficient and AUC value of given biomarkers for minimax method
+#' @description The \code{helper_TS} function calculates the combination
+#' coefficient and optimized value of given biomarkers for TS method
 #'
-#' @param t a \code{numeric} parameter that will be estimated in minimax
+#' @param t a \code{numeric} parameter that will be estimated in TS
 #' method for the combination score
 #'
-#' @param neg.set a \code{numeric} data frame that contains the observation with
-#' negative status
-#'
-#' @param pos.set a \code{numeric} data frame that contains the observation with
-#' positive status
-#'
-#' @param marker.set a \code{numeric} data frame that contains the biomarkers
+#' @param markers a \code{numeric} data frame that contains the biomarkers
 #'
 #' @param status a \code{factor} data frame that includes the actual disease
 #' status of the patients
 #'
-#' @return A \code{numeric} AUC value calculated with combination scores using t
+#' @return A \code{numeric} Optimized value calculated with combination scores
+#' using theta
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
@@ -1293,13 +1276,9 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status){
 #' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 #' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 #'
-#' neg.set <- markers[status == levels(status)[1], ]
-#' pos.set <- markers[status == levels(status)[2], ]
-#'
 #' t <- 0.5
 #'
-#' stat <- helper_minimax(t, neg.set = neg.set, pos.set = pos.set,
-#' marker.set = markers, status)
+#' stat <- helper_TS(theta = t, markers = markers, status = status)
 #'
 #' @importFrom pROC auc
 #'
@@ -1312,7 +1291,7 @@ helper_TS <- function(theta, markers, status){
   z <- a1 * markers[, 1] + a2 * markers[, 2]
   
   roc_obj <- suppressMessages(pROC::roc(status, z))
-  auc_value <- as.numeric(pROC::auc(roc_obj))
+  value <- as.numeric(pROC::auc(roc_obj))
   
-  return(-(auc_value))
+  return(-(value))
 }
