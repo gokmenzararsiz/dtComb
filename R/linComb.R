@@ -39,6 +39,36 @@
 #' }
 #' \bold{IMPORTANT}: See Details for further information.
 #'
+#' @param resample a \code{character} string indicating the name of the
+#' resampling options. Bootstrapping Cross validation and repeated cross 
+#' validation are given as the options for resampling along with the number 
+#' of folds and number of repeats.
+#' \itemize{
+#'  \item \code{boot}: Bootstrapping is performed in a similar way; the dataset
+#'   is divided into folds with replacement and models are trained and tested 
+#'   in these folds to determine the best parameters for the given method and 
+#'   dataset.
+#'  \item \code{cv}: Cross-validation resampling, the dataset is divided into 
+#'  the number of folds given without replacement, in each iteration one fold 
+#'  is selected as the test set, the model is built using the remaining folds 
+#'  and tested on the test set. The corresponding AUC values are kept in a list
+#'  as well as the parameters used for the combination. The best performed model
+#'  is selected and the combination score returned for the whole dataset.
+#'  \item \code{repeatedcv}: repeated cross-validation the process is repeated 
+#'  and the best performed models selected at each step is stored in another 
+#'  list, the best performed among these models is selected to be applied to 
+#'  the entire dataset.
+#' }
+#'   
+#' @param niters a \code{numeric} value that indicates the number resampling 
+#' iterations (10, default)
+#' 
+#' @param nfolds a \code{numeric} value that indicates the number of folds 
+#' (5, default)
+#' 
+#' @param nrepeats a \code{numeric} value that indicates the number of repeats 
+#' for "repeatedcv" option of resampling methods (3, default)
+#'
 #' @param standardize a \code{character} string indicating the name of the
 #' standardization method. The default option is no standardization applied.
 #' Available options are:
@@ -57,6 +87,18 @@
 #'
 #' @param init.param a \code{numeric} initial value to be used for optimization
 #' in minmax, PCL, minimax and TS methods
+#'
+#' @param direction a \code{character} string determines in which direction the 
+#' comparison will be made.  “>”: if the predictor values for the control group 
+#' are higher than the values of the case group (controls > cases). 
+#' “<”: if the predictor values for the control group are lower or equal than 
+#' the values of the case group (controls < cases). 
+#'
+#' @param conf.level a \code{numeric} values determines the confidens interval
+#' for the roc curve(0.95, default).
+#' 
+#' @param cutoff.method  a \code{character} string determines the cutoff method
+#' for the roc curve. 
 #' 
 #' @return A list of \code{numeric} linear combination scores calculated
 #' according to the given method and standardization option
