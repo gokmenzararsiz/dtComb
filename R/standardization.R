@@ -4,9 +4,11 @@
 ###############################################################################
 #' @title Standardization according to the chosen method.
 #'
-#' @description The \code{std.train} 
+#' @description The \code{std.train} Standardization (range, zScore etc.) can be
+#' estimated from the training data and applied to any data set with the same 
+#' variables.
 #'
-#' @param data a \code{numeric} dataframe of biomarkers
+#' @param data a \code{numeric} data frame of biomarkers
 #' 
 #' @param standardize a \code{character} string indicating the name of the
 #' standardization method. The default option is no standardization applied.
@@ -99,25 +101,14 @@ std.train <- function(data, standardize = NULL) {
     }
   
   }
-  return_model <- list(data = data,
+  std.model <- list(data = data,
                        std = std)
   
-  return(return_model)
+  return(std.model)
   }
 
 
 
-#' @title 
-#'
-#' @description The \code{std.test} 
-#'
-#' @param newdata a \code{numeric} dataframe of biomarkers
-#' 
-#' @param model a \code{string} 
-#'
-#' @return A \code{numeric} dataframe of standardized biomarkers
-#'
-#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 
 
 std.test <- function(newdata, model) {
@@ -126,8 +117,8 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- ((newdata[ , i] - std.model$std[i, 3]) /
-                          (std.model$std[i, 4] - std.model$std[i, 3]))
+      newdata[ , i] <- ((newdata[ , i] - model$fit$Std.model[i, 3]) /
+                       (model$fit$Std.model[i, 4] - model$fit$Std.model[i, 3]))
       
     }
     
@@ -136,7 +127,8 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- (newdata[ , i] - std.model$std[i, 1]) /  std.model$std[i, 2]
+      newdata[ , i] <- (newdata[ , i] - model$fit$Std.model[i, 1]) /  
+                        model$fit$Std.model[i, 2]
       
     }
     
@@ -145,8 +137,8 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- (10 * ((newdata[ , i] - std.model$std[i, 1])
-                              / std.model$std[i, 2])) + 50
+      newdata[ , i] <- (10 * ((newdata[ , i] - model$fit$Std.model[i, 1]) / 
+                               model$fit$Std.model[i, 2])) + 50
       
     }
     
@@ -155,7 +147,7 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[ , i] <- newdata[ , i] / std.model$std[i, 1]
+      newdata[ , i] <- newdata[ , i] / model$fit$Std.model[i, 1]
       
     }
     
@@ -164,7 +156,7 @@ std.test <- function(newdata, model) {
     
     for (i in 1:ncol(newdata)){
       
-      newdata[, i] <- newdata[ , i] / std.model$std[i, 2]
+      newdata[, i] <- newdata[ , i] / model$fit$Std.model[i, 2]
       
     }
     
