@@ -2,16 +2,13 @@
 #
 # Author: serra
 ###############################################################################
-#' @title Standardization with respect to the t score.
+#' @title 
 #'
-#' @description The \code{std.train} standardizes using T scores. The range
-#' varies between usually 20 and 80
-#'
-#' @param data a \code{numeric} dataframe of biomarkers
+#' @description The \code{print_train} 
 #' 
-#' @param standardize a a \code{string} cdscfvf
+#' @param print_model a a \code{string} 
 #'
-#' @return A \code{numeric} dataframe of standardized biomarkers
+#' @return 
 #'
 #' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
@@ -21,7 +18,7 @@
 #'
 #' #define the function parameters
 #' markers <- exampleData1[, -1]
-#' markers2 <- std.train(markers, tScore)
+#' 
 #'
 #' @export
 
