@@ -109,6 +109,19 @@ std.train <- function(data, standardize = NULL) {
 
 
 
+#' @title Standardization according to the trainig model parameters.
+#' @description The \code{std.test} Standardization parameters will be taken
+#' from the fitted training model and applied to the new data set.
+#'
+#' @param newdata a \code{numeric} data frame of biomarkers
+#' 
+#' @param model a \code{list} of parameters from the output of linComb, 
+#' nonlinComb, mlComb or mathComb functions.
+#
+#' @return A \code{numeric} dataframe of standardized biomarkers
+#'
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
+
 
 
 std.test <- function(newdata, model) {
