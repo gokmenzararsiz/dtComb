@@ -94,7 +94,7 @@
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #'  for the roc curve.
 #' 
-#' @return A list of \code{numeric} linear combination scores calculated
+#' @return A list of \code{numeric} mathematical combination scores calculated
 #'  according to the given method and standardization option
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
@@ -109,7 +109,7 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance ="euclidean", direction = "auto", 
+#' method = "distance", direction = "auto", 
 #' standardize = "tScore", cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
