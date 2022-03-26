@@ -29,11 +29,11 @@
 #' "none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for 
 #' details of these resampling methods see ?caret::trainControl
 #' 
-#' @param niters a \code{numeric} value that indicates the number resampling 
-#' iterations (10, default)
+#' @param niters a \code{numeric} value that indicates the number of 
+#' bootstrapped resampling iterations (10, default)
 #' 
-#' @param nfolds a \code{numeric} value that indicates the number of folds 
-#' (5, default)
+#' @param nfolds a \code{numeric} value that indicates the number of folds for 
+#' cross validation based resampling methods  (5, default)
 #' 
 #' @param nrepeats a \code{numeric} value that indicates the number of repeats 
 #' for "repeatedcv" option of resampling methods (3, default)
@@ -81,8 +81,8 @@
 #' event <- "needed"
 #'
 #' score1 <- mlComb(markers = markers, status = status, event = event,
-#' method = "knn", resample = "boot632",  niters = 15,
-#' preProcess = "center", direction = "<", cutoff.method ="youden")
+#' method = "knn", resample = "boot632",  niters = 15, 
+#' preProcess = "center", direction = "<", cutoff.method = "youden")
 #' 
 #' @export
 
