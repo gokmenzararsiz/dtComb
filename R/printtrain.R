@@ -1,3 +1,16 @@
+#' @title Print the summary of linComb, nonlinComb, mlComb and mathComb 
+#' functions.
+#'
+#' @description The code{print_train} function prints the summary statistics of
+#' the fitted model 
+#'
+#' @param print_model a \code{list} of parameters taken from the fitted model
+#' that includes the combination method, resampling method, pre-processing 
+#' method, selected optimum parameters and the results of fit.
+#'  
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
+
+
 print_train <- function(print_model) {
   
   
@@ -64,10 +77,19 @@ if(print_model$CombType == "linComb" || print_model$CombType == "nonlinComb"){
  cat("Confusion matrix: ", "\n")
  print(print_model$DiagStatCombined)
  cat("\n")
- }
+ 
+}
 
 
 
+#' @title Calculate Cohen's kappa and accuracy.
+#'
+#' @description The code{kappa.accuracy} calculates Cohen's kappa and accuracy. 
+#'
+#' @param DiagStatCombined a \code{numeric} table of confusion matrix of the 
+#' calculated combined score.
+#'  
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 
 kappa.accuracy <- function(DiagStatCombined){
   
