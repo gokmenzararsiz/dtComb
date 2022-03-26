@@ -1,3 +1,45 @@
+# TODO: Add comment
+#
+# Author: serra
+###############################################################################
+#' @title Generate ROC curves and related  statistics for the given markers and 
+#' combined score.
+#'
+#' @description The code{rocsum} function returns the ROC curves with 
+#' coordinates, Area Under the Curves of markers and combined score, Area Under
+#' the Curve comparison of markers and combined score, Confusion matrices for both
+#' markers and combined score with the cutoff values derived from the ROC Curves.
+#'
+#' @param markers a \code{numeric} data frame that includes two diagnostic tests
+#' results
+#' 
+#' @param comb.score a matrix of \code{numeric} combination scores calculated
+#' according to the given method
+#' 
+#' @param status a \code{factor} vector that includes the actual disease
+#'  status of the patients
+#'
+#' @param event a \code{character} string that indicates the event in the status
+#' to be considered as positive event
+#'
+#' @param direction a \code{character} string determines in which direction the 
+#' comparison will be made.  “>”: if the predictor values for the control group 
+#' are higher than the values of the case group (controls > cases). 
+#' “<”: if the predictor values for the control group are lower or equal than 
+#' the values of the case group (controls < cases). 
+#'
+#' @param conf.level a \code{numeric} values determines the confidens interval
+#' for the ROC curve(0.95, default).
+#' 
+#' @param cutoff.method  a \code{character} string determines the cutoff method
+#' for the ROC curve.
+#'
+#' @return A list of \code{numeric} ROC Curves, AUC statistics and Confusion 
+#' matrices.
+#'
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
+
+
 rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NULL, 
                     direction = c("auto", "<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
