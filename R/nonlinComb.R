@@ -91,11 +91,11 @@
 #'  the entire dataset.
 #' }
 #'   
-#' @param niters a \code{numeric} value that indicates the number resampling 
-#' iterations (10, default)
+#' @param niters a \code{numeric} value that indicates the number of 
+#' bootstrapped resampling iterations (10, default)
 #' 
-#' @param nfolds a \code{numeric} value that indicates the number of folds 
-#' (5, default)
+#' @param nfolds a \code{numeric} value that indicates the number of folds for 
+#' cross validation based resampling methods  (5, default)
 #' 
 #' @param nrepeats a \code{numeric} value that indicates the number of repeats 
 #' for "repeatedcv" option of resampling methods (3, default)
