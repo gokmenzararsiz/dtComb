@@ -2,22 +2,22 @@
 #
 # Author: serra 
 ###############################################################################
-#' @title a function that generates predictions for each model. The function
-#' should have arguments newdata and model. The output of the function can be 
-#' combination scores (probabilities for machine learning metot) labels of 
-#' object type.
+#' @title Predict combination scores and labels for new data sets using the 
+#' training model
 #'
-#' @description The \code{comb.predict} function in R is used to predict the 
-#' values based on the train data.
+#' @description The \code{comb.predict} a function that generates predictions 
+#' for a new dataset of biomarkers using the parameters from the fitted model. 
+#' The function takes arguments newdata and model. The output of the function is
+#' the combination scores and labels of object type.
 #'
-#' @param newdata a \code{numeric} test set that includes biomarkers that have 
-#' not been given to the model before.
+#' @param newdata a \code{numeric} new data set that includes biomarkers that
+#'  have not been introduced to the model before.
 #' 
-#' @param model a \code{string} a object where the parameters learned and 
-#' stored from the train set are kept.
+#' @param model a \code{list} object where the parameters from the training 
+#' model are saved.
 #' 
 #' @return A \code{data.frame} predicted combination scores (or probabilities) 
-#' labels
+#' and labels
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
 #'
@@ -128,8 +128,8 @@ comb.predict <- function(model, newdata){
         dataspace <- cbind.data.frame(poly(newdata$m1, model$fit$Degree1),
                                     poly(newdata$m2, model$fit$Degree2), interact)
       
-        comb.score <- predict(model$fit$Parameters, newx = as.matrix(dataspace), 
-                            type = "response")
+        comb.score <- predict(model$fit$Parameters, 
+                                      newx = as.matrix(dataspace), type = "response")
       } else {
         
         dataspace <- cbind.data.frame(poly(newdata$m1, model$fit$Degree1),
