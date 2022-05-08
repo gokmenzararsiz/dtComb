@@ -542,7 +542,7 @@ linComb <- function(markers = NULL,
     }
     
     else {
-      res <- glm(status ~ markers[, 1] + markers[, 2],
+      res <- glm(status ~ ., data = markers,
                  family = binomial((link = "logit")))
       parameters <- res
       comb.score <- as.matrix(predict(res, newdata = markers,
