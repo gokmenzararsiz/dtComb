@@ -144,7 +144,10 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                  DiagStatMarker1 = DiagStatMarker1,
                  DiagStatMarker2 = DiagStatMarker2,
                  DiagStatCombined = DiagStatCombined,
-                 ThresholdCombined = best.c$threshold)
+                 ThresholdMarker1 = best.m1$threshold,
+                 ThresholdMarker2 = best.m2$threshold,
+                 ThresholdCombined = best.c$threshold,
+                 CombScore = comb.score)
   
   return(allres)
 }
