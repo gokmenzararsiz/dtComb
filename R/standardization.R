@@ -33,7 +33,7 @@
 #'
 #' #define the function parameters
 #' markers <- exampleData1[, -1]
-#' markers2 <- std.train(markers, tScore)
+#' markers2 <- std.train(markers, "zScore")
 #'
 #' @export
 
