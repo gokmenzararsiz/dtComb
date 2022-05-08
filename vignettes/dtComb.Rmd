@@ -1,0 +1,23 @@
+---
+title: "dtComb"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dtComb}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+
+```{r setup}
+devtools::load_all()
+library(dtComb)
+```
+
