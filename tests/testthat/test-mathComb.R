@@ -33,7 +33,7 @@ for (distance in c("lorentzian",
                    "taneja",
                    "kumar-johnson")) {
   set.seed(14042022)
-  rf <- mathComb(
+  res <- mathComb(
     markers = markers,
     status = status,
     event = "needed",
@@ -44,16 +44,16 @@ for (distance in c("lorentzian",
   )
   
   test_that("mathComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Distance == distance][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Distance == distance][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
                    0.01)
   })
 }
@@ -67,7 +67,7 @@ for (method in c("add",
                  "expinbase"
                  )) {
   set.seed(14042022)
-  rf <- mathComb(
+  res <- mathComb(
     markers = markers2,
     status = status2,
     event = "1",
@@ -77,16 +77,16 @@ for (method in c("add",
   )
   
   test_that("mathComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
@@ -97,7 +97,7 @@ for (distance in c("kulczynski_d",
                  "manhattan",
                  "chebyshev")) {
   set.seed(14042022)
-  rf <- mathComb(
+  res <- mathComb(
     markers = markers3,
     status = status3,
     event = "M",
@@ -108,16 +108,16 @@ for (distance in c("kulczynski_d",
   )
   
   test_that("mathComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Distance == distance][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Distance == distance][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
                    0.01)
   })
 }
