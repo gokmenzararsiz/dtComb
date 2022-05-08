@@ -35,7 +35,7 @@ r <- read.table("C:/Users/ilayd/Desktop/projects/test/p.result.txt", header = TR
 for (method in c("scoring",
                    "minimax")) {
   set.seed(14042022)
-  rf <- linComb(
+  res <- linComb(
     markers = markers,
     status = status,
     event = "needed",
@@ -45,7 +45,7 @@ for (method in c("scoring",
     cutoff.method = "youden"
   )
  
-  pred <- predComb(rf, newmarkers)
+  pred <- predComb(res, newmarkers)
     test_that("linComb functions ...", {
       expect_length(pred, 2)
       expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
@@ -60,7 +60,7 @@ for (method in c("logistic",
                  "SL",
                  "TS")) {
   set.seed(14042022)
-  rf <- nonlinComb(
+  res <- nonlinComb(
     markers = markers2,
     status = status2,
     event = "1",
@@ -70,7 +70,7 @@ for (method in c("logistic",
     cutoff.method = "youden"
   )
   
-  pred <- predComb(rf, newmarkers2)
+  pred <- predComb(res, newmarkers2)
   test_that("linComb functions ...", {
     expect_length(pred, 2)
     expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
@@ -85,7 +85,7 @@ for (method in c("PCL",
                  "PT",
                  "minmax")) {
   set.seed(14042022)
-  rf <- linComb(
+  res <- linComb(
     markers = markers3,
     status = status3,
     event = "M",
@@ -95,7 +95,7 @@ for (method in c("PCL",
     cutoff.method = "youden"
   )
   
-  pred <- predComb(rf, newmarkers3)
+  pred <- predComb(res, newmarkers3)
   test_that("linComb functions ...", {
     expect_length(pred, 2)
     expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
