@@ -33,7 +33,7 @@ load("result_data/test_linComb.rda")
 for (method in c("TS",
                  "minimax")) {
   set.seed(14042022)
-  rf <- linComb(
+  res <- linComb(
     markers = markers,
     status = status,
     event = "needed",
@@ -44,16 +44,16 @@ for (method in c("TS",
   )
   
   test_that("linComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
@@ -63,7 +63,7 @@ for (method in c("logistic",
                  "SL",
                  "scoring")) {
   set.seed(14042022)
-  rf <- linComb(
+  res <- linComb(
     markers = markers2,
     status = status2,
     event = "1",
@@ -74,16 +74,16 @@ for (method in c("logistic",
   )
   
   test_that("linComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
@@ -94,7 +94,7 @@ for (method in c("PCL",
                  "minmax"
                  )) {
   set.seed(14042022)
-  rf <- linComb(
+  res <- linComb(
     markers = markers3,
     status = status3,
     event = "M",
@@ -106,16 +106,16 @@ for (method in c("PCL",
   )
   
   test_that("linComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
