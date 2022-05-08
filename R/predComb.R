@@ -5,7 +5,7 @@
 #' @title Predict combination scores and labels for new data sets using the 
 #' training model
 #'
-#' @description The \code{comb.predict} a function that generates predictions 
+#' @description The \code{predComb} a function that generates predictions 
 #' for a new dataset of biomarkers using the parameters from the fitted model. 
 #' The function takes arguments newdata and model. The output of the function is
 #' the combination scores and labels of object type.
@@ -32,26 +32,26 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = event,
-#' method = "scoring", resample= "none",
+#' method = "logistic", resample= "none",
 #' standardize = "none", direction = "<", cutoff.method = "youden")
 #' 
-#' comb.score1 <-  comb.predict(score1, markers)
+#' comb.score1 <-  predComb(score1, markers)
 #' 
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "nsgam", resample = "cv", include.interact = FALSE,
 #' standardize = "zScore", cutoff.method = "youden")
 #'
-#' comb.score2 <-  comb.predict(score2, markers)
+#' comb.score2 <-  predComb(score2, markers)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
 #' method = "distance", distance ="euclidean", direction = "auto", 
 #' standardize = "tScore", cutoff.method = "youden")
 #' 
-#' comb.score3 <-  comb.predict(score3, markers)
+#' comb.score3 <-  predComb(score3, markers)
 #' 
 #' 
 
-comb.predict <- function(model, newdata){
+predComb <- function(model, newdata){
 
   if (!is.data.frame(newdata)) {
     newdata <- as.data.frame(newdata)
@@ -63,7 +63,6 @@ comb.predict <- function(model, newdata){
     
     colnames(newdata) <- c("m1", "m2")
     newdata = std.test(newdata, model)
-    
   }
 
   if(combtype == "linComb"){
@@ -72,7 +71,7 @@ comb.predict <- function(model, newdata){
     parameters <- model$fit$Parameters
     
     if (method == "scoring"){
-      
+
       comb.score <- as.matrix(newdata) %*% as.matrix(model$fit$Parameters[-1])
     } 
     else if (method == "SL"){
@@ -81,9 +80,9 @@ comb.predict <- function(model, newdata){
     } 
     else if (method == "logistic"){
       
-      comb.score <- as.matrix(predict(model$fit$Parameters, newdata = newdata, 
-                                      type = "response"))
-    }
+      comb.score <- predict(model$fit$Parameters, newdata = newdata, 
+                                      type = "response")
+      }
     else if (method == "minmax"){
       
       comb.score <- as.matrix(apply(newdata, 1, max) 
@@ -115,7 +114,7 @@ comb.predict <- function(model, newdata){
     interact <- model$fit$Interact
     
     if(method == "polyreg"){
-      
+      print(model$fit$Parameters)
       comb.score <- predict(model$fit$Parameters, newdata = newdata, 
                             type = "response")
     }
@@ -140,7 +139,7 @@ comb.predict <- function(model, newdata){
       }
     }
     else {
-      
+
       comb.score <- predict(model$fit$Parameters, newx = as.matrix(newdata), 
                             type="response")
       
@@ -276,8 +275,8 @@ comb.predict <- function(model, newdata){
 
     comb.score <- as.matrix(comb.score)
     labels <- (comb.score > model$ThresholdCombined)
-    labels[labels==TRUE] <- "event"
-    labels[labels=="FALSE"] <- "not_event"
+    labels[labels == TRUE] <- model$fit$Classification[2]
+    labels[labels == "FALSE"] <- model$fit$Classification[1]
     comb.score <- data.frame(comb.score, labels)
     colnames(comb.score) <- c("comb.score", "labels")
   }
