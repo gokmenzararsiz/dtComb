@@ -140,7 +140,7 @@ predComb <- function(model, newdata){
     }
     else {
 
-      comb.score <- predict(model$fit$Parameters, newx = as.matrix(newdata), 
+      comb.score <- predict(model$fit$Parameters, newdata = newdata, 
                             type="response")
       
     }
