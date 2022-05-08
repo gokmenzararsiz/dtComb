@@ -31,7 +31,7 @@ load("result_data/test_nonlinComb.rda")
 for (method in c("polyreg",
                  "ridgereg")) {
   set.seed(14042022)
-  rf <- nonlinComb(
+  res <- nonlinComb(
     markers = markers,
     status = status,
     event = "needed",
@@ -42,16 +42,16 @@ for (method in c("polyreg",
   )
   
   test_that("nonlinComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
@@ -60,7 +60,7 @@ for (method in c("polyreg",
 for (method in c("lassoreg",
                  "elasticreg")) {
   set.seed(14042022)
-  rf <- nonlinComb(
+  res <- nonlinComb(
     markers = markers2,
     status = status2,
     event = "1",
@@ -71,16 +71,16 @@ for (method in c("lassoreg",
   )
   
   test_that("nonlinComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
@@ -90,7 +90,7 @@ for (method in c("splines",
                  "sgam",
                  "nsgam")) {
   set.seed(14042022)
-  rf <- nonlinComb(
+  res <- nonlinComb(
     markers = markers3,
     status = status3,
     event = "M",
@@ -101,16 +101,16 @@ for (method in c("splines",
   )
   
   test_that("nonlinComb functions ...", {
-    expect_length(rf, 11)
-    expect_equal(as.numeric(rf$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
+    expect_length(res, 11)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$sp[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
                  r$SPE[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$DiagStatCombined$detail$se[[1]]),
+    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
                  r$SENS[r$Method == method][1],
                  tolerance = 0.01)
-    expect_equal(as.numeric(rf$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
                    0.01)
   })
 }
