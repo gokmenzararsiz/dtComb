@@ -25,7 +25,7 @@ if(print_model$Method == "distance"){
 }
  cat(paste("Samples", print_model$rowcount, sep = ": "),"\n")
  cat(paste("Markers", print_model$colcount, sep = ": "),"\n")
- cat("Event:", paste(print_model$classification, collapse = ", "),"\n")
+ cat("Events:", paste(print_model$classification, collapse = ", "),"\n")
  cat(paste("Standardization", print_model$Pre_processing, sep = ": "),"\n")
  
  if(print_model$CombType == "mathComb"){
