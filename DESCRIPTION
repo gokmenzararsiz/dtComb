@@ -22,3 +22,9 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 NeedsCompilation: no
 Packaged: 2021-11-26 13:04:43 UTC; serra
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr

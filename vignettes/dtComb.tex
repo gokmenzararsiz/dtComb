@@ -1,0 +1,754 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+
+
+\usepackage{longtable,booktabs}
+\usepackage{graphicx}
+% grffile has become a legacy package: https://ctan.org/pkg/grffile
+\IfFileExists{grffile.sty}{%
+\usepackage{grffile}
+}{}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+\RequirePackage[]{C:/Users/ilayd/Documents/R/win-library/4.1/BiocStyle/resources/tex/Bioconductor}
+
+\bioctitle[]{dtComb: An Extensive R Package for Combination of Diagnostic Tests}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+\author[1,2]{Serra İlayda YERLİTAŞ}
+\author[2]{Serra Bersan GENGEÇ}
+\author[1,2]{Gözde ERTÜRK ZARARSIZ}
+\author[3]{Selçuk KORKMAZ}
+\author[1,2]{Gökmen ZARARSIZ\thanks{\ttfamily gokmen.zararsiz@gmail.com}}
+\affil[1]{Erciyes University Faculty of Medicine Department of Biostatistics}
+\affil[2]{Erciyes University Drug Application and Research Center (ERFARMA)}
+\affil[3]{Trakya University Faculty of Medicine Department of Biostatistics}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{12 May 2022}
+
+% code highlighting
+\definecolor{fgcolor}{rgb}{0.251, 0.251, 0.251}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.816,0.125,0.439}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.251,0.627,0.251}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.502,0.502,0.502}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.251,0.251,0.251}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.125,0.125,0.941}{#1}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.251,0.251,0.251}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.878,0.439,0.125}{#1}}%
+\let\hlipl\hlkwb
+%
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+%
+\newenvironment{Shaded}{\begin{myshaded}}{\end{myshaded}}
+% set background for result chunks
+\let\oldverbatim\verbatim
+\renewenvironment{verbatim}{\color{codecolor}\begin{myshaded}\begin{oldverbatim}}{\end{oldverbatim}\end{myshaded}}
+%
+\newcommand{\KeywordTok}[1]{\hlkwd{#1}}
+\newcommand{\DataTypeTok}[1]{\hlkwc{#1}}
+\newcommand{\DecValTok}[1]{\hlnum{#1}}
+\newcommand{\BaseNTok}[1]{\hlnum{#1}}
+\newcommand{\FloatTok}[1]{\hlnum{#1}}
+\newcommand{\ConstantTok}[1]{\hlnum{#1}}
+\newcommand{\CharTok}[1]{\hlstr{#1}}
+\newcommand{\SpecialCharTok}[1]{\hlstr{#1}}
+\newcommand{\StringTok}[1]{\hlstr{#1}}
+\newcommand{\VerbatimStringTok}[1]{\hlstr{#1}}
+\newcommand{\SpecialStringTok}[1]{\hlstr{#1}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\hlcom{#1}}
+\newcommand{\DocumentationTok}[1]{\hlcom{#1}}
+\newcommand{\AnnotationTok}[1]{\hlcom{#1}}
+\newcommand{\CommentVarTok}[1]{\hlcom{#1}}
+\newcommand{\OtherTok}[1]{{#1}}
+\newcommand{\FunctionTok}[1]{\hlstd{#1}}
+\newcommand{\VariableTok}[1]{\hlstd{#1}}
+\newcommand{\ControlFlowTok}[1]{\hlkwd{#1}}
+\newcommand{\OperatorTok}[1]{\hlopt{#1}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textit{#1}}
+\newcommand{\AttributeTok}[1]{{#1}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor{messagecolor}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor{warningcolor}{#1}}
+\newcommand{\AlertTok}[1]{\textcolor{errorcolor}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor{errorcolor}{#1}}
+\newcommand{\NormalTok}[1]{\hlstd{#1}}
+%
+\AtBeginDocument{\bibliographystyle{C:/Users/ilayd/Documents/R/win-library/4.1/BiocStyle/resources/tex/unsrturl}}
+
+
+\begin{document}
+\maketitle
+
+\packageVersion{dtComb 0.99.6}
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+}
+\textbackslash begin\{document\}
+
+\hypertarget{implementation-of-dtcomb-package}{%
+\section{Implementation of dtComb package}\label{implementation-of-dtcomb-package}}
+
+The dtComb package combines two diagnostic tests and ıt was developed to bring\\
+together a large number of dispersed methods. Birleştirilecek olan iki tanı
+testi ``data.frame'', altın standart olarak kabul edilen test faktör sınıfında
+olmalıdır. Kullanacağımız ilk örnekte paket içerisinde yer alan exampleData1
+veri setini kullanacağız. Bu veri seti Erciyes Üniversitesi Tıp fakültesinde
+onaylı olarak alınmıştır. Öncelikle ilgili fonksiyonların kullanılabilmesi için
+dtComb kütüphanesinin yüklenmesi gerekmektedir.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{devtools}\SpecialCharTok{::}\FunctionTok{load\_all}\NormalTok{()}
+\FunctionTok{library}\NormalTok{(dtComb)}
+\end{Highlighting}
+\end{Shaded}
+
+Benzer şekilde, aşağıdaki R kodu kullanılarak exampleData1 veri seti dtComb paketinden yüklenebilir:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load exampleData1}
+\FunctionTok{data}\NormalTok{(exampleData1)}
+\end{Highlighting}
+\end{Shaded}
+
+We used the data set from Akyıldız et al.~{[}10{]} that contains data from patients admitted to the Erciyes University Medical Faculty's General Surgery Department with the complaint of abdominal pain. Data include the leukocyte counts and D-dimer levels of 225 patients (115 females, 110 males) belonging to two groups. The first group had 115 (51.1\%) patients who needed immediate laparotomy and the second group had 110 (49.9\%) patients who did not need immediate laparotomy. Conventional treatment is assessed in this grouping and the patients operated on based on their postoperative pathologies are assigned to the first group, while the patients with a negative laparotomy are assigned to the second group {[}1{]}.
+
+\textbf{Example I} Eğitim verisi için bu verinin yalnızca 169 gözlemi içeren bir alt kümeyle çalışacağız. 169 gözlemli eğitim setinde laparotomi gereken 82(48.5) gözlem laparotomi gerektirmeyen 87(51.5) gözlem bulunmaktadır. Doğrusal kombinasyon metotları içerisinde yer alan Lojistik Regresyon tabanlı Skorlama {[}2{]}, Todor \& Saplacan's method {[}8{]} yöntemlerini, doğrusal olmayan kombinasyon metotlarından Lasso Regression with Polynomial Feature Space ve Splines kullanarak ddimer ve leukocyte tanı testlerini birleştireceğiz.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# \# train set of the exampleData1}
+\NormalTok{trainData }\OtherTok{\textless{}{-}}\NormalTok{ exampleData1[}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(}\DecValTok{83}\SpecialCharTok{:}\DecValTok{138}\NormalTok{),]}
+\FunctionTok{head}\NormalTok{(trainData)}
+\CommentTok{\#\textgreater{}    group ddimer log\_leukocyte}
+\CommentTok{\#\textgreater{} 1 needed   8.09          5.52}
+\CommentTok{\#\textgreater{} 2 needed   5.16          4.43}
+\CommentTok{\#\textgreater{} 3 needed   8.90          5.20}
+\CommentTok{\#\textgreater{} 4 needed  10.17          5.39}
+\CommentTok{\#\textgreater{} 5 needed   1.93          5.09}
+\CommentTok{\#\textgreater{} 6 needed   3.63          4.68}
+
+\NormalTok{markers }\OtherTok{\textless{}{-}}\NormalTok{ trainData[, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{]}
+\NormalTok{status }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(trainData}\SpecialCharTok{$}\NormalTok{group, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"not\_needed"}\NormalTok{, }\StringTok{"needed"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{the-lincomb-function}{%
+\subsection{\texorpdfstring{The \texttt{linComb} function}{The linComb function}}\label{the-lincomb-function}}
+
+Bu bölümde doğrusal kombinasyon yöntemlerini içeren \texttt{linComb} fonksiyonunu tanıtacağız.Bu fonksiyon 8 farklı doğrusal kombinasyon metotları içerisinden kullanıcının seçtiği kombinasyon yöntemi ile yine kullanıcıya bırakılan resampling, standardization, cutoff, directions ve conf.levels yöntemlerini seçmek için tüm argümanları içermektedir.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{linComb}\NormalTok{(}\AttributeTok{markers =} \ConstantTok{NULL}\NormalTok{,}
+        \AttributeTok{status =} \ConstantTok{NULL}\NormalTok{,}
+        \AttributeTok{event =} \ConstantTok{NULL}\NormalTok{,}
+        \AttributeTok{method =} \FunctionTok{c}\NormalTok{(}\StringTok{"scoring"}\NormalTok{,}
+                   \StringTok{"SL"}\NormalTok{,}
+                   \StringTok{"logistic"}\NormalTok{,}
+                   \StringTok{"minmax"}\NormalTok{,}
+                   \StringTok{"PT"}\NormalTok{,}
+                   \StringTok{"PCL"}\NormalTok{,}
+                   \StringTok{"minimax"}\NormalTok{,}
+                   \StringTok{"TS"}\NormalTok{),}
+        \AttributeTok{resample =} \FunctionTok{c}\NormalTok{(}\StringTok{"none"}\NormalTok{, }\StringTok{"cv"}\NormalTok{, }\StringTok{"repeatedcv"}\NormalTok{, }\StringTok{"boot"}\NormalTok{),}
+        \AttributeTok{nfolds =} \DecValTok{5}\NormalTok{,}
+        \AttributeTok{nrepeats =} \DecValTok{3}\NormalTok{,}
+        \AttributeTok{niters =} \DecValTok{10}\NormalTok{,}
+        \AttributeTok{standardize =} \FunctionTok{c}\NormalTok{(}\StringTok{"none"}\NormalTok{, }\StringTok{"range"}\NormalTok{,}
+                        \StringTok{"zScore"}\NormalTok{, }\StringTok{"tScore"}\NormalTok{, }\StringTok{"mean"}\NormalTok{, }\StringTok{"deviance"}\NormalTok{),}
+        \AttributeTok{ndigits =} \DecValTok{0}\NormalTok{,}
+        \AttributeTok{direction =} \FunctionTok{c}\NormalTok{(}\StringTok{"auto"}\NormalTok{, }\StringTok{"\textless{}"}\NormalTok{, }\StringTok{"\textgreater{}"}\NormalTok{),}
+        \AttributeTok{conf.level =} \FloatTok{0.95}\NormalTok{,}
+        \AttributeTok{cutoff.method =} \FunctionTok{c}\NormalTok{(}\StringTok{"youden"}\NormalTok{, }\StringTok{"roc01"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+The arguments and their definitions are given in Table 1.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3077}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6923}}@{}}
+\caption{\label{tab:table1} Arguments of the \texttt{linComb} function.}\tabularnewline
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Argument
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Definition
+\end{minipage} \\
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Argument
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Definition
+\end{minipage} \\
+\midrule
+\endhead
+\texttt{markers} & a numeric data frame that includes two diagnostic tests. \\
+\texttt{status} & vector that includes the actual disease status of the patients \\
+\texttt{event} & string that indicates the event in the status to be considered as positive event \\
+\texttt{method} & select one of the linear combination method. \texttt{scoring} for Scoring based on Logistic Regression {[}2{]}, \texttt{SL} for Su \& Liu's method {[}3{]}, \texttt{logistic} for Logistic Regression, \texttt{minmax} for Min-Max method {[}5{]}, \texttt{PT} for Pepe \& Thompson's method {[}4{]}, \texttt{PCL} for Pepe, Cai \& Langton's method {[}6{]}, \texttt{minimax} for Minimax approach {[}7{]} and \texttt{TS} for Todor \& Saplacan's method {[}8{]}. See details for further information. \\
+\texttt{resample} & select one of the resampling option. \texttt{boot} for bootstrap, \texttt{cv} for Cross-validation, \texttt{repeatedcv} for Repeated Cross-validation. \\
+\texttt{nfolds} & enter number of fold (5, default) \\
+\texttt{nrepeats} & enter number of repeated (3, default) \\
+\texttt{niters} & enter number of iters (10, default) \\
+\texttt{standardize} & select one of the standardization option. \texttt{range} for standardization to a range between 0 and 1, \texttt{zScore} for standardization using z scores, \texttt{tScore} for standardization using T scores, \texttt{mean} for standardization with sample mean = 1, \texttt{deviance} for standardization with sample standard deviation = 1 \\
+\texttt{ndigits} & If scoring is selected as the combination method, enter to tell how many digits the estimated beta/regression coefficients should be rounded. (0, default) \\
+\texttt{direction} & determines in which direction the comparison will be made.(auto, default) \\
+\texttt{conf.level} & determines the confidens interval for the roc curve(0.95, default). \\
+\texttt{cutoff.method} & determines the cutoff method for the roc curve. \\
+\bottomrule
+\end{longtable}
+
+\hypertarget{scoring-based-on-logistic-regression-method}{%
+\subsubsection{Scoring based on Logistic Regression method}\label{scoring-based-on-logistic-regression-method}}
+
+\texttt{method = "scoring"} combination score obtained using the estimated beta/regression coefficients values of the relevant logistic regression model.
+
+l = log\_b p / (p - 1) = \(\beta\)\_0 + \(\beta\)\_1x\_1 + \(\beta\)\_2x\_2
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{linComb}\NormalTok{(}\AttributeTok{markers =}\NormalTok{ markers, }
+                  \AttributeTok{status =}\NormalTok{ status, }
+                  \AttributeTok{event =} \StringTok{"needed"}\NormalTok{, }
+                  \AttributeTok{method =} \StringTok{"scoring"}\NormalTok{, }
+                  \AttributeTok{standardize =} \StringTok{"range"}\NormalTok{, }
+                  \AttributeTok{ndigits =} \DecValTok{2}\NormalTok{, }\AttributeTok{direction =} \StringTok{"auto"}\NormalTok{, }
+                  \AttributeTok{cutoff.method =} \StringTok{"youden"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics[width=1\linewidth,]{dtComb_files/figure-latex/scoring-1} \end{adjustwidth}
+
+\begin{verbatim}
+#> Method: scoring 
+#> Samples: 169 
+#> Markers: 2 
+#> Events: not_needed, needed 
+#> Standardization: range 
+#> 
+#>  Kappa       Accuracy  
+#>  0.6308744   0.816568
+#> 
+#> Area Under the Curves of markers and combined score:  
+#>                     AUC     SE.AUC LowerLimit UpperLimit        z      p.value
+#> ddimer        0.7858845 0.03416018  0.7189318  0.8528372  8.36894 5.813887e-17
+#> log_leukocyte 0.8668349 0.02882818  0.8103327  0.9233371 12.72487 4.301880e-37
+#> Combined      0.8811326 0.02621216  0.8297577  0.9325075 14.54030 6.729750e-48
+#> 
+#> Area Under the Curve comparison of markers and combined score:  
+#>   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|   SE(|A-B|)
+#> 1    Combined        ddimer 0.8811326 0.7858845 0.09524811  0.03217712
+#> 2    Combined log_leukocyte 0.8811326 0.8668349 0.01429773  0.01088271
+#> 3      ddimer log_leukocyte 0.7858845 0.8668349 0.08095038 -0.03971128
+#>           z     p-value
+#> 1  2.960119 0.003075205
+#> 2  1.313803 0.188912572
+#> 3 -2.038473 0.041502637
+#> 
+#> Confusion matrix:  
+#>           Outcome +    Outcome -      Total
+#> Test +           59            8         67
+#> Test -           23           79        102
+#> Total            82           87        169
+#> 
+#> Point estimates and 95% CIs:
+#> --------------------------------------------------------------
+#> Apparent prevalence *                  0.40 (0.32, 0.47)
+#> True prevalence *                      0.49 (0.41, 0.56)
+#> Sensitivity *                          0.72 (0.61, 0.81)
+#> Specificity *                          0.91 (0.83, 0.96)
+#> Positive predictive value *            0.88 (0.78, 0.95)
+#> Negative predictive value *            0.77 (0.68, 0.85)
+#> Positive likelihood ratio              7.82 (3.99, 15.35)
+#> Negative likelihood ratio              0.31 (0.22, 0.44)
+#> False T+ proportion for true D- *      0.09 (0.04, 0.17)
+#> False T- proportion for true D+ *      0.28 (0.19, 0.39)
+#> False T+ proportion for T+ *           0.12 (0.05, 0.22)
+#> False T- proportion for T- *           0.23 (0.15, 0.32)
+#> Correctly classified proportion *      0.82 (0.75, 0.87)
+#> --------------------------------------------------------------
+#> * Exact CIs
+\end{verbatim}
+
+From the ROC curve that this function gives us as output, we can also evaluate the test results regarding the comparison of the combined diagnostic test with a higher AUC than the other two diagnostic tests, the single and combined diagnostic test statistics, the combined diagnostic test with the single diagnostic test scores.
+
+\hypertarget{todor-saplacans-method}{%
+\subsubsection{Todor \& Saplacan's method}\label{todor-saplacans-method}}
+
+\texttt{method = "TS"} combination score obtained by using the trigonometric functions of the Θ value that optimizes the corresponding AUC
+
+\emph{Combination Score}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{linComb}\NormalTok{(}\AttributeTok{markers =}\NormalTok{ markers, }
+                  \AttributeTok{status =}\NormalTok{ status, }
+                  \AttributeTok{event =} \StringTok{"needed"}\NormalTok{, }
+                  \AttributeTok{method =} \StringTok{"TS"}\NormalTok{, }
+                  \AttributeTok{resample =} \StringTok{"cv"}\NormalTok{, }
+                  \AttributeTok{direction =} \StringTok{"auto"}\NormalTok{, }
+                  \AttributeTok{cutoff.method =} \StringTok{"youden"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics[width=1\linewidth,]{dtComb_files/figure-latex/TS-1} \end{adjustwidth}
+
+\begin{verbatim}
+#> Method: TS 
+#> Samples: 169 
+#> Markers: 2 
+#> Events: not_needed, needed 
+#> Standardization: none 
+#> Resampling: cv (nfolds: 5)
+#>  Kappa       Accuracy  
+#>  0.6180251   0.8106509
+#> 
+#> Area Under the Curves of markers and combined score:  
+#>                     AUC     SE.AUC LowerLimit UpperLimit        z      p.value
+#> ddimer        0.7858845 0.03416018  0.7189318  0.8528372  8.36894 5.813887e-17
+#> log_leukocyte 0.8668349 0.02882818  0.8103327  0.9233371 12.72487 4.301880e-37
+#> Combined      0.8843566 0.02475582  0.8358361  0.9328771 15.52591 2.316930e-54
+#> 
+#> Area Under the Curve comparison of markers and combined score:  
+#>   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|   SE(|A-B|)
+#> 1    Combined        ddimer 0.8843566 0.7858845 0.09847211  0.02770867
+#> 2    Combined log_leukocyte 0.8843566 0.8668349 0.01752173  0.01545491
+#> 3      ddimer log_leukocyte 0.7858845 0.8668349 0.08095038 -0.03971128
+#>           z     p-value
+#> 1  3.553837 0.000379654
+#> 2  1.133732 0.256906853
+#> 3 -2.038473 0.041502637
+#> 
+#> Confusion matrix:  
+#>           Outcome +    Outcome -      Total
+#> Test +           55            5         60
+#> Test -           27           82        109
+#> Total            82           87        169
+#> 
+#> Point estimates and 95% CIs:
+#> --------------------------------------------------------------
+#> Apparent prevalence *                  0.36 (0.28, 0.43)
+#> True prevalence *                      0.49 (0.41, 0.56)
+#> Sensitivity *                          0.67 (0.56, 0.77)
+#> Specificity *                          0.94 (0.87, 0.98)
+#> Positive predictive value *            0.92 (0.82, 0.97)
+#> Negative predictive value *            0.75 (0.66, 0.83)
+#> Positive likelihood ratio              11.67 (4.92, 27.70)
+#> Negative likelihood ratio              0.35 (0.26, 0.48)
+#> False T+ proportion for true D- *      0.06 (0.02, 0.13)
+#> False T- proportion for true D+ *      0.33 (0.23, 0.44)
+#> False T+ proportion for T+ *           0.08 (0.03, 0.18)
+#> False T- proportion for T- *           0.25 (0.17, 0.34)
+#> Correctly classified proportion *      0.81 (0.74, 0.87)
+#> --------------------------------------------------------------
+#> * Exact CIs
+\end{verbatim}
+
+\hypertarget{the-nonlincomb-function}{%
+\subsection{\texorpdfstring{The \texttt{nonlinComb} function}{The nonlinComb function}}\label{the-nonlincomb-function}}
+
+Bu bölümde doğrusal olmayan kombinasyon yöntemlerini içeren \texttt{nonlinComb} fonksiyonunu tanıtacağız.Bu fonksiyon 7 farklı doğrusal olmayan kombinasyon metotları içerisinden kullanıcının seçtiği kombinasyon yöntemi ile kullanıcıya bırakılan polynomial based methods için degrees, splines için df'ler, polynomial based methods için oluşturulan feature space'e biyobelirteçler arasındaki etkileşimin dahil edilmesi veya edilmemesi seçeneği, resampling, standardization, cutoff, directions ve conf.levels yöntemlerini seçmek için tüm argümanları içermektedir.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{nonlinComb}\NormalTok{(}\AttributeTok{markers =} \ConstantTok{NULL}\NormalTok{,}
+           \AttributeTok{status =} \ConstantTok{NULL}\NormalTok{,}
+           \AttributeTok{event =} \ConstantTok{NULL}\NormalTok{,}
+           \AttributeTok{method =} \FunctionTok{c}\NormalTok{(}\StringTok{"polyreg"}\NormalTok{,}
+                      \StringTok{"ridgereg"}\NormalTok{,}
+                      \StringTok{"lassoreg"}\NormalTok{,}
+                      \StringTok{"elasticreg"}\NormalTok{,}
+                      \StringTok{"splines"}\NormalTok{,}
+                      \StringTok{"sgam"}\NormalTok{,}
+                       \StringTok{"nsgam"}\NormalTok{),}
+           \AttributeTok{degree1 =} \DecValTok{3}\NormalTok{,}
+           \AttributeTok{degree2 =} \DecValTok{3}\NormalTok{,}
+           \AttributeTok{df1 =} \DecValTok{4}\NormalTok{,}
+           \AttributeTok{df2 =} \DecValTok{4}\NormalTok{,}
+           \AttributeTok{resample =} \FunctionTok{c}\NormalTok{(}\StringTok{"none"}\NormalTok{, }\StringTok{"cv"}\NormalTok{, }\StringTok{"repeatedcv"}\NormalTok{, }\StringTok{"boot"}\NormalTok{),}
+           \AttributeTok{nfolds =} \DecValTok{5}\NormalTok{,}
+           \AttributeTok{nrepeats =} \DecValTok{3}\NormalTok{,}
+           \AttributeTok{niters =} \DecValTok{10}\NormalTok{,}
+           \AttributeTok{standardize =} \FunctionTok{c}\NormalTok{(}\StringTok{"none"}\NormalTok{, }\StringTok{"range"}\NormalTok{, }\StringTok{"zScore"}\NormalTok{, }\StringTok{"tScore"}\NormalTok{, }
+                           \StringTok{"mean"}\NormalTok{, }\StringTok{"deviance"}\NormalTok{),}
+           \AttributeTok{include.interact =} \ConstantTok{FALSE}\NormalTok{,}
+           \AttributeTok{alpha =} \FloatTok{0.5}\NormalTok{,}
+           \AttributeTok{direction =} \FunctionTok{c}\NormalTok{(}\StringTok{"auto"}\NormalTok{ , }\StringTok{"\textless{}"}\NormalTok{, }\StringTok{"\textgreater{}"}\NormalTok{),}
+           \AttributeTok{conf.level =} \FloatTok{0.95}\NormalTok{,}
+           \AttributeTok{cutoff.method =} \FunctionTok{c}\NormalTok{(}\StringTok{"youden"}\NormalTok{, }\StringTok{"roc01"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+The arguments and their definitions are given in Table 2.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.3077}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.6923}}@{}}
+\caption{\label{tab:table2} Arguments of the \texttt{nonlinComb} function.}\tabularnewline
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Argument
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Definition
+\end{minipage} \\
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Argument
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Definition
+\end{minipage} \\
+\midrule
+\endhead
+\texttt{markers} & a numeric data frame that includes two diagnostic tests. \\
+\texttt{status} & vector that includes the actual disease status of the patients \\
+\texttt{event} & string that indicates the event in the status to be considered as positive event \\
+\texttt{method} & select one of the linear combination method. \texttt{polyreg} for Logistic Regression with Polynomial Feature Space, \texttt{ridgereg} for Ridge Regression with Polynomial Feature Space {[}9{]}, \texttt{lassoreg} for Lasso Regression with Polynomial Feature Space {[}9{]}, \texttt{elasticreg} for Elastic Net Regression with Polynomial Feature Space {[}9{]}, \texttt{splines} Splines {[}10{]}, \texttt{sgam} for Generalized Additive Models with Smoothing Splines {[}11{]}, \texttt{nsgam} for Generalized Additive Models with Natural Cubic Splines {[}12{]}. \\
+\texttt{degree1} & \\
+\texttt{degree2} & \\
+\texttt{df1} & \\
+\texttt{df2} & \\
+\texttt{resample} & select one of the resampling option. \texttt{boot} for bootstrap, \texttt{cv} for Cross-validation, \texttt{repeatedcv} for Repeated Cross-validation. \\
+\texttt{nfolds} & enter number of fold (5, default) \\
+\texttt{nrepeats} & enter number of repeated (3, default) \\
+\texttt{niters} & enter number of iters (10, default) \\
+\texttt{standardize} & select one of the standardization option. \texttt{range} for standardization to a range between 0 and 1, \texttt{zScore} for standardization using z scores, \texttt{tScore} for standardization using T scores, \texttt{mean} for standardization with sample mean = 1, \texttt{deviance} for standardization with sample standard deviation = 1 \\
+\texttt{include.interact} & (FALSE, default) \\
+\texttt{alpha} & \\
+\texttt{direction} & determines in which direction the comparison will be made.(auto, default) \\
+\texttt{conf.level} & determines the confidens interval for the roc curve(0.95, default). \\
+\texttt{cutoff.method} & determines the cutoff method for the roc curve. \\
+\bottomrule
+\end{longtable}
+
+\hypertarget{lasso-regression-with-polynomial-feature-space}{%
+\subsubsection{Lasso Regression with Polynomial Feature Space}\label{lasso-regression-with-polynomial-feature-space}}
+
+\texttt{method = "lassoreg"} lasso regression is also a shrinkage method with one difference is that at the end this method returns the coefficients of some features as 0, makes this method useful for feature elimination as well.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{nonlinComb}\NormalTok{(}\AttributeTok{markers =}\NormalTok{ markers, }
+                  \AttributeTok{status =}\NormalTok{ status, }
+                  \AttributeTok{event =} \StringTok{"needed"}\NormalTok{, }
+                  \AttributeTok{method =} \StringTok{"lassoreg"}\NormalTok{, }
+                  \AttributeTok{include.interact =} \StringTok{"TRUE"}\NormalTok{,}
+                  \AttributeTok{resample =} \StringTok{"cv"}\NormalTok{, }
+                  \AttributeTok{direction =} \StringTok{"auto"}\NormalTok{, }
+                  \AttributeTok{cutoff.method =} \StringTok{"youden"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics[width=1\linewidth,]{dtComb_files/figure-latex/lassoreg-1} \end{adjustwidth}
+
+\begin{verbatim}
+#> Method: lassoreg 
+#> Samples: 169 
+#> Markers: 2 
+#> Events: not_needed, needed 
+#> Standardization: none 
+#> Resampling: cv (nfolds: 5)
+#>  Kappa       Accuracy  
+#>  0.6424037   0.8224852
+#> 
+#> Area Under the Curves of markers and combined score:  
+#>                     AUC     SE.AUC LowerLimit UpperLimit        z      p.value
+#> ddimer        0.7858845 0.03416018  0.7189318  0.8528372  8.36894 5.813887e-17
+#> log_leukocyte 0.8668349 0.02882818  0.8103327  0.9233371 12.72487 4.301880e-37
+#> Combined      0.8892627 0.02422768  0.8417773  0.9367481 16.06686 4.356246e-58
+#> 
+#> Area Under the Curve comparison of markers and combined score:  
+#>   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|   SE(|A-B|)
+#> 1    Combined        ddimer 0.8892627 0.7858845 0.10337819  0.02979411
+#> 2    Combined log_leukocyte 0.8892627 0.8668349 0.02242781  0.01267534
+#> 3      ddimer log_leukocyte 0.7858845 0.8668349 0.08095038 -0.03971128
+#>           z      p-value
+#> 1  3.469752 0.0005209382
+#> 2  1.769405 0.0768262396
+#> 3 -2.038473 0.0415026367
+#> 
+#> Confusion matrix:  
+#>           Outcome +    Outcome -      Total
+#> Test +           58            6         64
+#> Test -           24           81        105
+#> Total            82           87        169
+#> 
+#> Point estimates and 95% CIs:
+#> --------------------------------------------------------------
+#> Apparent prevalence *                  0.38 (0.31, 0.46)
+#> True prevalence *                      0.49 (0.41, 0.56)
+#> Sensitivity *                          0.71 (0.60, 0.80)
+#> Specificity *                          0.93 (0.86, 0.97)
+#> Positive predictive value *            0.91 (0.81, 0.96)
+#> Negative predictive value *            0.77 (0.68, 0.85)
+#> Positive likelihood ratio              10.26 (4.68, 22.47)
+#> Negative likelihood ratio              0.31 (0.22, 0.44)
+#> False T+ proportion for true D- *      0.07 (0.03, 0.14)
+#> False T- proportion for true D+ *      0.29 (0.20, 0.40)
+#> False T+ proportion for T+ *           0.09 (0.04, 0.19)
+#> False T- proportion for T- *           0.23 (0.15, 0.32)
+#> Correctly classified proportion *      0.82 (0.76, 0.88)
+#> --------------------------------------------------------------
+#> * Exact CIs
+\end{verbatim}
+
+\hypertarget{splines}{%
+\subsubsection{Splines}\label{splines}}
+
+\texttt{method = "splines"} with the applications of regression models in a polynomial feature space the second non-linear approach to combining biomarkers comes from applying several regression models to the dataset using a function derived from piecewise polynomials. Splines are implemented with degrees of freedom and degrees of the fitted polynomials taken from the user.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{result }\OtherTok{\textless{}{-}} \FunctionTok{nonlinComb}\NormalTok{(}\AttributeTok{markers =}\NormalTok{ markers, }
+                  \AttributeTok{status =}\NormalTok{ status, }
+                  \AttributeTok{event =} \StringTok{"needed"}\NormalTok{, }
+                  \AttributeTok{method =} \StringTok{"splines"}\NormalTok{,}
+                  \AttributeTok{resample =} \StringTok{"boot"}\NormalTok{,}
+                  \AttributeTok{direction =} \StringTok{"auto"}\NormalTok{, }
+                  \AttributeTok{cutoff.method =} \StringTok{"youden"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{adjustwidth}{\fltoffset}{0mm}
+\includegraphics[width=1\linewidth,]{dtComb_files/figure-latex/splines-1} \end{adjustwidth}
+
+\begin{verbatim}
+#> Method: splines 
+#> Samples: 169 
+#> Markers: 2 
+#> Events: not_needed, needed 
+#> Standardization: none 
+#> Resampling: boot (niters: 10)
+#>  Kappa       Accuracy  
+#>  0.6800813   0.8402367
+#> 
+#> Area Under the Curves of markers and combined score:  
+#>                     AUC     SE.AUC LowerLimit UpperLimit        z      p.value
+#> ddimer        0.7858845 0.03416018  0.7189318  0.8528372  8.36894 5.813887e-17
+#> log_leukocyte 0.8668349 0.02882818  0.8103327  0.9233371 12.72487 4.301880e-37
+#> Combined      0.9093776 0.02189102  0.8664720  0.9522832 18.70071 4.884865e-78
+#> 
+#> Area Under the Curve comparison of markers and combined score:  
+#>   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|   SE(|A-B|)
+#> 1    Combined        ddimer 0.9093776 0.7858845 0.12349313  0.03078875
+#> 2    Combined log_leukocyte 0.9093776 0.8668349 0.04254275  0.02320856
+#> 3      ddimer log_leukocyte 0.7858845 0.8668349 0.08095038 -0.03971128
+#>           z      p-value
+#> 1  4.010982 0.0000604667
+#> 2  1.833063 0.0667931444
+#> 3 -2.038473 0.0415026367
+#> 
+#> Confusion matrix:  
+#>           Outcome +    Outcome -      Total
+#> Test +           68           13         81
+#> Test -           14           74         88
+#> Total            82           87        169
+#> 
+#> Point estimates and 95% CIs:
+#> --------------------------------------------------------------
+#> Apparent prevalence *                  0.48 (0.40, 0.56)
+#> True prevalence *                      0.49 (0.41, 0.56)
+#> Sensitivity *                          0.83 (0.73, 0.90)
+#> Specificity *                          0.85 (0.76, 0.92)
+#> Positive predictive value *            0.84 (0.74, 0.91)
+#> Negative predictive value *            0.84 (0.75, 0.91)
+#> Positive likelihood ratio              5.55 (3.33, 9.25)
+#> Negative likelihood ratio              0.20 (0.12, 0.33)
+#> False T+ proportion for true D- *      0.15 (0.08, 0.24)
+#> False T- proportion for true D+ *      0.17 (0.10, 0.27)
+#> False T+ proportion for T+ *           0.16 (0.09, 0.26)
+#> False T- proportion for T- *           0.16 (0.09, 0.25)
+#> Correctly classified proportion *      0.84 (0.78, 0.89)
+#> --------------------------------------------------------------
+#> * Exact CIs
+\end{verbatim}
+
+\textbf{Example II}
+
+\hypertarget{scoring}{%
+\section{Scoring}\label{scoring}}
+
+\begin{equation} \label{eqn:formula10}
+  l = \log_b\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+  \\
+  Combination Score = \beta_1 x_1 + \beta_2 x_2
+\end{equation}
+
+\hypertarget{sl}{%
+\section{SL}\label{sl}}
+
+\begin{equation} \label{eqn:formula11}
+  Contol group = X \sim N(\mu_x , \sum)
+  \\
+  Disease \: group = Y \sim N(\mu_y ,\sigma ^ 2 \sum)
+  \\
+  Fisher's discriminant coefficient = (\alpha , \beta) \propto (\mu_y- \mu_x) ^ T {\sum_{}^{-1}} 
+  \\<!--sigma üzerindeki -1 değişecek-->
+  \\
+ Combination Score = \alpha x_1 + \beta x_2
+\end{equation}
+
+\hypertarget{logistic}{%
+\section{Logistic}\label{logistic}}
+
+\begin{equation} \label{eqn:formula12}
+  l = \log_b\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+\end{equation}
+
+\hypertarget{min-max}{%
+\section{Min-max}\label{min-max}}
+
+\begin{equation} \label{eqn:formula13}
+  Control group: X_i = (X_1i, X_2i), i = 1, 2, ..., n
+  \\
+  Disease  group = Y_j = (Y_1j, Y_2j), j = 1, 2, ..., m
+  \\ 
+  maximize W(λ) = \left(\frac{1}{mn}\right) {\sum_{i=1}^{n} {\sum_{j=1}^{m}}I(Y_{j,max} + λY_{j,min} > X_{i,max} + λX_{i,min})}
+  \\
+   Combination Score = x_{max} + λx_{min}
+\end{equation}
+
+\hypertarget{pt}{%
+\section{PT}\label{pt}}
+
+\begin{equation} \label{eqn:formula14}
+  l = \log_b\left(\frac{p}{1 - p}\right) = \beta_0 + \beta_1 x_1 + \beta_2 x_2
+  \\ 
+  λ = \beta_2/\beta_1
+  \\
+   Combination Score = x_1 + λx_2
+\end{equation}
+
+\hypertarget{pcl}{%
+\section{PCL}\label{pcl}}
+
+\begin{equation} \label{eqn:formula15}
+  Control group: X_i = (X_1i, X_2i), i = 1, 2, ..., n
+  \\
+  Disease  group = Y_j = (Y_1j, Y_2j), j = 1, 2, ..., m
+  \\ 
+  maximize W(λ) = \left(\frac{1}{mn}\right) {\sum_{i=1}^{n} {\sum_{j=1}^{m}}I(Y_{1j} + λY_{2j} > X_{1i} + λX_{2i}) + \left(\frac{1}{2} \right) I(Y_{1j} + λY_{2j} = X_{1i} + λX_{2i})}
+  \\
+   Combination Score = x_1 + λx_2
+\end{equation}
+
+\hypertarget{minimax}{%
+\section{Minimax}\label{minimax}}
+
+\begin{equation} \label{eqn:formula16}
+  Contol group: X_i =  (X_{1i}, X_{2i}), i = 1, 2, ... , n 
+  \\
+  Disease  group = Y_j =  (Y_{1j}, Y_{2j}), j = 1, 2, ... , m 
+  \\
+  (b_1, b_2) = {[t {\sum_{\;\;\;\;\;D}} + (1 - t) \sum_{C}] ^ {-1}}{(\mu_D - \mu_C)} 
+
+  \\
+ Combination Score = b_1 x_1 + b_2 x_2
+\end{equation}
+
+\hypertarget{ts}{%
+\section{TS}\label{ts}}
+
+\begin{equation} \label{eqn:formula17}
+   Combination \: Score = sin(\theta)x_1 + cos(\theta)x_2
+\end{equation}
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+
+{[}1{]}
+
+{[}2{]}
+
+{[}3{]} Su, J. Q., \& Liu, J. S. (1993). Linear combinations of multiple diagnostic markers. Journal of the American Statistical Association, 88(424), 1350-1355.
+
+{[}4{]} Pepe, M. S., \& Thompson, M. L. (2000). Combining diagnostic test results to increase accuracy. Biostatistics, 1(2), 123-140.
+
+{[}5{]} Liu, C., Liu, A., \& Halabi, S. (2011). A min--max combination of biomarkers to improve diagnostic accuracy. Statistics in medicine, 30(16), 2005-2014.
+
+{[}6{]} Pepe, M. S., Cai, T., \& Longton, G. (2006). Combining predictors for classification using the area under the receiver operating characteristic curve. Biometrics, 62(1), 221-229.
+
+{[}7{]} Sameera, G., Vardhan, R. V., \& Sarma, K. V. S. (2016). Binary classification using multivariate receiver operating characteristic curve for continuous data. Journal of biopharmaceutical statistics, 26(3), 421-431.
+
+{[}8{]} Todor, N., Todor, I., \& Săplăcan, G. (2014). Tools to identify linear combination of prognostic factors which maximizes area under receiver operator curve. Journal of clinical bioinformatics, 4(1), 1-7.
+\textbackslash end\{document\}
+
+
+\end{document}

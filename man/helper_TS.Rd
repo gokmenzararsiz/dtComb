@@ -2,26 +2,26 @@
 % Please edit documentation in R/linComb.R
 \name{helper_TS}
 \alias{helper_TS}
-\title{AUC calculator for TS method.}
+\title{Helper function for TS method.}
 \usage{
 helper_TS(theta, markers, status)
 }
 \arguments{
-\item{theta}{a \code{numeric} parameter that will be estimated in the TS
-method for the combination score}
+\item{markers}{a \code{numeric} data frame that contains the biomarkers}
 
 \item{status}{a \code{factor} data frame that includes the actual disease
 status of the patients}
 
-\item{marker.set}{a \code{numeric} data frame that contains the biomarkers}
+\item{t}{a \code{numeric} parameter that will be estimated in TS
+method for the combination score}
 }
 \value{
-A \code{numeric} AUC value calculated with combination scores using
-trigonometric functions of theta
+A \code{numeric} Optimized value calculated with combination scores
+using theta
 }
 \description{
 The \code{helper_TS} function calculates the combination
-coefficient and AUC value of given biomarkers for the TS method
+coefficient and optimized value of given biomarkers for TS method
 }
 \examples{
 #call data
@@ -31,11 +31,11 @@ data(exampleData1)
 markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 
-theta <- 0.08
+t <- 0.5
 
-stat <- helper_TS(theta = theta, markers = markers, status = status)
+stat <- helper_TS(theta = t, markers = markers, status = status)
 
 }
 \author{
-Serra Bersan Gengec, Ilayda Serra Yerlitas
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }

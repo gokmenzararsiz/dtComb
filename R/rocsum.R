@@ -1,3 +1,45 @@
+# TODO: Add comment
+#
+# Author: serra
+###############################################################################
+#' @title Generate ROC curves and related  statistics for the given markers and 
+#' combined score.
+#'
+#' @description The code{rocsum} function returns the ROC curves with 
+#' coordinates, Area Under the Curves of markers and combined score, Area Under
+#' the Curve comparison of markers and combined score, Confusion matrices for both
+#' markers and combined score with the cutoff values derived from the ROC Curves.
+#'
+#' @param markers a \code{numeric} data frame that includes two diagnostic tests
+#' results
+#' 
+#' @param comb.score a matrix of \code{numeric} combination scores calculated
+#' according to the given method
+#' 
+#' @param status a \code{factor} vector that includes the actual disease
+#'  status of the patients
+#'
+#' @param event a \code{character} string that indicates the event in the status
+#' to be considered as positive event
+#'
+#' @param direction a \code{character} string determines in which direction the 
+#' comparison will be made.  “>”: if the predictor values for the control group 
+#' are higher than the values of the case group (controls > cases). 
+#' “<”: if the predictor values for the control group are lower or equal than 
+#' the values of the case group (controls < cases). 
+#'
+#' @param conf.level a \code{numeric} values determines the confidens interval
+#' for the ROC curve(0.95, default).
+#' 
+#' @param cutoff.method  a \code{character} string determines the cutoff method
+#' for the ROC curve.
+#'
+#' @return A list of \code{numeric} ROC Curves, AUC statistics and Confusion 
+#' matrices.
+#'
+#' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
+
+
 rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NULL, 
                     direction = c("auto", "<", ">"), conf.level = 0.95, 
                     cutoff.method = c("youden", "roc01")){
@@ -86,11 +128,11 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                           best.method = cutoff.method)
   best.c <- pROC::coords(roc.c, "best", ret = c("threshold","tp","tn","fp","fn"), 
                          best.method = cutoff.method)
-  best.m1.tbl <- as.table(matrix(c(best.m1$tp, best.m1$fn, best.m1$fp, best.m1$tn), 
+  best.m1.tbl <- as.table(matrix(c(best.m1$tp, best.m1$fp, best.m1$fn, best.m1$tn), 
                                  nrow = 2, byrow = TRUE))
-  best.m2.tbl <- as.table(matrix(c(best.m2$tp, best.m2$fn, best.m2$fp, best.m2$tn), 
+  best.m2.tbl <- as.table(matrix(c(best.m2$tp, best.m2$fp, best.m2$fn, best.m2$tn), 
                                  nrow = 2, byrow = TRUE))
-  best.c.tbl <- as.table(matrix(c(best.c$tp, best.c$fn, best.c$fp, best.c$tn), 
+  best.c.tbl <- as.table(matrix(c(best.c$tp, best.c$fp, best.c$fn, best.c$tn), 
                                 nrow = 2, byrow = TRUE))
   DiagStatMarker1 <- epiR::epi.tests(best.m1.tbl, conf.level = conf.level)
   DiagStatMarker2 <- epiR::epi.tests(best.m2.tbl, conf.level = conf.level)
@@ -101,7 +143,11 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                  MultComp_table = MultComp_table,
                  DiagStatMarker1 = DiagStatMarker1,
                  DiagStatMarker2 = DiagStatMarker2,
-                 DiagStatCombined = DiagStatCombined)
+                 DiagStatCombined = DiagStatCombined,
+                 ThresholdMarker1 = best.m1$threshold,
+                 ThresholdMarker2 = best.m2$threshold,
+                 ThresholdCombined = best.c$threshold,
+                 CombScore = comb.score)
   
   return(allres)
 }
