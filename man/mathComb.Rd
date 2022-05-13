@@ -34,18 +34,11 @@ to be considered as positive event}
 \item{distance}{a \code{character} string specifying the method used for
 combining the markers. The available methods are:
 \itemize{
-\item \code{euclidean}: The euclidean distance is (named after Euclid) a
-straight line distance between two points. Euclid argued that the shortest
-distance between two points is always a line.
+\item \code{euclidean}:
 Euclidean: d = sqrt( ∑ | P_i - Q_i |^2)
-\item \code{manhattan}: The Manhattan distance, also called the Taxicab
-distance or the City Block distance, calculates the distance between two
-real-valued vectors.
+\item \code{manhattan}:
 Manhattan : d = ∑ | P_i - Q_i |
-\item \code{chebyshev}: Chebyshev distance (or Tchebychev distance), maximum
-metric, or L∞ metric is a metric defined on a vector space where the
-distance between two vectors is the greatest of their differences along any
-coordinate dimension.
+\item \code{chebyshev}:
 Chebyshev : $d = max | P_i - Q_i |$
 \item \code{kulczynski_d}:
 Kulczynski d : d = ∑ | P_i - Q_i | / ∑ min(P_i , Q_i)
@@ -103,7 +96,7 @@ for the roc curve(0.95, default).}
 for the roc curve.}
 }
 \value{
-A list of \code{numeric} linear combination scores calculated
+A list of \code{numeric} mathematical combination scores calculated
 according to the given method and standardization option
 }
 \description{
@@ -121,15 +114,15 @@ direction <- "<"
 cutoff.method <- "youden"
 
 score1 <- mathComb(markers = markers, status = status, event = event,
-method = "distance", distance ="euclidean", direction = "auto", standardize = "range",
-cutoff.method = cutoff.method)
+method = "distance", distance = "avg", direction = direction,
+standardize = "none", cutoff.method = cutoff.method)
 
 score2 <- mathComb(markers = markers, status = status, event = event,
-method = "expinbase", transform = "cos", direction = direction,
+method = "baseinexp", transform = "exp", direction = direction,
 cutoff.method = cutoff.method)
 
 score3 <- mathComb(markers = markers, status = status, event = event,
-method = "add", transform = "exp", direction = direction, power.transform = TRUE,
+  direction = direction, power.transform = FALSE,
 cutoff.method = cutoff.method)
 
 }

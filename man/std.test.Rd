@@ -2,30 +2,22 @@
 % Please edit documentation in R/standardization.R
 \name{std.test}
 \alias{std.test}
-\title{Standardization with respect to the t score.}
+\title{Standardization according to the trainig model parameters.}
 \usage{
 std.test(newdata, model)
 }
 \arguments{
-\item{newdata}{a \code{numeric} dataframe of biomarkers}
+\item{newdata}{a \code{numeric} data frame of biomarkers}
 
-\item{model}{a \code{string} dcdcdcdz}
+\item{model}{a \code{list} of parameters from the output of linComb,
+nonlinComb, mlComb or mathComb functions.}
 }
 \value{
 A \code{numeric} dataframe of standardized biomarkers
 }
 \description{
-The \code{std.test} standardizes using T scores. The range
-varies between usually 20 and 80
-}
-\examples{
-#call data
-data(exampleData1)
-
-#define the function parameters
-markers <- exampleData1[, -1]
-markers2 <- std.test(markers, score1)
-
+The \code{std.test} Standardization parameters will be taken
+from the fitted training model and applied to the new data set.
 }
 \author{
 Serra Ilayda  Yerlitas, Serra Bersan Gengec

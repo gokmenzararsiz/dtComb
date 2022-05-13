@@ -2,7 +2,7 @@
 % Please edit documentation in R/linComb.R
 \name{helper_minimax}
 \alias{helper_minimax}
-\title{AUC calculator for minimax method.}
+\title{Helper function for minimax method.}
 \usage{
 helper_minimax(t, neg.set, pos.set, markers, status)
 }
@@ -16,17 +16,18 @@ negative status}
 \item{pos.set}{a \code{numeric} data frame that contains the observation with
 positive status}
 
+\item{markers}{a \code{numeric} data frame that contains the biomarkers}
+
 \item{status}{a \code{factor} data frame that includes the actual disease
 status of the patients}
-
-\item{marker.set}{a \code{numeric} data frame that contains the biomarkers}
 }
 \value{
-A \code{numeric} AUC value calculated with combination scores using t
+A \code{numeric} Optimized value calculated with combination scores
+using t
 }
 \description{
 The \code{helper_minimax} function calculates the combination
-coefficient and AUC value of given biomarkers for minimax method
+coefficient and optimized value of given biomarkers for minimax method
 }
 \examples{
 #call data
@@ -42,7 +43,7 @@ pos.set <- markers[status == levels(status)[2], ]
 t <- 0.5
 
 stat <- helper_minimax(t, neg.set = neg.set, pos.set = pos.set,
-marker.set = markers, status)
+markers = markers, status)
 
 }
 \author{

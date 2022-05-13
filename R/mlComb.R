@@ -81,7 +81,7 @@
 #' event <- "needed"
 #'
 #' score1 <- mlComb(markers = markers, status = status, event = event,
-#'  resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+#' method = "rf", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
 #' preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
 #'
 #' @export

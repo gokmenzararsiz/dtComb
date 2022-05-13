@@ -43,8 +43,11 @@ method used while training the model. The available methods are "boot",
 "none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for
 details of these resampling methods see ?caret::trainControl}
 
-\item{nfolds}{a \code{numeric} value that indicates the number of folds or
-the number of resampling iterations (5, default)}
+\item{niters}{a \code{numeric} value that indicates the number of
+bootstrapped resampling iterations (10, default)}
+
+\item{nfolds}{a \code{numeric} value that indicates the number of folds for
+cross validation based resampling methods  (5, default)}
 
 \item{nrepeats}{a \code{numeric} value that indicates the number of repeats
 for "repeatedcv" option of resampling methods (3, default)}
@@ -96,10 +99,10 @@ status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- mlComb(markers = markers, status = status, event = event,
-method = "knn", resample = "boot632",  niters = 15,
-preProcess = "center", direction = "<", cutoff.method ="youden")
+method = "rf", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
 
 }
 \author{
-Ilayda Serra Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }

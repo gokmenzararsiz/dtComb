@@ -2,31 +2,26 @@
 % Please edit documentation in R/linComb.R
 \name{helper_TS}
 \alias{helper_TS}
-\title{AUC calculator for minimax method.}
+\title{Helper function for TS method.}
 \usage{
 helper_TS(theta, markers, status)
 }
 \arguments{
+\item{markers}{a \code{numeric} data frame that contains the biomarkers}
+
 \item{status}{a \code{factor} data frame that includes the actual disease
 status of the patients}
 
-\item{t}{a \code{numeric} parameter that will be estimated in minimax
+\item{t}{a \code{numeric} parameter that will be estimated in TS
 method for the combination score}
-
-\item{neg.set}{a \code{numeric} data frame that contains the observation with
-negative status}
-
-\item{pos.set}{a \code{numeric} data frame that contains the observation with
-positive status}
-
-\item{marker.set}{a \code{numeric} data frame that contains the biomarkers}
 }
 \value{
-A \code{numeric} AUC value calculated with combination scores using t
+A \code{numeric} Optimized value calculated with combination scores
+using theta
 }
 \description{
-The \code{helper_minimax} function calculates the combination
-coefficient and AUC value of given biomarkers for minimax method
+The \code{helper_TS} function calculates the combination
+coefficient and optimized value of given biomarkers for TS method
 }
 \examples{
 #call data
@@ -36,13 +31,9 @@ data(exampleData1)
 markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 
-neg.set <- markers[status == levels(status)[1], ]
-pos.set <- markers[status == levels(status)[2], ]
-
 t <- 0.5
 
-stat <- helper_minimax(t, neg.set = neg.set, pos.set = pos.set,
-marker.set = markers, status)
+stat <- helper_TS(theta = t, markers = markers, status = status)
 
 }
 \author{

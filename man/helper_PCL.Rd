@@ -2,7 +2,7 @@
 % Please edit documentation in R/linComb.R
 \name{helper_PCL}
 \alias{helper_PCL}
-\title{Mann Whitney AUC estimator for PCL method.}
+\title{Helper function for PCL method.}
 \usage{
 helper_PCL(lambda, neg.set, pos.set)
 }
@@ -17,11 +17,11 @@ negative status}
 positive status}
 }
 \value{
-A \code{numeric} value for the estimated AUC
+A \code{numeric} value for the estimated optimized value
 }
 \description{
-The \code{helper_PCL} function estimates non-parametric
-AUC for the given biomarkers
+The \code{helper_PCL} function estimates optimized value of
+given biomarkers for PCL method
 }
 \examples{
 #call data

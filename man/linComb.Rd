@@ -21,7 +21,7 @@ linComb(
 )
 }
 \arguments{
-\item{markers}{a \code{numeric} data frame that includes two diagnostic tests
+\item{markers}{a \code{numeric} a numeric data frame that includes two diagnostic tests
 results}
 
 \item{status}{a \code{factor} vector that includes the actual disease
@@ -33,8 +33,8 @@ to be considered as positive event}
 \item{method}{a \code{character} string specifying the method used for
 combining the markers. The available methods are:
 \itemize{
-\item \code{scoring}: Combination score obtained using the slope values of
-the relevant logistic regression model
+\item \code{scoring}: Combination score obtained using the estimated
+beta/regression coefficients values of the relevant logistic regression model
 \item \code{SL}: Su and Liu combination score obtained by using Fisher's
 discriminant function under the assumption of multivariate normal
 distribution model and proportionate covariance matrices
@@ -44,13 +44,43 @@ regression model
 the markers
 \item \code{PT}: Pepe and Thompson combination score obtained by
 proportioning the slope values the relevant logistic regression model
-\item \code{PCT}: Pepe, Cai and Langton combination score obtained by using
+\item \code{PCL}: Pepe, Cai and Langton combination score obtained by using
 AUC as the parameter of a logistic regression model
 \item \code{minimax}: Combination score obtained with the Minimax procedure
 \item \code{TS}: Combination score obtained by using the trigonometric
 functions of the theta value that optimizes the AUC
 }
 \bold{IMPORTANT}: See Details for further information.}
+
+\item{resample}{a \code{character} string indicating the name of the
+resampling options. Bootstrapping Cross validation and repeated cross
+validation are given as the options for resampling along with the number
+of folds and number of repeats.
+\itemize{
+\item \code{boot}: Bootstrapping is performed in a similar way; the dataset
+is divided into folds with replacement and models are trained and tested
+in these folds to determine the best parameters for the given method and
+dataset.
+\item \code{cv}: Cross-validation resampling, the dataset is divided into
+the number of folds given without replacement, in each iteration one fold
+is selected as the test set, the model is built using the remaining folds
+and tested on the test set. The corresponding AUC values are kept in a list
+as well as the parameters used for the combination. The best performed model
+is selected and the combination score returned for the whole dataset.
+\item \code{repeatedcv}: repeated cross-validation the process is repeated
+and the best performed models selected at each step is stored in another
+list, the best performed among these models is selected to be applied to
+the entire dataset.
+}}
+
+\item{nfolds}{a \code{numeric} value that indicates the number of folds for
+cross validation based resampling methods  (5, default)}
+
+\item{nrepeats}{a \code{numeric} value that indicates the number of repeats
+for "repeatedcv" option of resampling methods (3, default)}
+
+\item{niters}{a \code{numeric} value that indicates the number of
+bootstrapped resampling iterations (10, default)}
 
 \item{standardize}{a \code{character} string indicating the name of the
 standardization method. The default option is no standardization applied.
@@ -65,8 +95,20 @@ usually 20 and 80
 \item \code{deviance}: Standardization with sample standard deviation = 1
 }}
 
-\item{ndigits}{a \code{integer} value to indicate the number of decimal places
-to be used for rounding in Scoring method}
+\item{ndigits}{a \code{integer} value to indicate the number of decimal
+places to be used for rounding in Scoring method (0, default)}
+
+\item{direction}{a \code{character} string determines in which direction the
+comparison will be made.  “>”: if the predictor values for the control group
+are higher than the values of the case group (controls > cases).
+“<”: if the predictor values for the control group are lower or equal than
+the values of the case group (controls < cases).}
+
+\item{conf.level}{a \code{numeric} values determines the confidens interval
+for the roc curve(0.95, default).}
+
+\item{cutoff.method}{a \code{character} string determines the cutoff method
+for the roc curve.}
 
 \item{init.param}{a \code{numeric} initial value to be used for optimization
 in minmax, PCL, minimax and TS methods}
@@ -89,16 +131,16 @@ markers <- exampleData1[, -1]
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
-score1 <- linComb(markers = markers, status = status, event = event,
-method = "scoring", resample= "none",
+score1 <- linComb(markers = markers, status = status, event = "needed",
+method = "minimax", resample = "none",
 standardize = "none", direction = "<", cutoff.method = "youden")
 
 score2 <- linComb(markers = markers, status = status, event = event,
-method = "TS", resample = "boot", standardize = "zScore", direction = "<", 
+method = "TS", resample = "boot", standardize = "range", direction = "<",
 cutoff.method = "youden")
 
 score3 <- linComb(markers = markers, status = status, event = event,
-method = "logistic", resample = "repeatedcv", direction = "<", 
+method = "logistic", resample = "none", direction = "<",
 cutoff.method = "youden")
 
 }

@@ -81,13 +81,43 @@ methods the degree of the fitted polynomial between each node for marker 1.
 \item{degree2}{a \code{numeric} value for polynomial based methods indicates
 the degree of the feature space created for marker 2, for spline based
 methods the degree of the fitted polynomial between each node for marker 2
-(3, default)
+(3, default)}
 
-@param df1 a \code{numeric} value that indicates the number of knots as the
-degrees of freedom in spline based methods for marker 1 (4, default)
+\item{df1}{a \code{numeric} value that indicates the number of knots as the
+degrees of freedom in spline based methods for marker 1 (4, default)}
 
-@param df2 a \code{numeric} value that indicates the number of knots as the
+\item{df2}{a \code{numeric} value that indicates the number of knots as the
 degrees of freedom in spline based methods for marker 2 (4, default)}
+
+\item{resample}{a \code{character} string indicating the name of the
+resampling options. Bootstrapping Cross validation and repeated cross
+validation are given as the options for resampling along with the number
+of folds and number of repeats.
+\itemize{
+\item \code{boot}: Bootstrapping is performed in a similar way; the dataset
+is divided into folds with replacement and models are trained and tested
+in these folds to determine the best parameters for the given method and
+dataset.
+\item \code{cv}: Cross-validation resampling, the dataset is divided into
+the number of folds given without replacement, in each iteration one fold
+is selected as the test set, the model is built using the remaining folds
+and tested on the test set. The corresponding AUC values are kept in a list
+as well as the parameters used for the combination. The best performed model
+is selected and the combination score returned for the whole dataset.
+\item \code{repeatedcv}: repeated cross-validation the process is repeated
+and the best performed models selected at each step is stored in another
+list, the best performed among these models is selected to be applied to
+the entire dataset.
+}}
+
+\item{nfolds}{a \code{numeric} value that indicates the number of folds for
+cross validation based resampling methods  (5, default)}
+
+\item{nrepeats}{a \code{numeric} value that indicates the number of repeats
+for "repeatedcv" option of resampling methods (3, default)}
+
+\item{niters}{a \code{numeric} value that indicates the number of
+bootstrapped resampling iterations (10, default)}
 
 \item{standardize}{a \code{character} string indicating the name of the
 standardization method. The default option is no standardization applied.
@@ -101,6 +131,10 @@ usually 20 and 80
 \item \code{mean}: Standardization with sample mean = 1
 \item \code{deviance}: Standardization with sample standard deviation = 1
 }}
+
+\item{include.interact}{a \code{logical} indicator that specifies whether to
+include the interaction between the markers to the feature space created for
+polynomial based methods (FALSE, default)}
 
 \item{alpha}{a \code{numeric} value as the mixing parameter in Elastic Net
 Regression method (0.5, default)}
@@ -116,10 +150,6 @@ for the roc curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
-
-\item{interact}{a \code{logical} indicator that specifies whether to include
-the interaction between the markers to the feature space created for
-polynomial based methods (FALSE, default)}
 }
 \value{
 A list of \code{numeric} nonlinear combination scores calculated
@@ -140,17 +170,17 @@ event <- "needed"
 direction <- "<"
 cutoff.method <- "youden"
 
-score1 <- nonlinComb(markers = markers, status = status, event = event,
-method = "polyreg", resample = "boot", include.interact = TRUE, 
-cutoff.method = "youden", standardize = "none")
- 
-score2 <- nonlinComb(markers = markers, status = status, event = event,
-method = "splines", resample = "boot", cutoff.method = "youden", 
-standardize = "tScore")
+score1 <- nonlinComb(markers = markers3, status = status3, event = "M",
+method = "ridgereg",  include.interact = FALSE, cutoff.method = "youden",  
+direction = "<")
 
-score3 <- nonlinComb(markers = markers, status = status, event = event, 
-method = "lassoreg", resample = "repeatedcv", include.interact = TRUE, 
-cutoff.method = "youden", standardize = "zScore")
+score2 <- nonlinComb(markers = markers, status = status, event = event,
+method = "splines", resample = "none", cutoff.method = "youden",
+standardize = "tScore", direction = "<")
+
+score3 <- nonlinComb(markers = markers, status = status, event = event,
+method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
+cutoff.method = "youden", standardize = "zScore", direction = "auto")
 }
 \author{
 Serra Ilayda Yerlitas, Serra Bersan Gengec

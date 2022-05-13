@@ -34,5 +34,5 @@ comb.score <- power.add(n, marker.set = markers)
 
 }
 \author{
-Ilayda Serra Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/linComb.R
 \name{helper_minmax}
 \alias{helper_minmax}
-\title{Mann Whitney AUC estimator for minmax method.}
+\title{Helper function for minmax method.}
 \usage{
 helper_minmax(lambda, neg.set, pos.set)
 }
@@ -17,11 +17,11 @@ with negative status}
 with positive status}
 }
 \value{
-A \code{numeric} value for the estimated AUC
+A \code{numeric} value for the estimated optimized value
 }
 \description{
-The \code{helper_minmax} function estimates non-parametric AUC
-for the given biomarkers
+The \code{helper_minmax} function estimates optimized value of
+given biomarkers for minmax method
 }
 \examples{
 #call data

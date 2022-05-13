@@ -8,7 +8,7 @@ Data <- exampleData1[-c(83:138),]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-
+test <- exampleData1[c(83:138),]
 
 data(mayo)
 Data2 <- mayo[-c(42:119),]

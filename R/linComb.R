@@ -8,7 +8,7 @@
 #' scores of two diagnostic tests selected among several linear combination
 #' methods and standardization options
 #'
-#' @param markers a \code{numeric} data frame that includes two diagnostic tests
+#' @param markers a \code{numeric} a numeric data frame that includes two diagnostic tests
 #' results
 #'
 #' @param status a \code{factor} vector that includes the actual disease
@@ -83,7 +83,7 @@
 #' }
 #'
 #' @param ndigits a \code{integer} value to indicate the number of decimal
-#' places to be used for rounding in Scoring method
+#' places to be used for rounding in Scoring method (0, default)
 #'
 #' @param init.param a \code{numeric} initial value to be used for optimization
 #' in minmax, PCL, minimax and TS methods

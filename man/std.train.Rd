@@ -2,21 +2,33 @@
 % Please edit documentation in R/standardization.R
 \name{std.train}
 \alias{std.train}
-\title{Standardization with respect to the t score.}
+\title{Standardization according to the chosen method.}
 \usage{
 std.train(data, standardize = NULL)
 }
 \arguments{
-\item{data}{a \code{numeric} dataframe of biomarkers}
+\item{data}{a \code{numeric} data frame of biomarkers}
 
-\item{standardize}{a a \code{string} cdscfvf}
+\item{standardize}{a \code{character} string indicating the name of the
+standardization method. The default option is no standardization applied.
+Available options are:
+\itemize{
+\item \code{range}: Standardization to a range between 0 and 1
+\item \code{zScore}: Standardization using z scores with mean = 0
+and standard deviation = 1
+\item \code{tScore}: Standardization using T scores. The range varies between
+usually 20 and 80
+\item \code{mean}: Standardization with sample mean = 1
+\item \code{deviance}: Standardization with sample standard deviation = 1
+}}
 }
 \value{
 A \code{numeric} dataframe of standardized biomarkers
 }
 \description{
-The \code{std.train} standardizes using T scores. The range
-varies between usually 20 and 80
+The \code{std.train} Standardization (range, zScore etc.) can be
+estimated from the training data and applied to any data set with the same
+variables.
 }
 \examples{
 #call data
@@ -24,7 +36,7 @@ data(exampleData1)
 
 #define the function parameters
 markers <- exampleData1[, -1]
-markers2 <- std.train(markers, tScore)
+markers2 <- std.train(markers, "zScore")
 
 }
 \author{
