@@ -48,7 +48,10 @@
 #' @param B a \code{numeric} value that is the number of bootstrap samples for
 #' bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV".
 #' (25, default)
-#'
+#' 
+#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is 
+#' plotted. Default is TRUE
+#' 
 #' @param direction a \code{character} string determines in which direction the
 #' comparison will be made.  “>”: if the predictor values for the control group
 #' are higher than the values of the case group (controls > cases).
@@ -96,7 +99,8 @@ mlComb <- function(markers = NULL,
                    nfolds = 5,
                    nrepeats = 3,
                    preProcess = NULL,
-                   B = 25,
+                   show.plot = TRUE,
+                   B = 25, 
                    direction = c("auto", "<", ">"),
                    conf.level = 0.95,
                    cutoff.method = c("youden", "roc01"),
@@ -142,9 +146,11 @@ mlComb <- function(markers = NULL,
     resample <- "none"
   }
   
-  if (length(which(directions == direction)) == 0 ||
-      length(direction) != 1)
+  if (length(which(directions == direction)) == 0 )
     stop("direction should be one of “auto”, “<”, “>”")
+  
+  if(length(direction) != 1)
+    warning("Direction is set to “auto”")
   
   if (length(which(cutoff.methods == cutoff.method)) == 0 ||
       length(cutoff.method) != 1)
@@ -341,7 +347,8 @@ mlComb <- function(markers = NULL,
       event = event,
       direction = direction,
       conf.level = conf.level,
-      cutoff.method = cutoff.method
+      cutoff.method = cutoff.method,
+      show.plot = show.plot
     )
   
   model_fit <- list(CombType = "mlComb",
@@ -361,6 +368,20 @@ mlComb <- function(markers = NULL,
   
   invisible(allres)
 }
+
+###############################################################################
+#' @title Available classification/regression methods in \code{dtComb}
+#'
+#' @description This function returns a data.frame of available classification 
+#' methods in \code{dtComb}. These methods are imported from caret package.
+#'
+#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec
+#'
+#' @examples
+#' 
+#' availableMethods()
+#'
+#' @export
 
 availableMethods <- function() {
   message(

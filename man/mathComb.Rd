@@ -16,9 +16,11 @@ mathComb(
   standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
   transform = c("none", "log", "exp", "sin", "cos"),
   power.transform = FALSE,
+  show.plot = TRUE,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01")
+  cutoff.method = c("youden", "roc01"),
+  ...
 )
 }
 \arguments{
@@ -30,6 +32,19 @@ status of the patients}
 
 \item{event}{a \code{character} string that indicates the event in the status
 to be considered as positive event}
+
+\item{method}{a \code{character} string specifying the method used for
+combining the markers. The available methods are:
+\itemize{
+\item \code{add}: Combination score obtained by adding markers
+\item \code{multiply}: Combination score obtained by multiplying markers
+\item \code{divide}: Combination score obtained by dividing markers
+\item \code{subtract}: Combination score obtained by subtracting markers
+\item \code{distance}: Combination score obtained with the help of
+distance measures.
+\item \code{baseinexp}: Combination score obtained by marker1 power marker2.
+\item \code{expinbase}: Combination score obtained by marker2 power marker1.
+}}
 
 \item{distance}{a \code{character} string specifying the method used for
 combining the markers. The available methods are:
@@ -83,24 +98,29 @@ calculating combination score
 apply power to the markers giving the optimum AUC value in the \link{-3, 3}
 range, before calculating the combination score (FALSE, default).}
 
+\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+plotted. Default is TRUE}
+
 \item{direction}{a \code{character} string determines in which direction the
 comparison will be made.  “>”: if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
 “<”: if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
-\item{conf.level}{a \code{numeric} values determines the confidens interval
+\item{conf.level}{a \code{numeric} values determines the confidence interval
 for the roc curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
+
+\item{\dots}{further arguments. Currently has no effect on the results.}
 }
 \value{
 A list of \code{numeric} mathematical combination scores calculated
 according to the given method and standardization option
 }
 \description{
-The code{mathComb} function returns the combination results of
+The \code{mathComb} function returns the combination results of
 two diagnostic tests with different mathematical operators, distance
 measures, standardization, and transform options.
 }
@@ -114,7 +134,7 @@ direction <- "<"
 cutoff.method <- "youden"
 
 score1 <- mathComb(markers = markers, status = status, event = event,
-method = "distance", distance = "avg", direction = direction,
+method = "distance", distance = "avg", direction = direction, show.plot = FALSE,
 standardize = "none", cutoff.method = cutoff.method)
 
 score2 <- mathComb(markers = markers, status = status, event = event,
@@ -122,7 +142,7 @@ method = "baseinexp", transform = "exp", direction = direction,
 cutoff.method = cutoff.method)
 
 score3 <- mathComb(markers = markers, status = status, event = event,
-  direction = direction, power.transform = FALSE,
+method = "add",  direction = direction, power.transform = TRUE,
 cutoff.method = cutoff.method)
 
 }

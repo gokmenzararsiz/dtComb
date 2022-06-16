@@ -1,4 +1,4 @@
-# TODO: conf.level, ci.auc.method, nBoot, cutoff.method
+# TODO: 
 #
 # Author: serra ilayda yerlitas
 ###############################################################################
@@ -87,6 +87,9 @@
 #'
 #' @param init.param a \code{numeric} initial value to be used for optimization
 #' in minmax, PCL, minimax and TS methods
+#' 
+#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is 
+#' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
 #' comparison will be made.  “>”: if the predictor values for the control group
@@ -94,11 +97,13 @@
 #' “<”: if the predictor values for the control group are lower or equal than
 #' the values of the case group (controls < cases).
 #'
-#' @param conf.level a \code{numeric} values determines the confidens interval
+#' @param conf.level a \code{numeric} values determines the confidence interval
 #' for the roc curve(0.95, default).
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the roc curve.
+#' 
+#' @param \dots further arguments. Currently has no effect on the results.
 #'
 #' @return A list of \code{numeric} linear combination scores calculated
 #' according to the given method and standardization option
@@ -115,7 +120,7 @@
 #' event <- "needed"
 #'
 #' score1 <- linComb(markers = markers, status = status, event = "needed",
-#' method = "minimax", resample = "none",
+#' method = "minimax", resample = "none", show.plot = TRUE,
 #' standardize = "none", direction = "<", cutoff.method = "youden")
 #'
 #' score2 <- linComb(markers = markers, status = status, event = event,
@@ -123,7 +128,7 @@
 #' cutoff.method = "youden")
 #'
 #' score3 <- linComb(markers = markers, status = status, event = event,
-#' method = "logistic", resample = "none", direction = "<",
+#' method = "PT", resample = "none", direction = "<",
 #' cutoff.method = "youden")
 #'
 #' @export
@@ -145,10 +150,10 @@ linComb <- function(markers = NULL,
                     niters = 10,
                     standardize = c("none", "range",
                                     "zScore", "tScore", "mean", "deviance"),
-                    ndigits = 0,
+                    ndigits = 0, show.plot = TRUE,
                     direction = c("auto", "<", ">"),
                     conf.level = 0.95,
-                    cutoff.method = c("youden", "roc01")) {
+                    cutoff.method = c("youden", "roc01"), ...) {
   methods <-
     c("scoring",
       "SL",
@@ -253,9 +258,11 @@ linComb <- function(markers = NULL,
     standardize <- "none"
   }
   
-  if (length(which(directions == direction)) == 0 ||
-      length(direction) != 1)
+  if (length(which(directions == direction)) == 0 )
     stop("direction should be one of “auto”, “<”, “>”")
+  
+  if(length(direction) != 1)
+    warning("Direction is set to “auto”")
   
   if (length(which(cutoff.methods == cutoff.method)) == 0 ||
       length(cutoff.method) != 1)
@@ -1200,7 +1207,8 @@ linComb <- function(markers = NULL,
       event = event,
       direction = direction,
       conf.level = conf.level,
-      cutoff.method = cutoff.method
+      cutoff.method = cutoff.method,
+      show.plot = show.plot
     )
   
   model_fit <- list(

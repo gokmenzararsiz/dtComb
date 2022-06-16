@@ -38,10 +38,10 @@ score1 <- linComb(markers = markers, status = status, event = event,
 method = "logistic", resample= "none",
 standardize = "none", direction = "<", cutoff.method = "youden")
 
-comb.score1 <-  predComb(score1, markers)
+comb.score1 <- predComb(score1, markers)
 
 score2 <- nonlinComb(markers = markers, status = status, event = event,
-method = "nsgam", resample = "cv", include.interact = FALSE,
+method = "nsgam", resample = "cv", include.interact = FALSE, direction = "<",
 standardize = "zScore", cutoff.method = "youden")
 
 comb.score2 <-  predComb(score2, markers)
@@ -51,7 +51,6 @@ method = "distance", distance ="euclidean", direction = "auto",
 standardize = "tScore", cutoff.method = "youden")
 
 comb.score3 <-  predComb(score3, markers)
-
 
 }
 \author{

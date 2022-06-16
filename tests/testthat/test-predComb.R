@@ -1,4 +1,5 @@
 library(APtools)
+
 data("exampleData1")
 Data <- exampleData1[-c(83:138),]
 markers <- Data[, -1]
@@ -6,15 +7,12 @@ status <- factor(Data$group, levels = c("not_needed", "needed"))
 
 newmarkers <- exampleData1[c(83:138), -1]
 
-
-
 data(mayo)
 Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
 newmarkers2 <- mayo[c(42:119), 3:4]
-
 
 Data3 <-
   read.csv(
@@ -27,10 +25,9 @@ status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 newmarkers3 <- Data3[c(121:262), 4:5]
 
+load("result_data/test_predComb.rda")
 
-r <- read.table("C:/Users/ilayd/Desktop/projects/test/p.result.txt", header = TRUE)
-
-##################################
+###############################################################################
 
 for (method in c("scoring",
                    "minimax")) {
@@ -44,8 +41,7 @@ for (method in c("scoring",
     direction = "<",
     cutoff.method = "youden"
   )
- 
-  pred <- predComb(res, newmarkers)
+ pred <- predComb(res, newmarkers)
     test_that("linComb functions ...", {
       expect_length(pred, 2)
       expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
@@ -55,16 +51,17 @@ for (method in c("scoring",
     })
 }
 
-#mayo Datası ile
+###############################################################################
+
 for (method in c("logistic",
                  "SL",
                  "TS")) {
   set.seed(14042022)
-  res <- nonlinComb(
+  res <- linComb(
     markers = markers2,
     status = status2,
     event = "1",
-    method = "nsgam",
+    method = method,
     resample = "none",
     direction = "<",
     cutoff.method = "youden"
@@ -80,7 +77,8 @@ for (method in c("logistic",
   })
 }
 
-#WDBC Datası ile 
+###############################################################################
+
 for (method in c("PCL",
                  "PT",
                  "minmax")) {
@@ -91,6 +89,7 @@ for (method in c("PCL",
     event = "M",
     method = method,
     resample = "none",
+    standardize = "range",
     direction = "<",
     cutoff.method = "youden"
   )

@@ -2,7 +2,7 @@
 % Please edit documentation in R/standardization.R
 \name{std.test}
 \alias{std.test}
-\title{Standardization according to the trainig model parameters.}
+\title{Standardization according to the training model parameters.}
 \usage{
 std.test(newdata, model)
 }

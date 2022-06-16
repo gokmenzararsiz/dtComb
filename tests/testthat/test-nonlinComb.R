@@ -1,19 +1,15 @@
 library(APtools)
 library(usethis)
 
-
-
 data("exampleData1")
 Data <- exampleData1[-c(83:138),]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-
 data(mayo)
 Data2 <- mayo[-c(42:119),]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
-
 
 Data3 <-
   read.csv(
@@ -24,7 +20,7 @@ Data3 <- Data3[-c(121:262),]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
-#comb.score, AUC, SEN, SPE ve Cutoff kontrolü
+###############################################################################
 
 load("result_data/test_nonlinComb.rda")
 
@@ -56,7 +52,8 @@ for (method in c("polyreg",
   })
 }
 
-#mayo Datası ile
+###############################################################################
+
 for (method in c("lassoreg",
                  "elasticreg")) {
   set.seed(14042022)
@@ -85,7 +82,8 @@ for (method in c("lassoreg",
   })
 }
 
-#WDBC Datası ile 
+###############################################################################
+
 for (method in c("splines",
                  "sgam",
                  "nsgam")) {
@@ -115,7 +113,8 @@ for (method in c("splines",
   })
 }
 
-#Hata kontrolü
+###############################################################################
+
 status4 <- factor(Data3[, 2], levels = c("B", "M", "C"))
 status4[[9]] <- "C"
 
@@ -147,8 +146,6 @@ test_that("nonlinComb functions ...", {
   )
 })
 
-
-  
 test_that("nonlinComb functions ...", {
   expect_error(
     nonlinComb(
@@ -230,7 +227,8 @@ test_that("nonlinComb functions ...", {
   
 })
 
-# Markers için numeric Kontrolü ve event statüsü içeriyor mu?
+###############################################################################
+
 markers3[44, 1:2] <- "assay"
 
 test_that("nonlinComb functions ...", {
@@ -260,11 +258,10 @@ test_that("nonlinComb functions ...", {
   )
 })
 
-# NA Kontrolü
+###############################################################################
+
 markers3 <- Data3[, 4:5]
 status3[[12]] <- NA
-
-
 
 test_that("nonlinComb functions ...", {
   expect_warning(
@@ -280,7 +277,6 @@ test_that("nonlinComb functions ...", {
     "Rows with NA removed from the dataset since status include NA"
   )
 })
-
 
 markers3[44, 1:2] <- NA
 status3 <- factor(Data3[, 2], levels = c("B", "M"))

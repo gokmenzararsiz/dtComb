@@ -33,34 +33,40 @@
 #' 
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the ROC curve.
+#' 
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is plotted. 
+#' Default is FALSE.
 #'
 #' @return A list of \code{numeric} ROC Curves, AUC statistics and Confusion 
 #' matrices.
 #'
 #' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
-
+#' 
 
 rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NULL, 
                     direction = c("auto", "<", ">"), conf.level = 0.95, 
-                    cutoff.method = c("youden", "roc01")){
-  
-  roc.m1 <- suppressMessages(pROC::roc(status ~ markers[, 1], plot = TRUE, print.auc = TRUE, 
-                      direction = direction, col = "#619CFF", lwd = 4, legacy.axes = TRUE, 
+                    cutoff.method = c("youden", "roc01"), show.plot = show.plot){
+
+  roc.m1 <- suppressMessages(pROC::roc(status ~ markers[, 1], plot = show.plot, print.auc = TRUE,
+                      direction = direction, col = "#619CFF", lwd = 4, legacy.axes = TRUE,
                       percent = FALSE, main = "ROC Curves for Combined Diagnostic Test"))
   
-  roc.m2 <- suppressMessages(pROC::roc(status ~ markers[, 2], plot = TRUE, print.auc = TRUE, 
-                      direction = direction, print.auc.y = 0.40, col = "#00BA38", lwd = 4, 
+  roc.m2 <- suppressMessages(pROC::roc(status ~ markers[, 2], plot = show.plot, print.auc = TRUE,
+                      direction = direction, print.auc.y = 0.40, col = "#00BA38", lwd = 4,
                       legacy.axes = TRUE, percent = FALSE, add = TRUE,
                       main = "ROC Curves for Combined Diagnostic Test"))
   
-  roc.c <- suppressMessages(pROC::roc(status ~ as.numeric(comb.score), plot = TRUE, print.auc = TRUE, 
-                     direction = direction, print.auc.y = 0.30, col = "#F8766D", lwd = 4, 
+  roc.c <- suppressMessages(pROC::roc(status ~ as.numeric(comb.score), plot = show.plot, print.auc = TRUE,
+                     direction = direction, print.auc.y = 0.30, col = "#F8766D", lwd = 4,
                      legacy.axes = TRUE, percent = FALSE, add = TRUE,
                      main = "ROC Curves for Combined Diagnostic Test"))
+
+  if(show.plot == TRUE){
   
-  legend("bottomright", legend = c(colnames(markers)[1], colnames(markers)[2], 
-                                   "Combined Score"), col = c("#619CFF","#00BA38","#F8766D"), lwd = 4)
-  
+    legend("bottomright", legend = c(colnames(markers)[1], colnames(markers)[2],
+                                     "Combined Score"), col = c("#619CFF","#00BA38","#F8766D"), lwd = 4)  
+    }
+
   
   # ROC coordinates
   coord.m1 <- pROC::coords(roc.m1)
@@ -149,5 +155,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                  ThresholdCombined = best.c$threshold,
                  CombScore = comb.score)
   
+    
   return(allres)
 }

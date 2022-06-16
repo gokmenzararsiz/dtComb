@@ -23,7 +23,7 @@ usually 20 and 80
 }}
 }
 \value{
-A \code{numeric} dataframe of standardized biomarkers
+A \code{numeric} data.frame of standardized biomarkers
 }
 \description{
 The \code{std.train} Standardization (range, zScore etc.) can be
@@ -36,7 +36,7 @@ data(exampleData1)
 
 #define the function parameters
 markers <- exampleData1[, -1]
-markers2 <- std.train(markers, "zScore")
+markers2 <- std.train(markers, "deviance")
 
 }
 \author{

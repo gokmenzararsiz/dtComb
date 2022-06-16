@@ -2,57 +2,7 @@
 % \VignetteEncoding{UTF-8}
 % \VignetteIndexEntry{dtComb}
 
-\documentclass[10pt]{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
-% maxwidth is the original width if it is less than linewidth
-% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass[10pt]{article}
 \usepackage[left=3cm, top=2.5cm, right=2.5cm, bottom=2cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -87,7 +37,10 @@
 \newcommand{\software}[1]{\texttt{#1}}
 
 %%%% Set knitr options %%%%
-
+<<echo=FALSE>>=
+library(knitr)
+opts_chunk$set(tidy = FALSE, dev = "pdf",  message = FALSE, fig.align = "center", cache = FALSE)
+@
 
 %%%% Load required packages %%%%
 
@@ -110,7 +63,7 @@
 \date{
   \today
 }
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
 \begin{document}
 
 \maketitle
@@ -129,7 +82,7 @@ The \CRANpkg{dtComb} package is user-friendly, effortless, and is currently the 
 
 \vspace{1em}
 
-\noindent\textbf{dtComb version:} 0.99.6
+\noindent\textbf{dtComb version:} \Sexpr{packageDescription("dtComb")$Version}
 
 \end{abstract}
 
@@ -137,69 +90,35 @@ The \CRANpkg{dtComb} package is user-friendly, effortless, and is currently the 
 Diagnostic tests are widely used for purposes of distinguishing diseases from each other and making the correct diagnosis for the patients. Therefore, the role of the diagnostic tests in  making decisions is crucial. In addition to having an essential role in medical diagnosis,  these tests also contribute to planning the proper treatment while reducing treatment costs.  The diagnostic accuracy performance and reliability of these diagnostic tests are taken into account  when making these tests widely available. For some conditions, more than one diagnostic test may be available. Some of these diagnostic tests may even replace existing methods because they have better performance. In many studies, new diagnostic test performance measures with superior performance were obtained by using multiple diagnostic test instead of one. Various approaches to combining diagnostic tests are available  in the literature. The \dtComb{} package includes diverse  combination methods, data standardization, and resampling methods. 
 This vignette will demonstrate how to combine two different diagnostic tests with different combination methods. \dtComb{}package is loaded as below:
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(dtComb)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+library(dtComb)
+@
 
 \section{Preparing the input data}
 The methods available in this package are structured to require a \Rclass{DataFrame} with two categories (negative/positive, present/absent) as the results of a reference test used in the precision of the disease and a continuous quantitative structure for the diagnostic tests. In this demonstration, we will be using the dataset named exampleData1 that is included in this package. The exampleData1 dataset contains data from patients admitted to the Erciyes University Medical Faculty’s General Surgery Department with complaints of abdominal pain. Dataset includes the leukocyte counts and D-dimer levels of 225 patients (115 females, 110 males) of two groups that indicates the results of the reference test. The first group had 115 ($51,1\%$) patients who needed immediate laparotomy, and the second group had 110 ($49,9\%$) patients who did not need immediate laparotomy. Conventional treatment is assessed according to this grouping, and the patients operated on based on their postoperative pathologies are assigned to the first group. In contrast, the patients with a negative laparotomy are assigned to the second group \citep{akyildiz2010value}.\newline
 The dataset exampleData1 is called using the  \Rfunction{data} function to set up the model. The data set is structured as follows.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data}\hlstd{(exampleData1)}
-\hlkwd{head}\hlstd{(exampleData1)}
-\end{alltt}
-\begin{verbatim}
-##    group ddimer log_leukocyte
-## 1 needed   8.09          5.52
-## 2 needed   5.16          4.43
-## 3 needed   8.90          5.20
-## 4 needed  10.17          5.39
-## 5 needed   1.93          5.09
-## 6 needed   3.63          4.68
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<eval = TRUE, echo=TRUE>>=
+data(exampleData1)
+head(exampleData1)
+@
 
 In this demonstration a training set and a test set will be used to show the capabilites of this package. The training set will consist of $75\%$ of the data set and will be used to train classification models as well as to compare different model performances. The remaining of the data set will be saved as a test set to later demonstrate the prediction functionality using the trained model parameters of selected classification models. The \texttt{train} set is constructed as below, and the \texttt{test} set will be set up later on.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{# # train set from the exampleData1}
-\hlkwd{set.seed}\hlstd{(}\hlnum{2128}\hlstd{)}
-\hlstd{inTrain} \hlkwb{<-} \hlstd{caret}\hlopt{::}\hlkwd{createDataPartition}\hlstd{(exampleData1}\hlopt{$}\hlstd{group,} \hlkwc{p} \hlstd{=} \hlnum{3}\hlopt{/}\hlnum{4}\hlstd{,} \hlkwc{list} \hlstd{=} \hlnum{FALSE}\hlstd{)}
-\hlstd{trainData} \hlkwb{<-} \hlstd{exampleData1[inTrain, ]}
-\hlkwd{head}\hlstd{(trainData)}
-\end{alltt}
-\begin{verbatim}
-##    group ddimer log_leukocyte
-## 2 needed   5.16          4.43
-## 3 needed   8.90          5.20
-## 4 needed  10.17          5.39
-## 5 needed   1.93          5.09
-## 6 needed   3.63          4.68
-## 7 needed   3.12          5.20
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+# # train set from the exampleData1
+set.seed(2128)
+inTrain <- caret::createDataPartition(exampleData1$group, p = 3/4, list = FALSE)
+trainData <- exampleData1[inTrain, ]
+head(trainData)
+@
 When the contents of the \texttt{train} set is examined it can be seen that out of 170 observations in this set, 83 patients require laparotomy, while 87 patients do not require laparotomy according to the group column.\newline
 Functions used for training are designed to take diagnostic tests and reference test results as two different inputs. In this step, the training set obtained from the sample data set is divided into diagnostic test results (\texttt{markers}) and reference test results (\texttt{status}). During this division process, the referencce test results (\texttt{status}) are transformed into factor variables.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{markers} \hlkwb{<-} \hlstd{trainData[,} \hlopt{-}\hlnum{1}\hlstd{]}
-\hlstd{status} \hlkwb{<-} \hlkwd{factor}\hlstd{(trainData}\hlopt{$}\hlstd{group,} \hlkwc{levels} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"not_needed"}\hlstd{,} \hlstr{"needed"}\hlstd{))}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<>>=
+markers <- trainData[, -1]
+status <- factor(trainData$group, levels = c("not_needed", "needed"))
+@
 
 \section{Avaible Methods}
 There are various methods for combining diagnostic tests. One of the extensively used method is comparing the two diagnostic tests. However, models with notably higher accuracy can be obtained using statistical methods and machine learning algorithms. The \dtComb{} package includes 143 methods for combining diagnostic tests. These methods are divided into linear methods, non-linear methods, mathematical operators, and machine learning algorithms. \newline
@@ -337,314 +256,53 @@ dtComb has 4 different functions (\texttt{linComb}, \texttt{nonlinComb}, \texttt
 \end{itemize}
 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{set.seed}\hlstd{(}\hlnum{2128}\hlstd{)}
+<<fig.height=4.8, fig.width=5>>=
+set.seed(2128)
 
-\hlcom{#linComb Function}
-\hlstd{fit.lin} \hlkwb{<-} \hlkwd{linComb}\hlstd{(}\hlkwc{markers} \hlstd{= markers,}
-                      \hlkwc{status} \hlstd{= status,}
-                      \hlkwc{event} \hlstd{=} \hlstr{"needed"}\hlstd{,}
-                      \hlkwc{method} \hlstd{=} \hlstr{"scoring"}\hlstd{,}
-                      \hlkwc{resample} \hlstd{=} \hlstr{"cv"}\hlstd{,}
-                      \hlkwc{standardize} \hlstd{=} \hlstr{"range"}\hlstd{,}
-                      \hlkwc{ndigits} \hlstd{=} \hlnum{2}\hlstd{,} \hlkwc{direction} \hlstd{=} \hlstr{"auto"}\hlstd{,}
-                      \hlkwc{cutoff.method} \hlstd{=} \hlstr{"youden"}\hlstd{)}
-\end{alltt}
-\end{kframe}
+#linComb Function
+fit.lin <- linComb(markers = markers, 
+                      status = status, 
+                      event = "needed", 
+                      method = "scoring", 
+                      resample = "cv",
+                      standardize = "range", 
+                      ndigits = 2, direction = "auto", 
+                      cutoff.method = "youden")
+@
 
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-6-1} 
+<<fig.height=4.8, fig.width=5>>=
+#nonlinComb Function
+fit.nonlin <- nonlinComb(markers = markers, 
+                            status = status, 
+                            event = "needed", 
+                            method = "lassoreg", 
+                            include.interact = "TRUE",
+                            resample = "boot", 
+                            direction = "auto", 
+                            cutoff.method = "youden")
+@
 
-}
+<<fig.height=4.8, fig.width=5>>=
+#mlComb Function
+fit.ml <- mlComb(markers = markers, 
+                     status = status, 
+                     event = "needed",
+                     method = "knn",
+                     resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+                     preProcess = c("center", "scale"), 
+                     direction = "<", cutoff.method = "youden")
+@
 
-
-\begin{kframe}\begin{verbatim}
-## Method: scoring 
-## Samples: 170 
-## Markers: 2 
-## Events: not_needed, needed 
-## Standardization: range 
-## Resampling: cv (nfolds: 5)
-##  Kappa       Accuracy  
-##  0.6476441   0.8235294
-## 
-## Area Under the Curves of markers and combined score:  
-##                     AUC     SE.AUC LowerLimit UpperLimit         z      p.value
-## ddimer        0.8221853 0.03136528  0.7607105  0.8836601 10.272036 9.419585e-25
-## log_leukocyte 0.7950422 0.03718164  0.7221676  0.8679169  7.935159 2.102258e-15
-## Combined      0.8781332 0.02617685  0.8268275  0.9294389 14.445332 2.682607e-47
-## 
-## Area Under the Curve comparison of markers and combined score:  
-##   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|  SE(|A-B|)         z
-## 1    Combined        ddimer 0.8781332 0.8221853 0.05594793 0.02324285 2.4071030
-## 2    Combined log_leukocyte 0.8781332 0.7950422 0.08309098 0.03097344 2.6826531
-## 3      ddimer log_leukocyte 0.8221853 0.7950422 0.02714305 0.04705981 0.5767779
-##      p-value
-## 1 0.01607963
-## 2 0.00730407
-## 3 0.56408952
-## 
-## Confusion matrix:  
-##           Outcome +    Outcome -      Total
-## Test +           72           19         91
-## Test -           11           68         79
-## Total            83           87        170
-## 
-## Point estimates and 95% CIs:
-## --------------------------------------------------------------
-## Apparent prevalence *                  0.54 (0.46, 0.61)
-## True prevalence *                      0.49 (0.41, 0.57)
-## Sensitivity *                          0.87 (0.78, 0.93)
-## Specificity *                          0.78 (0.68, 0.86)
-## Positive predictive value *            0.79 (0.69, 0.87)
-## Negative predictive value *            0.86 (0.76, 0.93)
-## Positive likelihood ratio              3.97 (2.65, 5.96)
-## Negative likelihood ratio              0.17 (0.10, 0.30)
-## False T+ proportion for true D- *      0.22 (0.14, 0.32)
-## False T- proportion for true D+ *      0.13 (0.07, 0.22)
-## False T+ proportion for T+ *           0.21 (0.13, 0.31)
-## False T- proportion for T- *           0.14 (0.07, 0.24)
-## Correctly classified proportion *      0.82 (0.76, 0.88)
-## --------------------------------------------------------------
-## * Exact CIs
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{#nonlinComb Function}
-\hlstd{fit.nonlin} \hlkwb{<-} \hlkwd{nonlinComb}\hlstd{(}\hlkwc{markers} \hlstd{= markers,}
-                            \hlkwc{status} \hlstd{= status,}
-                            \hlkwc{event} \hlstd{=} \hlstr{"needed"}\hlstd{,}
-                            \hlkwc{method} \hlstd{=} \hlstr{"lassoreg"}\hlstd{,}
-                            \hlkwc{include.interact} \hlstd{=} \hlstr{"TRUE"}\hlstd{,}
-                            \hlkwc{resample} \hlstd{=} \hlstr{"boot"}\hlstd{,}
-                            \hlkwc{direction} \hlstd{=} \hlstr{"auto"}\hlstd{,}
-                            \hlkwc{cutoff.method} \hlstd{=} \hlstr{"youden"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-7-1} 
-
-}
-
-
-\begin{kframe}\begin{verbatim}
-## Method: lassoreg 
-## Samples: 170 
-## Markers: 2 
-## Events: not_needed, needed 
-## Standardization: none 
-## Resampling: boot (niters: 10)
-##  Kappa       Accuracy  
-##  0.6714976   0.8352941
-## 
-## Area Under the Curves of markers and combined score:  
-##                     AUC     SE.AUC LowerLimit UpperLimit         z      p.value
-## ddimer        0.8221853 0.03136528  0.7607105  0.8836601 10.272036 9.419585e-25
-## log_leukocyte 0.7950422 0.03718164  0.7221676  0.8679169  7.935159 2.102258e-15
-## Combined      0.9082537 0.02162706  0.8658654  0.9506420 18.876983 1.763788e-79
-## 
-## Area Under the Curve comparison of markers and combined score:  
-##   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|  SE(|A-B|)         z
-## 1    Combined        ddimer 0.9082537 0.8221853 0.08606841 0.01850002 4.6523421
-## 2    Combined log_leukocyte 0.9082537 0.7950422 0.11321147 0.03858083 2.9343972
-## 3      ddimer log_leukocyte 0.8221853 0.7950422 0.02714305 0.04705981 0.5767779
-##        p-value
-## 1 3.281860e-06
-## 2 3.341962e-03
-## 3 5.640895e-01
-## 
-## Confusion matrix:  
-##           Outcome +    Outcome -      Total
-## Test +           75           20         95
-## Test -            8           67         75
-## Total            83           87        170
-## 
-## Point estimates and 95% CIs:
-## --------------------------------------------------------------
-## Apparent prevalence *                  0.56 (0.48, 0.63)
-## True prevalence *                      0.49 (0.41, 0.57)
-## Sensitivity *                          0.90 (0.82, 0.96)
-## Specificity *                          0.77 (0.67, 0.85)
-## Positive predictive value *            0.79 (0.69, 0.87)
-## Negative predictive value *            0.89 (0.80, 0.95)
-## Positive likelihood ratio              3.93 (2.66, 5.81)
-## Negative likelihood ratio              0.13 (0.06, 0.24)
-## False T+ proportion for true D- *      0.23 (0.15, 0.33)
-## False T- proportion for true D+ *      0.10 (0.04, 0.18)
-## False T+ proportion for T+ *           0.21 (0.13, 0.31)
-## False T- proportion for T- *           0.11 (0.05, 0.20)
-## Correctly classified proportion *      0.84 (0.77, 0.89)
-## --------------------------------------------------------------
-## * Exact CIs
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{#mlComb Function}
-\hlstd{fit.ml} \hlkwb{<-} \hlkwd{mlComb}\hlstd{(}\hlkwc{markers} \hlstd{= markers,}
-                     \hlkwc{status} \hlstd{= status,}
-                     \hlkwc{event} \hlstd{=} \hlstr{"needed"}\hlstd{,}
-                     \hlkwc{method} \hlstd{=} \hlstr{"knn"}\hlstd{,}
-                     \hlkwc{resample} \hlstd{=} \hlstr{"repeatedcv"}\hlstd{,} \hlkwc{nfolds} \hlstd{=} \hlnum{10}\hlstd{,} \hlkwc{nrepeats} \hlstd{=} \hlnum{5}\hlstd{,}
-                     \hlkwc{preProcess} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"center"}\hlstd{,} \hlstr{"scale"}\hlstd{),}
-                     \hlkwc{direction} \hlstd{=} \hlstr{"<"}\hlstd{,} \hlkwc{cutoff.method} \hlstd{=} \hlstr{"youden"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-8-1} 
-
-}
-
-
-\begin{kframe}\begin{verbatim}
-## k-Nearest Neighbors 
-## 
-## 170 samples
-##   2 predictor
-##   2 classes: 'not_needed', 'needed' 
-## 
-## Pre-processing: centered (2), scaled (2) 
-## Resampling: Cross-Validated (10 fold, repeated 5 times) 
-## Summary of sample sizes: 153, 153, 153, 153, 152, 153, ... 
-## Resampling results across tuning parameters:
-## 
-##   k  Accuracy   Kappa    
-##   5  0.7446814  0.4887963
-##   7  0.7344853  0.4684145
-##   9  0.7332435  0.4664939
-## 
-## Accuracy was used to select the optimal model using the largest value.
-## The final value used for the model was k = 5.
-## 
-## 
-## Area Under the Curves of markers and combined score:  
-##                     AUC     SE.AUC LowerLimit UpperLimit         z
-## ddimer        0.8221853 0.03136528  0.7607105  0.8836601 10.272036
-## log_leukocyte 0.7950422 0.03718164  0.7221676  0.8679169  7.935159
-## Combined      0.9392051 0.01560800  0.9086140  0.9697962 28.139738
-##                     p.value
-## ddimer         9.419585e-25
-## log_leukocyte  2.102258e-15
-## Combined      3.199976e-174
-## 
-## Area Under the Curve comparison of markers and combined score:  
-##   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|  SE(|A-B|)         z
-## 1    Combined        ddimer 0.9392051 0.8221853 0.11701980 0.02631726 4.4465034
-## 2    Combined log_leukocyte 0.9392051 0.7950422 0.14416286 0.03412920 4.2240329
-## 3      ddimer log_leukocyte 0.8221853 0.7950422 0.02714305 0.04705981 0.5767779
-##        p-value
-## 1 8.727931e-06
-## 2 2.399690e-05
-## 3 5.640895e-01
-## 
-## Confusion matrix:  
-##           Outcome +    Outcome -      Total
-## Test +           70           11         81
-## Test -           13           76         89
-## Total            83           87        170
-## 
-## Point estimates and 95% CIs:
-## --------------------------------------------------------------
-## Apparent prevalence *                  0.48 (0.40, 0.55)
-## True prevalence *                      0.49 (0.41, 0.57)
-## Sensitivity *                          0.84 (0.75, 0.91)
-## Specificity *                          0.87 (0.79, 0.94)
-## Positive predictive value *            0.86 (0.77, 0.93)
-## Negative predictive value *            0.85 (0.76, 0.92)
-## Positive likelihood ratio              6.67 (3.81, 11.68)
-## Negative likelihood ratio              0.18 (0.11, 0.30)
-## False T+ proportion for true D- *      0.13 (0.06, 0.21)
-## False T- proportion for true D+ *      0.16 (0.09, 0.25)
-## False T+ proportion for T+ *           0.14 (0.07, 0.23)
-## False T- proportion for T- *           0.15 (0.08, 0.24)
-## Correctly classified proportion *      0.86 (0.80, 0.91)
-## --------------------------------------------------------------
-## * Exact CIs
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{#mathComb Function}
-\hlstd{fit.math} \hlkwb{<-} \hlkwd{mathComb}\hlstd{(}\hlkwc{markers} \hlstd{= markers,}
-                         \hlkwc{status} \hlstd{= status,}
-                         \hlkwc{event} \hlstd{=} \hlstr{"needed"}\hlstd{,}
-                         \hlkwc{method} \hlstd{=} \hlstr{"distance"}\hlstd{,}
-                         \hlkwc{distance} \hlstd{=} \hlstr{"euclidean"}\hlstd{,}
-                         \hlkwc{direction} \hlstd{=} \hlstr{"<"}\hlstd{,}
-                         \hlkwc{cutoff.method} \hlstd{=} \hlstr{"youden"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-
-{\centering \includegraphics[width=\maxwidth]{figure/unnamed-chunk-9-1} 
-
-}
-
-
-\begin{kframe}\begin{verbatim}
-## Method: distance 
-## Distance: euclidean 
-## Samples: 170 
-## Markers: 2 
-## Events: not_needed, needed 
-## Standardization: none 
-## Transform: none 
-## 
-##  Kappa       Accuracy  
-##  0.6140085   0.8058824
-## 
-## Area Under the Curves of markers and combined score:  
-##                     AUC     SE.AUC LowerLimit UpperLimit         z      p.value
-## ddimer        0.8221853 0.03136528  0.7607105  0.8836601 10.272036 9.419585e-25
-## log_leukocyte 0.7950422 0.03718164  0.7221676  0.8679169  7.935159 2.102258e-15
-## Combined      0.8797950 0.02536950  0.8300717  0.9295183 14.970537 1.143941e-50
-## 
-## Area Under the Curve comparison of markers and combined score:  
-##   Marker1 (A)   Marker2 (B)   AUC (A)   AUC (B)      |A-B|  SE(|A-B|)         z
-## 1    Combined        ddimer 0.8797950 0.8221853 0.05760975 0.01359213 4.2384625
-## 2    Combined log_leukocyte 0.8797950 0.7950422 0.08475280 0.03874061 2.1876993
-## 3      ddimer log_leukocyte 0.8221853 0.7950422 0.02714305 0.04705981 0.5767779
-##        p-value
-## 1 2.250558e-05
-## 2 2.869151e-02
-## 3 5.640895e-01
-## 
-## Confusion matrix:  
-##           Outcome +    Outcome -      Total
-## Test +           78           28        106
-## Test -            5           59         64
-## Total            83           87        170
-## 
-## Point estimates and 95% CIs:
-## --------------------------------------------------------------
-## Apparent prevalence *                  0.62 (0.55, 0.70)
-## True prevalence *                      0.49 (0.41, 0.57)
-## Sensitivity *                          0.94 (0.86, 0.98)
-## Specificity *                          0.68 (0.57, 0.77)
-## Positive predictive value *            0.74 (0.64, 0.82)
-## Negative predictive value *            0.92 (0.83, 0.97)
-## Positive likelihood ratio              2.92 (2.14, 3.98)
-## Negative likelihood ratio              0.09 (0.04, 0.21)
-## False T+ proportion for true D- *      0.32 (0.23, 0.43)
-## False T- proportion for true D+ *      0.06 (0.02, 0.14)
-## False T+ proportion for T+ *           0.26 (0.18, 0.36)
-## False T- proportion for T- *           0.08 (0.03, 0.17)
-## Correctly classified proportion *      0.81 (0.74, 0.86)
-## --------------------------------------------------------------
-## * Exact CIs
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<fig.height=4.8, fig.width=5>>=
+#mathComb Function
+fit.math <- mathComb(markers = markers,
+                         status = status,
+                         event = "needed",
+                         method = "distance",
+                         distance = "euclidean",
+                         direction = "<",
+                         cutoff.method = "youden")
+@
 
 
 \section{Comparing the performance of classifiers}
@@ -674,143 +332,20 @@ distance(euclidean) & 0.880 & 0.806 \\
 \section{Predicting the class labels of test samples}
 The class labels of the test cases are estimated based on the parameters of the model trained, e.g. If we are training a model using the \texttt{knn} method, one of the machine learning algorithms, the labels of the test set are estimated by the parameters we obtained from the training set. However, the important point is that the test set must have gone through the same standardization stages as the training set. The \Rfunction{predComb} function makes predictions in line with the training model by applying this standardization process in the test set. The test data set is created from the exampleData1 sample data as follows, and the \Rfunction{predComb} function is applied to this data set.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{testData} \hlkwb{<-} \hlstd{exampleData1[}\hlopt{-}\hlstd{inTrain,} \hlopt{-}\hlnum{1}\hlstd{]}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+<<concordance=TRUE>>=
+testData <- exampleData1[-inTrain, -1]
+@
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{predComb}\hlstd{(fit.nonlin, testData)}
-\end{alltt}
-\begin{verbatim}
-##      comb.score     labels
-## 1  1.000000e+00     needed
-## 2  9.339987e-01     needed
-## 3  1.000000e+00     needed
-## 4  1.479751e-16 not_needed
-## 5  1.000000e+00     needed
-## 6  1.041296e-09 not_needed
-## 7  1.000000e+00     needed
-## 8  1.000000e+00     needed
-## 9  6.245920e-13 not_needed
-## 10 1.730838e-27 not_needed
-## 11 9.477324e-07 not_needed
-## 12 1.266500e-33 not_needed
-## 13 8.276221e-33 not_needed
-## 14 1.213456e-31 not_needed
-## 15 7.402595e-27 not_needed
-## 16 1.000000e+00     needed
-## 17 1.082540e-11 not_needed
-## 18 1.000000e+00     needed
-## 19 2.920516e-29 not_needed
-## 20 1.000000e+00     needed
-## 21 3.454558e-28 not_needed
-## 22 7.030873e-29 not_needed
-## 23 5.895762e-28 not_needed
-## 24 1.000000e+00     needed
-## 25 7.190401e-12 not_needed
-## 26 6.749013e-29 not_needed
-## 27 4.725644e-25 not_needed
-## 28 1.719394e-33 not_needed
-## 29 2.321893e-24 not_needed
-## 30 1.471633e-25 not_needed
-## 31 2.944632e-30 not_needed
-## 32 5.051824e-32 not_needed
-## 33 3.122348e-34 not_needed
-## 34 3.093785e-36 not_needed
-## 35 5.574296e-35 not_needed
-## 36 7.743622e-35 not_needed
-## 37 2.474333e-36 not_needed
-## 38 2.099961e-35 not_needed
-## 39 7.600877e-27 not_needed
-## 40 1.302778e-32 not_needed
-## 41 3.027438e-39 not_needed
-## 42 3.189182e-37 not_needed
-## 43 9.858140e-28 not_needed
-## 44 1.161957e-27 not_needed
-## 45 2.581951e-28 not_needed
-## 46 1.000000e+00     needed
-## 47 7.513786e-27 not_needed
-## 48 8.534483e-30 not_needed
-## 49 1.147069e-29 not_needed
-## 50 2.731496e-27 not_needed
-## 51 1.324388e-36 not_needed
-## 52 1.135819e-24 not_needed
-## 53 4.267400e-27 not_needed
-## 54 2.778275e-36 not_needed
-## 55 9.237483e-38 not_needed
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+predComb(fit.nonlin, testData)
+@
 
 The \Rfunction{predComb} function returns the combined score of the applied method and the estimated label for the models trained using the \Rfunction{linComb}, \Rfunction{nonlinComb}, or \Rfunction{mathComb} functions. For the models trained using \Rfunction{mlComb} function, the probability of positive and negative cases for each test observation is given as output.
 
 \section{Session info}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{sessionInfo}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
-## R version 4.2.0 Patched (2022-06-07 r82464 ucrt)
-## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 19044)
-## 
-## Matrix products: default
-## 
-## locale:
-## [1] LC_COLLATE=English_United Kingdom.utf8 
-## [2] LC_CTYPE=English_United Kingdom.utf8   
-## [3] LC_MONETARY=English_United Kingdom.utf8
-## [4] LC_NUMERIC=C                           
-## [5] LC_TIME=English_United Kingdom.utf8    
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-## [1] caret_6.0-92    lattice_0.20-45 ggplot2_3.3.6   dtComb_0.99.6  
-## [5] knitr_1.39.2   
-## 
-## loaded via a namespace (and not attached):
-##  [1] splines_4.2.0        foreach_1.5.2        prodlim_2019.11.13  
-##  [4] epiR_2.0.46          highr_0.9            stats4_4.2.0        
-##  [7] pander_0.6.5         globals_0.15.0       gdtools_0.2.4       
-## [10] ipred_0.9-12         pillar_1.7.0         glue_1.6.2          
-## [13] pROC_1.18.0          uuid_1.1-0           digest_0.6.29       
-## [16] hardhat_0.2.0        colorspace_2.0-3     recipes_0.2.0       
-## [19] htmltools_0.5.2      Matrix_1.4-1         plyr_1.8.7          
-## [22] timeDate_3043.102    pkgconfig_2.0.3      listenv_0.8.0       
-## [25] purrr_0.3.4          scales_1.2.0         gower_1.0.0         
-## [28] officer_0.4.2        lava_1.6.10          tibble_3.1.7        
-## [31] proxy_0.4-26         generics_0.1.2       ellipsis_0.3.2      
-## [34] withr_2.5.0          nnet_7.3-17          cli_3.3.0           
-## [37] survival_3.3-1       magrittr_2.0.3       crayon_1.5.1        
-## [40] evaluate_0.15        future_1.25.0        fansi_1.0.3         
-## [43] parallelly_1.31.1    nlme_3.1-157         MASS_7.3-57         
-## [46] xml2_1.3.3           class_7.3-20         tools_4.2.0         
-## [49] data.table_1.14.2    lifecycle_1.0.1      stringr_1.4.0       
-## [52] flextable_0.7.0      glmnet_4.1-4         munsell_0.5.0       
-## [55] zip_2.2.0            compiler_4.2.0       e1071_1.7-9         
-## [58] systemfonts_1.0.4    rlang_1.0.2          classInt_0.4-3      
-## [61] units_0.8-0          grid_4.2.0           iterators_1.0.14    
-## [64] rstudioapi_0.13      rmarkdown_2.14       base64enc_0.1-3     
-## [67] gtable_0.3.0         ModelMetrics_1.2.2.2 codetools_0.2-18    
-## [70] DBI_1.1.2            reshape2_1.4.4       R6_2.5.1            
-## [73] zoo_1.8-10           lubridate_1.8.0      dplyr_1.0.9         
-## [76] fastmap_1.1.0        future.apply_1.9.0   utf8_1.2.2          
-## [79] shape_1.4.6          KernSmooth_2.23-20   stringi_1.7.6       
-## [82] parallel_4.2.0       BiasedUrn_1.07       Rcpp_1.0.8.3        
-## [85] vctrs_0.4.1          sf_1.0-7             rpart_4.1.16        
-## [88] tidyselect_1.1.2     xfun_0.31
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<>>=
+sessionInfo()
+@
 
 \bibliographystyle{unsrtnat}
 \bibliography{dtComb}

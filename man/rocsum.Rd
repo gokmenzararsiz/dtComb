@@ -12,7 +12,8 @@ rocsum(
   event = NULL,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01")
+  cutoff.method = c("youden", "roc01"),
+  show.plot = show.plot
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ for the ROC curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the ROC curve.}
+
+\item{show.plot}{a \code{logical}. If TRUE, a ROC curve is plotted.
+Default is FALSE.}
 }
 \value{
 A list of \code{numeric} ROC Curves, AUC statistics and Confusion
