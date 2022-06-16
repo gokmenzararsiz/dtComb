@@ -5,7 +5,7 @@
 #' @title Standardization according to the chosen method.
 #'
 #' @description The \code{std.train} Standardization (range, zScore etc.) can be
-#' estimated from the training data and applied to any data set with the same 
+#' estimated from the training data and applied to any dataset with the same 
 #' variables.
 #'
 #' @param data a \code{numeric} data frame of biomarkers
