@@ -41,8 +41,8 @@
 #'  determine the weights of the loss functions of Ridge and Lasso regressions.
 #'  \item \code{splines}: With the applications of regression models in a
 #'  polynomial feature space the second non-linear approach to combining
-#'  biomarkers comes from applying several regression models to the data set
-#'  using a function derived from pecewise polynomials. Splines are implemented
+#'  biomarkers comes from applying several regression models to the dataset
+#'  using a function derived from piecewise polynomials. Splines are implemented
 #'  with degrees of freedom and degrees of the fitted polynomials taken from the
 #'  user. For the implementation splines library is used to build piecewise
 #'  logistic regression models with base splines.
