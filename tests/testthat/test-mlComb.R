@@ -1,20 +1,15 @@
 library(APtools)
 library(usethis)
 
-
-
 data("exampleData1")
 Data <- exampleData1[-c(83:138),]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-
-
 data(mayo)
 Data2 <- mayo[-c(42:119),]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
-
 
 Data3 <-
   read.csv(
@@ -25,7 +20,8 @@ Data3 <- Data3[-c(121:262),]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
-#Hata kontrolü
+###############################################################################
+
 status4 <- factor(Data3[, 2], levels = c("B", "M", "C"))
 status4[[9]] <- "C"
 
@@ -55,8 +51,6 @@ test_that("mlComb functions ...", {
   )
 })
 
-
-
 test_that("mlComb functions ...", {
   expect_error(
     mlComb(
@@ -81,7 +75,6 @@ test_that("mlComb functions ...", {
     "The response given method is not available for mlComb function. See availableMethods function for the list of methods available."
   )
 
-  
   expect_error(
     mlComb(
       markers = markers2,
@@ -108,7 +101,8 @@ test_that("mlComb functions ...", {
   
 })
 
-# Markers için numeric Kontrolü ve event statüsü içeriyor mu?
+###############################################################################
+
 markers3[44, 1:2] <- "assay"
 
 test_that("mlComb functions ...", {

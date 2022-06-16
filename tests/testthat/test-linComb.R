@@ -1,8 +1,6 @@
 library(APtools)
 library(usethis)
 
-
-
 data("exampleData1")
 Data <- exampleData1[-c(83:138),]
 markers <- Data[, -1]
@@ -15,7 +13,6 @@ Data2 <- mayo[-c(42:119),]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
-
 Data3 <-
   read.csv(
     "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
@@ -25,8 +22,7 @@ Data3 <- Data3[-c(121:262),]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
-
-#comb.score, AUC, SEN, SPE ve Cutoff kontrolü
+###############################################################################
 
 load("result_data/test_linComb.rda")
 
@@ -45,6 +41,8 @@ for (method in c("TS",
   
   test_that("linComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -58,7 +56,8 @@ for (method in c("TS",
   })
 }
 
-#mayo Datası ile
+###############################################################################
+
 for (method in c("logistic",
                  "SL",
                  "scoring")) {
@@ -75,6 +74,8 @@ for (method in c("logistic",
   
   test_that("linComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -88,7 +89,8 @@ for (method in c("logistic",
   })
 }
 
-#WDBC Datası ile 
+###############################################################################
+
 for (method in c("PCL",
                  "PT",
                  "minmax"
@@ -107,6 +109,8 @@ for (method in c("PCL",
   
   test_that("linComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -120,10 +124,8 @@ for (method in c("PCL",
   })
 }
 
+###############################################################################
 
-
-
-#Hata kontrolü
 status4 <- factor(Data3[, 2], levels = c("B", "M", "C"))
 status4[[9]] <- "C"
 
@@ -236,7 +238,8 @@ test_that("linComb functions ...", {
   
 })
 
-# Markers için numeric Kontrolü ve event statüsü içeriyor mu?
+###############################################################################
+
 markers3[44, 1:2] <- "assay"
 
 test_that("linComb functions ...", {
@@ -266,11 +269,10 @@ test_that("linComb functions ...", {
   )
 })
 
-# NA Kontrolü
+###############################################################################
+
 markers3 <- Data3[, 4:5]
 status3[[12]] <- NA
-
-
 
 test_that("linComb functions ...", {
   expect_warning(
@@ -287,7 +289,6 @@ test_that("linComb functions ...", {
   )
 })
 
-
 markers3[44, 1:2] <- NA
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
@@ -303,5 +304,19 @@ test_that("linComb functions ...", {
       cutoff.method = "youden"
     ),
     "Rows with NA removed from the dataset since markers include NA"
+  )
+})
+
+test_that("linComb functions ...", {
+  expect_warning(
+    linComb(
+      markers = markers,
+      status = status,
+      event = "needed",
+      method = "PT",
+      direction = "<",
+      cutoff.method = "youden"
+    ),
+    "The used combination method requires range standardization. All biomarker values are standardized to a range between 0 and 1."
   )
 })

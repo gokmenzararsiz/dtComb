@@ -26,7 +26,7 @@
 #'  \item \code{ridgereg}: Ridge regression is a shrinkage method used to
 #'  estimate the coefficients of highly correlated variables and in this case
 #'  the polynomial feature space created from two biomarkers. For the
-#'  implementation of the method, glmnet library [8] is used with two functions:
+#'  implementation of the method, glmnet library is used with two functions:
 #'  cv.glmnet() to run a cross validation  model to determine the tuning
 #'  parameter λ and glmnet() to fit the model with the selected tuning parameter.
 #'  \item \code{lassoreg}: Lasso regression is also a shrinkage method with one
@@ -41,8 +41,8 @@
 #'  determine the weights of the loss functions of Ridge and Lasso regressions.
 #'  \item \code{splines}: With the applications of regression models in a
 #'  polynomial feature space the second non-linear approach to combining
-#'  biomarkers comes from applying several regression models to the dataset
-#'  using a function derived from piecewise polynomials. Splines are implemented
+#'  biomarkers comes from applying several regression models to the data set
+#'  using a function derived from pecewise polynomials. Splines are implemented
 #'  with degrees of freedom and degrees of the fitted polynomials taken from the
 #'  user. For the implementation splines library is used to build piecewise
 #'  logistic regression models with base splines.
@@ -119,6 +119,9 @@
 #'
 #' @param alpha a \code{numeric} value as the mixing parameter in Elastic Net
 #' Regression method (0.5, default)
+#' 
+#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is 
+#' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
 #' comparison will be made.  “>”: if the predictor values for the control group
@@ -126,11 +129,11 @@
 #' “<”: if the predictor values for the control group are lower or equal than
 #' the values of the case group (controls < cases).
 #'
-#' @param conf.level a \code{numeric} values determines the confidens interval
-#' for the roc curve(0.95, default).
+#' @param conf.level a \code{numeric} values determines the confidence interval
+#' for the ROC curve(0.95, default).
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
-#' for the roc curve.
+#' for the ROC curve.
 #'
 #' @return A list of \code{numeric} nonlinear combination scores calculated
 #' according to the given method and standardization option
@@ -147,7 +150,7 @@
 #' direction <- "<"
 #' cutoff.method <- "youden"
 #'
-#' score1 <- nonlinComb(markers = markers3, status = status3, event = "M",
+#' score1 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "ridgereg",  include.interact = FALSE, cutoff.method = "youden",  
 #' direction = "<")
 #'
@@ -158,6 +161,8 @@
 #' score3 <- nonlinComb(markers = markers, status = status, event = event,
 #' method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
 #' cutoff.method = "youden", standardize = "zScore", direction = "auto")
+#' 
+#' @export
 
 nonlinComb <- function(markers = NULL,
                        status = NULL,
@@ -180,10 +185,10 @@ nonlinComb <- function(markers = NULL,
                        standardize = c("none", "range", "zScore", "tScore", 
                                        "mean", "deviance"),
                        include.interact = FALSE,
-                       alpha = 0.5,
+                       alpha = 0.5, show.plot = TRUE,
                        direction = c("auto" , "<", ">"),
                        conf.level = 0.95,
-                       cutoff.method = c("youden", "roc01")) {
+                       cutoff.method = c("youden", "roc01"), ...) {
   methods <-
     c("polyreg",
       "ridgereg",
@@ -287,9 +292,11 @@ nonlinComb <- function(markers = NULL,
     standardize <- "none"
   }
   
-  if (length(which(directions == direction)) == 0 ||
-      length(direction) != 1)
+  if (length(which(directions == direction)) == 0 )
     stop("direction should be one of “auto”, “<”, “>”")
+  
+  if(length(direction) != 1)
+    warning("Direction is set to “auto”")
   
   if (length(which(cutoff.methods == cutoff.method)) == 0 ||
       length(cutoff.method) != 1)
@@ -1532,7 +1539,8 @@ nonlinComb <- function(markers = NULL,
       event = event,
       direction = direction,
       conf.level = conf.level,
-      cutoff.method = cutoff.method
+      cutoff.method = cutoff.method,
+      show.plot = show.plot
     )
   
   model_fit <- list(

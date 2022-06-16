@@ -5,7 +5,7 @@
 
 #' Example data for the dtComb package
 #'
-#' A dataset containing the results of diagnostic laparoscopy procedure for 225
+#' A data set containing the results of diagnostic laparoscopy procedure for 225
 #' patients
 #'
 #' @docType data

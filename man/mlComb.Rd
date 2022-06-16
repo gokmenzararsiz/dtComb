@@ -14,6 +14,7 @@ mlComb(
   nfolds = 5,
   nrepeats = 3,
   preProcess = NULL,
+  show.plot = TRUE,
   B = 25,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
@@ -58,6 +59,9 @@ pre-processing methods are: "BoxCox", "YeoJohnson", "expoTrans", "center",
 "scale", "range", "knnImpute", "bagImpute", "medianImpute", "pca", "ica",
 "spatialSign", "corr", "zv", "nzv", and "conditionalX". For detailed
 information about the methods see ?caret::preProcess}
+
+\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+plotted. Default is TRUE}
 
 \item{B}{a \code{numeric} value that is the number of bootstrap samples for
 bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV".

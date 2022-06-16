@@ -5,16 +5,16 @@
 #' @title Combine two diagnostic tests with several mathematical operators and
 #'  distance measures.
 #'
-#' @description The code{mathComb} function returns the combination results of
+#' @description The \code{mathComb} function returns the combination results of
 #'  two diagnostic tests with different mathematical operators, distance
 #'  measures, standardization, and transform options.
 #'
 #' @param markers a \code{numeric} data frame that includes two diagnostic tests
 #'  results
-#'
+#'  
 #' @param status a \code{factor} vector that includes the actual disease
-#'  status of the patients
-#'
+#'  status of the patients 
+#'  
 #' @param event a \code{character} string that indicates the event in the status
 #'  to be considered as positive event
 #'
@@ -29,7 +29,7 @@
 #'  distance measures.
 #'  \item \code{baseinexp}: Combination score obtained by marker1 power marker2.
 #'  \item \code{expinbase}: Combination score obtained by marker2 power marker1.
-#'
+#'  }
 #' @param distance a \code{character} string specifying the method used for
 #'  combining the markers. The available methods are:
 #'  \itemize{
@@ -81,18 +81,23 @@
 #' @param power.transform a \code{logical} variable that determines whether to
 #'  apply power to the markers giving the optimum AUC value in the [-3, 3]
 #'  range, before calculating the combination score (FALSE, default).
-#'
+#'  
+#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is 
+#' plotted. Default is TRUE
+#' 
 #' @param direction a \code{character} string determines in which direction the
 #'  comparison will be made.  “>”: if the predictor values for the control group
 #'  are higher than the values of the case group (controls > cases).
 #'  “<”: if the predictor values for the control group are lower or equal than
 #'  the values of the case group (controls < cases).
 #'
-#' @param conf.level a \code{numeric} values determines the confidens interval
+#' @param conf.level a \code{numeric} values determines the confidence interval
 #'  for the roc curve(0.95, default).
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #'  for the roc curve.
+#'  
+#' @param \dots further arguments. Currently has no effect on the results.
 #'
 #' @return A list of \code{numeric} mathematical combination scores calculated
 #'  according to the given method and standardization option
@@ -109,7 +114,7 @@
 #' cutoff.method <- "youden"
 #'
 #' score1 <- mathComb(markers = markers, status = status, event = event,
-#' method = "distance", distance = "avg", direction = direction,
+#' method = "distance", distance = "avg", direction = direction, show.plot = FALSE,
 #' standardize = "none", cutoff.method = cutoff.method)
 #'
 #' score2 <- mathComb(markers = markers, status = status, event = event,
@@ -117,12 +122,10 @@
 #' cutoff.method = cutoff.method)
 #'
 #' score3 <- mathComb(markers = markers, status = status, event = event,
-#'   direction = direction, power.transform = FALSE,
+#' method = "add",  direction = direction, power.transform = TRUE,
 #' cutoff.method = cutoff.method)
 #'
 #' @export
-
-
 
 mathComb <- function(markers = NULL,
                      status = NULL,
@@ -148,10 +151,10 @@ mathComb <- function(markers = NULL,
                      standardize = c("none", "range",
                                      "zScore", "tScore", "mean", "deviance"),
                      transform = c("none", "log", "exp", "sin", "cos"),
-                     power.transform = FALSE,
+                     power.transform = FALSE, show.plot = TRUE,
                      direction = c("auto", "<", ">"),
                      conf.level = 0.95,
-                     cutoff.method = c("youden", "roc01")) {
+                     cutoff.method = c("youden", "roc01"), ...) {
   methods <-
     c("add",
       "multiply",
@@ -275,9 +278,11 @@ mathComb <- function(markers = NULL,
   if (length(which(transforms == transform)) == 0)
     stop("transforms should be one of “none”, “log”, “exp”, “sin”, “cos”")
   
-  if (length(which(directions == direction)) == 0 ||
-      length(direction) != 1)
+  if (length(which(directions == direction)) == 0 )
     stop("direction should be one of “auto”, “<”, “>”")
+  
+  if(length(direction) != 1)
+    warning("Direction is set to “auto”")
   
   if (length(which(cutoff.methods == cutoff.method)) == 0 ||
       length(cutoff.method) != 1)
@@ -456,7 +461,8 @@ mathComb <- function(markers = NULL,
       event = event,
       direction = direction,
       conf.level = conf.level,
-      cutoff.method = cutoff.method
+      cutoff.method = cutoff.method,
+      show.plot = show.plot
     )
   
   model_fit <- list(

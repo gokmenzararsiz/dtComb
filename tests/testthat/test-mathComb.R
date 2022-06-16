@@ -1,19 +1,15 @@
 library(APtools)
 library(usethis)
 
-
-
 data("exampleData1")
 Data <- exampleData1[-c(83:138), ]
 markers <- Data[,-1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-
 data(mayo)
 Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
-
 
 Data3 <-
   read.csv(
@@ -26,7 +22,7 @@ status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 load("result_data/test_mathComb.rda")
 
-#comb.score, AUC, SEN, SPE ve Cutoff kontrolü
+###############################################################################
 
 for (distance in c("lorentzian",
                    "avg",
@@ -45,6 +41,8 @@ for (distance in c("lorentzian",
   
   test_that("mathComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -58,7 +56,8 @@ for (distance in c("lorentzian",
   })
 }
 
-#mayo Datası ile
+###############################################################################
+
 for (method in c("add",
                  "multiply",
                  "divide",
@@ -78,6 +77,8 @@ for (method in c("add",
   
   test_that("mathComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -91,7 +92,8 @@ for (method in c("add",
   })
 }
 
-#WDBC Datası ile
+###############################################################################
+
 for (distance in c("kulczynski_d",
                  "euclidean",
                  "manhattan",
@@ -109,6 +111,8 @@ for (distance in c("kulczynski_d",
   
   test_that("mathComb functions ...", {
     expect_length(res, 11)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance], tolerance =
+                   0.1)
     expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
                    0.01)
     expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
@@ -122,8 +126,8 @@ for (distance in c("kulczynski_d",
   })
 }
 
+###############################################################################
 
-#Hata kontrolü
 status4 <- factor(Data3[, 2], levels = c("B", "M", "C"))
 status4[[9]] <- "C"
 
@@ -154,8 +158,6 @@ test_that("mathComb functions ...", {
     "the number of markers should be 2"
   )
 })
-
-
 
 test_that("mathComb functions ...", {
   expect_error(
@@ -291,7 +293,8 @@ test_that("mathComb functions ...", {
   
 })
 
-# Markers için numeric Kontrolü ve event statüsü içeriyor mu?
+###############################################################################
+
 markers3[44, 1:2] <- "assay"
 
 test_that("mathComb functions ...", {
@@ -321,11 +324,10 @@ test_that("mathComb functions ...", {
   )
 })
 
-# NA Kontrolü
+###############################################################################
+
 markers3 <- Data3[, 4:5]
 status3[[12]] <- NA
-
-
 
 test_that("mathComb functions ...", {
   expect_warning(
@@ -341,7 +343,6 @@ test_that("mathComb functions ...", {
     "Rows with NA removed from the dataset since status include NA"
   )
 })
-
 
 markers3[44, 1:2] <- NA
 status3 <- factor(Data3[, 2], levels = c("B", "M"))

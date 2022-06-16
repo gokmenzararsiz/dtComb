@@ -15,9 +15,11 @@ linComb(
   niters = 10,
   standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
   ndigits = 0,
+  show.plot = TRUE,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01")
+  cutoff.method = c("youden", "roc01"),
+  ...
 )
 }
 \arguments{
@@ -98,17 +100,22 @@ usually 20 and 80
 \item{ndigits}{a \code{integer} value to indicate the number of decimal
 places to be used for rounding in Scoring method (0, default)}
 
+\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+plotted. Default is TRUE}
+
 \item{direction}{a \code{character} string determines in which direction the
 comparison will be made.  “>”: if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
 “<”: if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
-\item{conf.level}{a \code{numeric} values determines the confidens interval
+\item{conf.level}{a \code{numeric} values determines the confidence interval
 for the roc curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
+
+\item{\dots}{further arguments. Currently has no effect on the results.}
 
 \item{init.param}{a \code{numeric} initial value to be used for optimization
 in minmax, PCL, minimax and TS methods}
@@ -132,7 +139,7 @@ status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- linComb(markers = markers, status = status, event = "needed",
-method = "minimax", resample = "none",
+method = "minimax", resample = "none", show.plot = TRUE,
 standardize = "none", direction = "<", cutoff.method = "youden")
 
 score2 <- linComb(markers = markers, status = status, event = event,
@@ -140,7 +147,7 @@ method = "TS", resample = "boot", standardize = "range", direction = "<",
 cutoff.method = "youden")
 
 score3 <- linComb(markers = markers, status = status, event = event,
-method = "logistic", resample = "none", direction = "<",
+method = "PT", resample = "none", direction = "<",
 cutoff.method = "youden")
 
 }

@@ -18,7 +18,7 @@ per mcL}
 data(exampleData1)
 }
 \description{
-A dataset containing the results of diagnostic laparoscopy procedure for 225
+A data set containing the results of diagnostic laparoscopy procedure for 225
 patients
 }
 \examples{

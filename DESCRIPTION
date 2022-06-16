@@ -1,6 +1,6 @@
 Package: dtComb
 Title: A Comprehensive R Library for Combining Diagnostic Tests
-Version: 0.99.6
+Version: 0.99.7
 Author: Serra Ilayda Yerlitas <ilaydayerlitas340@gmail.com>,
         Serra Bersan Gengec <serrabersan@gmail.com>,
         Gozde Erturk Zararsiz <gozdeerturk9@gmail.com>,
@@ -19,7 +19,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 NeedsCompilation: no
 Packaged: 2021-11-26 13:04:43 UTC; serra
 Suggests: 

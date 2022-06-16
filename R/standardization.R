@@ -23,7 +23,7 @@
 #' \item \code{deviance}: Standardization with sample standard deviation = 1
 #' }
 #'
-#' @return A \code{numeric} dataframe of standardized biomarkers
+#' @return A \code{numeric} data.frame of standardized biomarkers
 #'
 #' @author Serra Ilayda  Yerlitas, Serra Bersan Gengec 
 #'
@@ -33,7 +33,7 @@
 #'
 #' #define the function parameters
 #' markers <- exampleData1[, -1]
-#' markers2 <- std.train(markers, "zScore")
+#' markers2 <- std.train(markers, "deviance")
 #'
 #' @export
 
@@ -109,7 +109,8 @@ std.train <- function(data, standardize = NULL) {
 
 
 
-#' @title Standardization according to the trainig model parameters.
+#' @title Standardization according to the training model parameters.
+#' 
 #' @description The \code{std.test} Standardization parameters will be taken
 #' from the fitted training model and applied to the new data set.
 #'

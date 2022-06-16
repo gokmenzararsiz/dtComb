@@ -35,10 +35,10 @@
 #' method = "logistic", resample= "none",
 #' standardize = "none", direction = "<", cutoff.method = "youden")
 #' 
-#' comb.score1 <-  predComb(score1, markers)
+#' comb.score1 <- predComb(score1, markers)
 #' 
 #' score2 <- nonlinComb(markers = markers, status = status, event = event,
-#' method = "nsgam", resample = "cv", include.interact = FALSE,
+#' method = "nsgam", resample = "cv", include.interact = FALSE, direction = "<",
 #' standardize = "zScore", cutoff.method = "youden")
 #'
 #' comb.score2 <-  predComb(score2, markers)
@@ -49,7 +49,7 @@
 #' 
 #' comb.score3 <-  predComb(score3, markers)
 #' 
-#' 
+#' @export
 
 predComb <- function(model, newdata){
 
@@ -79,7 +79,10 @@ predComb <- function(model, newdata){
       comb.score <- as.matrix(newdata) %*% model$fit$Parameters
     } 
     else if (method == "logistic"){
-      
+
+      coefficientsColNames <- names(model$fit$Parameters$coefficients[2:3])
+      colnames(newdata) <- coefficientsColNames
+
       comb.score <- predict(model$fit$Parameters, newdata = newdata, 
                                       type = "response")
       }
@@ -114,7 +117,7 @@ predComb <- function(model, newdata){
     interact <- model$fit$Interact
     
     if(method == "polyreg"){
-      print(model$fit$Parameters)
+
       comb.score <- predict(model$fit$Parameters, newdata = newdata, 
                             type = "response")
     }
