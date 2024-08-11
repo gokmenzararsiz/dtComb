@@ -919,7 +919,6 @@ linComb <- function(markers = NULL,
       )
 
       lambda <- as.numeric(opt.func$par)
-      print(lambda)
       markers <- as.matrix(markers)
 
       names(lambda) <- "lambda"

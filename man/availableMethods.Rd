@@ -6,6 +6,10 @@
 \usage{
 availableMethods()
 }
+\value{
+\code{No return value} contains the method names and explanations of the
+machine-learning models available for the dtComb package.
+}
 \description{
 This function returns a data.frame of available classification
 methods in \code{dtComb}. These methods are imported from the caret package.

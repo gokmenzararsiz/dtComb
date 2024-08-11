@@ -12,6 +12,9 @@ print_train(print_model)
 that includes the combination method, resampling method, pre-processing
 method, selected optimum parameters and the results of fit.}
 }
+\value{
+\code{No return value} writes a summary of the results to the console.
+}
 \description{
 The \code{print_train} function prints the summary statistics of
 the fitted model

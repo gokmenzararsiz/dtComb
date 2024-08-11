@@ -11,8 +11,8 @@ markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
 Data3 <-
-  utils::read.csv(
-    "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
+  read.csv(
+    "result_data/wdbc.data.txt",
     header = FALSE
   )
 Data3 <- Data3[-c(121:262), ]

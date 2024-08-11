@@ -423,6 +423,9 @@ mlComb <- function(markers = NULL,
 #' @description This function returns a data.frame of available classification
 #' methods in \code{dtComb}. These methods are imported from the caret package.
 #'
+#' @return \code{No return value} contains the method names and explanations of the
+#' machine-learning models available for the dtComb package.
+#'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'

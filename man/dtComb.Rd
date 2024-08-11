@@ -2,6 +2,7 @@
 % Please edit documentation in R/dtComb.R
 \docType{package}
 \name{dtComb}
+\alias{dtComb-package}
 \alias{dtComb}
 \title{dtComb: A Comprehensive R Library for Combining Diagnostic Tests}
 \description{
@@ -10,4 +11,24 @@ under four main categories: linear combinations with the linComb function,
 non-linear combinations with the nonlinComb function,
 mathematical operators with the mathComb function, and machine learning
 algorithms with the mlComb function.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/gokmenzararsiz/dtComb}
+}
+
+}
+\author{
+\strong{Maintainer}: Gokmen Zararsiz \email{gokmen.zararsiz@gmail.com} [contributor]
+
+Authors:
+\itemize{
+  \item Serra Ilayda Yerlitas \email{ilaydayerlitas340@gmail.com} [contributor]
+  \item Serra Bersan Gengec \email{serrabersan@gmail.com} [contributor]
+  \item Necla Kochan \email{necla.kayaalp@gmail.com} [contributor]
+  \item Gozde Erturk Zararsiz \email{gozdeerturk9@gmail.com} [contributor]
+  \item Selcuk Korkmaz \email{selcukorkmaz@gmail.com} [contributor]
+}
+
 }

@@ -53,6 +53,8 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
                      "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                      "ObservedPrev", "MeanPrev", "PrevalenceMatching"
                    ), show.plot = show.plot) {
+  oldpar <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(oldpar))
   graphics::par(pty = "s")
 
   roc.m1 <- suppressMessages(pROC::roc(status ~ markers[, 1],
@@ -81,9 +83,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
       "Combination Score"
     ), col = c("#619CFF", "#00BA38", "#F8766D"), lwd = 4)
   }
-
-
-  # ROC coordinates
   coord.m1 <- pROC::coords(roc.m1)
   coord.m2 <- pROC::coords(roc.m2)
   coord.c <- pROC::coords(roc.c)
@@ -94,9 +93,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
   )
   ROC_coordinates <- data.frame(coord.names, rbind(coord.m1, coord.m2, coord.c))
   colnames(ROC_coordinates) <- c("Marker", "Threshold", "Specificity", "Sensitivity")
-
-
-  # Area under the ROC Curves
   auc.m1 <- pROC::ci.auc(roc.m1, method = "delong")
   auc.m2 <- pROC::ci.auc(roc.m2, method = "delong")
   auc.c <- pROC::ci.auc(roc.c, method = "delong")
@@ -117,9 +113,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
   rownames(AUC_table) <- c(colnames(markers)[1], colnames(markers)[2], "Combination")
   colnames(AUC_table) <- c("AUC", "SE.AUC", "LowerLimit", "UpperLimit", "z", "p-value")
   AUC_table <- data.frame(AUC_table)
-
-
-  # Comparison of the Area under the ROC curves
   roccm1 <- pROC::roc.test(roc.c, roc.m1, method = "delong")
   roccm2 <- pROC::roc.test(roc.c, roc.m2, method = "delong")
   rocm1m2 <- pROC::roc.test(roc.m1, roc.m2, method = "delong")
@@ -155,9 +148,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
     "Marker1 (A)", "Marker2 (B)", "AUC (A)", "AUC (B)",
     "|A-B|", "SE(|A-B|)", "z", "p-value"
   )
-
-  # Diagnostic Statistics for Each Marker and Combination Function
-
   data <- data.frame(markers, status, comb.score)
 
   cutoff.m1 <- OptimalCutpoints::optimal.cutpoints(colnames(data[1]), colnames(data[3]),
@@ -217,5 +207,6 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
   )
 
   class(allres) <- "dtComb"
+  graphics::par(mfrow = c(2, 2))
   return(allres)
 }

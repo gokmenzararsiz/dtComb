@@ -16,7 +16,7 @@ newmarkers2 <- mayo[c(42:119), 3:4]
 
 Data3 <-
   read.csv(
-    "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
+    "result_data/wdbc.data.txt",
     header = FALSE
   )
 Data3 <- Data3[-c(121:262), ]

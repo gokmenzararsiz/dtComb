@@ -125,26 +125,12 @@ predict.dtComb <- function(object, newdata = NULL, ...) {
     interact <- model$fit$Interact
 
     if (method %in% c("ridgereg", "lassoreg", "elasticreg")) {
-      # if(interact == TRUE){
-      #
-      # interact <- newdata$m1 * newdata$m2
-      #
-      # dataspace <- cbind.data.frame(poly(newdata$m1, model$fit$Degree1),
-      #                               poly(newdata$m2, model$fit$Degree2), interact)
       dataspace <- getPower(newdata, model$fit$Degree1, model$fit$Degree2, interact)
 
 
       comb.score <- predict(model$fit$Parameters,
         newx = as.matrix(dataspace), type = "response"
       )
-      # } else {
-      #
-      #   dataspace <- cbind.data.frame(poly(newdata$m1, model$fit$Degree1),
-      #                                 poly(newdata$m2, model$fit$Degree2))
-      #
-      #   comb.score <- predict(model$fit$Parameters, newx = as.matrix(dataspace),
-      #                         type = "response")
-      # }
     } else {
       comb.score <- predict(model$fit$Parameters,
         newdata = newdata,
@@ -176,23 +162,15 @@ predict.dtComb <- function(object, newdata = NULL, ...) {
     }
 
     if (method == "add") {
-      # if(power.transform == TRUE){
-
       markers <- newdata^model$fit$MaxPower
       comb.score <- markers[, 1] + markers[, 2]
-      # }
-      # else {comb.score <- newdata[ ,1] + newdata[ ,2]}
     } else if (method == "multiply") {
       comb.score <- newdata[, 1] * newdata[, 2]
     } else if (method == "divide") {
       comb.score <- newdata[, 1] / newdata[, 2]
     } else if (method == "subtract") {
-      # if(power.transform == TRUE){
-
       markers <- newdata^model$fit$MaxPower
       comb.score <- markers[, 1] - markers[, 2]
-      # }
-      # else{comb.score <- (newdata[ ,1] - newdata[ ,2])}
     } else if (method == "distance") {
       if (distance == "euclidean") {
         comb.score <- sqrt(newdata[, 1]^2 + newdata[, 2]^2)

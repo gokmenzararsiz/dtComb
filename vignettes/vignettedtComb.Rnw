@@ -17,32 +17,27 @@
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage{Sweave}
 \usepackage[numbers]{natbib}
-\usepackage{nameref} % cross-reference for section names.
+\usepackage{nameref} 
 \usepackage{booktabs}
 \usepackage{caption}
 \RequirePackage{graphicx, fancyvrb, textcomp}
-\usepackage{authblk}  % authors and affiliations
+
+\usepackage{authblk}
 \setcounter{Maxaffil}{0}
 \renewcommand\Affilfont{\itshape\small}
 
-%%% New Commands %%%
 \newcommand{\dtComb}{\textit{dtComb}}
-% \newcommand{\Biocpkg}[1]{\href{https://www.bioconductor.org/packages/release/bioc/html/#1.html}{\texttt{#1}}}
 \newcommand{\CRANpkg}[1]{\href{https://cran.r-project.org/web/packages/#1/index.html}{\texttt{#1}}}
 \newcommand{\Rfunction}[1]{\texttt{#1}}
 \newcommand{\Rcode}[1]{\texttt{#1}}
 \newcommand{\Rclass}[1]{\texttt{#1}}
 \newcommand{\software}[1]{\texttt{#1}}
 
-%%%% Set knitr options %%%%
 <<echo=FALSE>>=
 library(knitr)
 opts_chunk$set(tidy = FALSE, dev = "pdf", message = FALSE, fig.align = "center", cache = FALSE)
 @
-
-%%%% Load required packages %%%%
 
 
 \title{\textbf{dtComb: A Comprehensive R Package for Combining Two Diagnostic Tests}}
@@ -71,7 +66,6 @@ opts_chunk$set(tidy = FALSE, dev = "pdf", message = FALSE, fig.align = "center",
 
 \begin{abstract}
 \CRANpkg{dtComb} is a comprehensive R package that combines two different diagnostic tests. Using its extensive collection of 143 combination methods, the \CRANpkg{dtComb} package enables researchers to standardize their data and merge diagnostic tests. Users can load the dataset containing the reference list and the diagnostic tests they intend to utilize. The package includes combination methods grouped into four main categories: linear combination methods (\Rfunction{linComb}), non-linear combination methods (\Rfunction{nonlinComb}), mathematical operators (\Rfunction{mathComb}), and machine-learning algorithms (\Rfunction{mlComb}). The package incorporates eight specific combination methods from the literature within the scope of linear combination methods. Non-linear combination methods encompass statistical approaches like polynomial regression, penalized regression methods, and splines, incorporating the interactions between the diagnostic tests. Mathematical operators involve arithmetic operations and eight \texttt{distance measures} adaptable to various data structures. Finally, machine-learning algorithms include 113 models from the \CRANpkg{caret} package tailored for \CRANpkg{dtComb}'s data structure. The data standardization step includes five different methods: Z-score, T-score, Mean, Deviance, and Range standardization. The \CRANpkg{dtComb} integrates machine-learning approaches, enabling the utilization of preprocessing methods available in the \CRANpkg{caret} package for standardization purposes within the \CRANpkg{dtComb} environment. The \CRANpkg{dtComb} package allows users to fine-tune hyperparameters while building a model. This is accomplished through resampling techniques such as 10-fold cross-validation, bootstrapping, and 10-fold repeated cross-validation. Since machine-learning algorithms are directly adapted from the \CRANpkg{caret} package, all resampling methods available in the \CRANpkg{caret} package are applicable within the \CRANpkg{dtComb} environment. Following the model building, the \Rfunction{predict} function predicts the class labels and returns the combination scores of new observations from the test set. The \CRANpkg{dtComb} package is designed to be user-friendly and easy to use and is currently the most comprehensive package developed to combine diagnostic tests in the literature. This vignette was created to guide researchers on how to use this package. 
-%%%%%%%%%
 \vspace{1em}
 \noindent\textbf{dtComb version:} \Sexpr{packageDescription("dtComb")$Version}
 \end{abstract}

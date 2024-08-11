@@ -8,4 +8,4 @@
 #'
 #' @docType package
 #' @name dtComb
-NULL
+"_PACKAGE"

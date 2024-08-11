@@ -8,6 +8,8 @@
 #' that includes the combination method, resampling method, pre-processing
 #' method, selected optimum parameters and the results of fit.
 #'
+#' @return \code{No return value} writes a summary of the results to the console.
+#'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 
@@ -82,6 +84,8 @@ print_train <- function(print_model) {
 #'
 #' @param DiagStatCombined a \code{numeric} table of confusion matrix of the
 #' calculated combination score.
+#'
+#' @return A \code{list} of Cohen's kappa and accuracy values
 #'
 #' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz

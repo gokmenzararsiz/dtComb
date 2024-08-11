@@ -10,6 +10,9 @@
 \item{DiagStatCombined}{a \code{numeric} table of confusion matrix of the
 calculated combination score.}
 }
+\value{
+A \code{list} of Cohen's kappa and accuracy values
+}
 \description{
 The \code{kappa.accuracy} calculates Cohen's kappa and accuracy.
 }
