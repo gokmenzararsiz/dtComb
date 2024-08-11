@@ -7,13 +7,13 @@
 helper_TS(theta, markers, status)
 }
 \arguments{
+\item{theta}{a \code{numeric} parameter that will be estimated in TS
+method for the combination score}
+
 \item{markers}{a \code{numeric} data frame that contains the biomarkers}
 
 \item{status}{a \code{factor} data frame that includes the actual disease
 status of the patients}
-
-\item{t}{a \code{numeric} parameter that will be estimated in TS
-method for the combination score}
 }
 \value{
 A \code{numeric} Optimized value calculated with combination scores
@@ -21,13 +21,13 @@ using theta
 }
 \description{
 The \code{helper_TS} function calculates the combination
-coefficient and optimized value of given biomarkers for TS method
+coefficient and optimized value of given biomarkers for the TS method.
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 
@@ -37,5 +37,6 @@ stat <- helper_TS(theta = t, markers = markers, status = status)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

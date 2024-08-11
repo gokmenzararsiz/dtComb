@@ -1,13 +1,13 @@
-library(APtools)
+# library(usethis)
 
 data("exampleData1")
-Data <- exampleData1[-c(83:138),]
+Data <- exampleData1[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
 newmarkers <- exampleData1[c(83:138), -1]
 
-data(mayo)
+load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
@@ -19,7 +19,7 @@ Data3 <-
     "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
     header = FALSE
   )
-Data3 <- Data3[-c(121:262),]
+Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
@@ -29,8 +29,10 @@ load("result_data/test_predComb.rda")
 
 ###############################################################################
 
-for (method in c("scoring",
-                   "minimax")) {
+for (method in c(
+  "scoring",
+  "minimax"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers,
@@ -39,23 +41,26 @@ for (method in c("scoring",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
- pred <- predComb(res, newmarkers)
-    test_that("linComb functions ...", {
-      expect_length(pred, 2)
-      expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
-      expect_equal(pred$labels,
-                   r$Labels[r$Method == method],
-                   tolerance = 0.01)
-    })
+  pred <- predict(res, newmarkers)
+  test_that("linComb functions ...", {
+    expect_length(pred, 2)
+    expect_equal(as.numeric(pred$comb.score), r$Comb.score[r$Method == method], tolerance = 0.01)
+    expect_equal(pred$labels,
+      r$Labels[r$Method == method],
+      tolerance = 0.01
+    )
+  })
 }
 
 ###############################################################################
 
-for (method in c("logistic",
-                 "SL",
-                 "TS")) {
+for (method in c(
+  "logistic",
+  "SL",
+  "TS"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers2,
@@ -64,24 +69,26 @@ for (method in c("logistic",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
-  pred <- predComb(res, newmarkers2)
+
+  pred <- predict(res, newmarkers2)
   test_that("linComb functions ...", {
     expect_length(pred, 2)
-    expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
+    expect_equal(as.numeric(pred$comb.score), r$Comb.score[r$Method == method], tolerance = 0.01)
     expect_equal(pred$labels,
-                 r$Labels[r$Method == method],
-                 tolerance = 0.01)
+      r$Labels[r$Method == method],
+      tolerance = 0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("PCL",
-                 "PT",
-                 "minmax")) {
+for (method in c(
+  "PCL",
+  "minmax"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers3,
@@ -91,16 +98,38 @@ for (method in c("PCL",
     resample = "none",
     standardize = "range",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
-  pred <- predComb(res, newmarkers3)
+
+  pred <- predict(res, newmarkers3)
   test_that("linComb functions ...", {
     expect_length(pred, 2)
-    expect_equal(as.numeric(pred$comb.score),  r$Comb.score[r$Method == method], tolerance = 0.01)
+    expect_equal(as.numeric(pred$comb.score), r$Comb.score[r$Method == method], tolerance = 0.01)
     expect_equal(pred$labels,
-                 r$Labels[r$Method == method],
-                 tolerance = 0.01)
+      r$Labels[r$Method == method],
+      tolerance = 0.01
+    )
   })
 }
 
+set.seed(14042022)
+res <- linComb(
+  markers = markers3,
+  status = status3,
+  event = "M",
+  method = "PT",
+  resample = "none",
+  standardize = "range",
+  direction = "<",
+  cutoff.method = "Youden"
+)
+
+pred <- predict(res, newmarkers3)
+test_that("linComb functions ...", {
+  expect_length(pred, 2)
+  expect_equal(as.numeric(pred$comb.score), r$Comb.score[r$Method == "PT"], tolerance = 0.01)
+  expect_equal(pred$labels,
+    r$Labels[r$Method == "PT"],
+    tolerance = 0.01
+  )
+})

@@ -1,30 +1,30 @@
 Package: dtComb
 Title: A Comprehensive R Library for Combining Diagnostic Tests
-Version: 0.99.7
+Version: 1.0.0
 Author: Serra Ilayda Yerlitas <ilaydayerlitas340@gmail.com>,
         Serra Bersan Gengec <serrabersan@gmail.com>,
+        Necla Kochan <necla.kayaalp@gmail.com>,
         Gozde Erturk Zararsiz <gozdeerturk9@gmail.com>,
         Selcuk Korkmaz <selcukorkmaz@gmail.com>,
         Gokmen Zararsiz <gokmen.zararsiz@gmail.com>
 Maintainer: Gokmen Zararsiz <gokmen.zararsiz@gmail.com>
 Description: A comprehensive library in R programming language for combining two
-    diagnostic tests using various approaches that includes statistical and 
-    machine learning based methodologies. These approaches are divided into four 
-    groups: linear combination methods, non-linear combination methods, mathematical operators
-    and machine learning algorithms. See the ... website for more information,
-    documentation and examples.
+            diagnostic tests using various approaches that includes statistical 
+            and machine learning based methodologies. These approaches are divided
+            into four groups; linear combination methods, non-linear combination 
+            methods, mathematical operatorsand machine learning algorithms. 
+            See the <http://biosoft.erciyes.edu.tr/app/dtComb> website for more 
+            information, documentation and examples.
 Depends: R (>= 3.5.0)
-Imports: pROC (>= 1.18.0), epiR
-License: GPL-3
+Imports: pROC (>= 1.18.0), caret, epiR, gam, ggplot2, ggpubr, glmnet,
+        OptimalCutpoints
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2021-11-26 13:04:43 UTC; serra
-Suggests: 
-    knitr,
-    rmarkdown,
-    testthat (>= 3.0.0)
+Packaged: 2023-09-01 08:09:00 UTC; serrailaydayerlitas
+Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr

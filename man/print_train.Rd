@@ -13,9 +13,10 @@ that includes the combination method, resampling method, pre-processing
 method, selected optimum parameters and the results of fit.}
 }
 \description{
-The code{print_train} function prints the summary statistics of
+The \code{print_train} function prints the summary statistics of
 the fitted model
 }
 \author{
-Serra Ilayda  Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

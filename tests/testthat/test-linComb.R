@@ -1,24 +1,21 @@
-library(APtools)
-library(usethis)
-
 data("exampleData1")
-Data <- exampleData1[-c(83:138),]
+Data <- exampleData1[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-test <- exampleData1[c(83:138),]
+test <- exampleData1[c(83:138), ]
 
-data(mayo)
-Data2 <- mayo[-c(42:119),]
+load("result_data/mayo.rda")
+Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
 Data3 <-
-  read.csv(
+  utils::read.csv(
     "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
     header = FALSE
   )
-Data3 <- Data3[-c(121:262),]
+Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
@@ -26,8 +23,10 @@ status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 load("result_data/test_linComb.rda")
 
-for (method in c("TS",
-                 "minimax")) {
+for (method in c(
+  "TS",
+  "minimax"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers,
@@ -36,31 +35,41 @@ for (method in c("TS",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("linComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("logistic",
-                 "SL",
-                 "scoring")) {
+for (method in c(
+  "logistic",
+  "SL",
+  "scoring"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers2,
@@ -69,32 +78,41 @@ for (method in c("logistic",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("linComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("PCL",
-                 "PT",
-                 "minmax"
-                 )) {
+for (method in c(
+  "PCL",
+  "PT",
+  "minmax"
+)) {
   set.seed(14042022)
   res <- linComb(
     markers = markers3,
@@ -104,23 +122,31 @@ for (method in c("PCL",
     resample = "none",
     standardize = "range",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("linComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
@@ -142,7 +168,7 @@ test_that("linComb functions ...", {
     ),
     "the number of status levels should be 2"
   )
-  
+
   expect_error(
     linComb(
       markers = Data3[, 4:6],
@@ -165,11 +191,11 @@ test_that("linComb functions ...", {
       event = "M",
       direction = "<",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “scoring”, “SL”, “logistic”, “minmax”, “PT”, “PCL”, “minimax”, “TS”"
+    "method should be one of 'scoring', 'SL', 'logistic', 'minmax', 'PT', 'PCL', 'minimax', 'TS'"
   )
-  
+
   expect_error(
     linComb(
       markers = markers3,
@@ -178,11 +204,11 @@ test_that("linComb functions ...", {
       method = "asaddsa",
       direction = "auto",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “scoring”, “SL”, “logistic”, “minmax”, “PT”, “PCL”, “minimax”, “TS”"
+    "method should be one of 'scoring', 'SL', 'logistic', 'minmax', 'PT', 'PCL', 'minimax', 'TS'"
   )
-  
+
   expect_error(
     linComb(
       markers = markers3,
@@ -192,11 +218,11 @@ test_that("linComb functions ...", {
       direction = "auto",
       resample = "cv",
       standardize = "asdada",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "standardize should be one of “range”, “zScore”, “tScore”, “mean”, “deviance”"
+    "standardize should be one of 'range', 'zScore', 'tScore', 'mean', 'deviance'"
   )
-  
+
   expect_error(
     linComb(
       markers = markers2,
@@ -205,11 +231,11 @@ test_that("linComb functions ...", {
       method = "minimax",
       direction = "asdada",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "direction should be one of “auto”, “<”, “>”"
+    "direction should be one of 'auto', '<', '>'"
   )
-  
+
   expect_error(
     linComb(
       markers = markers2,
@@ -220,7 +246,7 @@ test_that("linComb functions ...", {
       standardize = "tScore",
       cutoff.method = "sadda"
     ),
-    "cutoff.method should be one of “youden”, “roc01”"
+    "The entered cutoff.method is invalid"
   )
   expect_error(
     linComb(
@@ -231,11 +257,10 @@ test_that("linComb functions ...", {
       resample = "sada",
       standardize = "range",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "resample should be one of “none“, “cv“, “repeatedcv“, “boot“"
+    "resample should be one of 'none', 'cv', 'repeatedcv', 'boot'"
   )
-  
 })
 
 ###############################################################################
@@ -251,7 +276,7 @@ test_that("linComb functions ...", {
       method = "PCL",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "at least one variable is not numeric"
   )
@@ -263,7 +288,7 @@ test_that("linComb functions ...", {
       method = "PCL",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "status does not include event"
   )
@@ -283,7 +308,7 @@ test_that("linComb functions ...", {
       method = "TS",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since status include NA"
   )
@@ -301,7 +326,7 @@ test_that("linComb functions ...", {
       method = "TS",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since markers include NA"
   )
@@ -313,10 +338,24 @@ test_that("linComb functions ...", {
       markers = markers,
       status = status,
       event = "needed",
-      method = "PT",
+      method = "PCL",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "The used combination method requires range standardization. All biomarker values are standardized to a range between 0 and 1."
+  )
+})
+
+test_that("linComb functions ...", {
+  expect_warning(
+    linComb(
+      markers = markers,
+      status = status,
+      event = "needed",
+      method = "PT",
+      direction = "<",
+      cutoff.method = "Youden"
+    ),
+    "The used combination method requires zScore standardization."
   )
 })

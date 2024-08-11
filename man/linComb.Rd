@@ -18,7 +18,12 @@ linComb(
   show.plot = TRUE,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01"),
+  cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
+    "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
+    "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
+    "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
+    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
+    "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
   ...
 )
 }
@@ -33,45 +38,109 @@ status of the patients}
 to be considered as positive event}
 
 \item{method}{a \code{character} string specifying the method used for
-combining the markers. The available methods are:
+combining the markers. \cr
+\strong{Notations:}
+Before getting into these methods,
+let us first introduce some notations that will be used
+throughout this vignette. Let
+\eqn{D_i,  i = 1, 2, \ldots, n_1}
+be the marker values of \eqn{ i\text{th}} individual in diseased group, where
+\eqn{D_i = (D_{i1}, D_{i2})} and
+\eqn{H_j, j=1,2, \ldots, n_2}
+be the marker values of \eqn{ j\text{th}} individual in healthy group, where
+\eqn{H_j = H_{j1}, H_{j2}}.
+Let
+\eqn{x_i1 = c(D_{i1}, H_{j1})} be the values of the first marker, and
+\eqn{x_i2 = c(D_{i2}, H_{j2})} be values of the second marker for the \eqn{ i\text{th}}
+individual \eqn{ i= 1,2, \ldots, n}. Let
+\eqn{D_{i,min} = min(D_{i1}, D_{i2}), D_{i,max} = max(D_{i1}, D_{i2}) ,
+ H_{j,min} = min(H_{j1}, H_{j2}), H_{j,max} = max(H_{j1}, H_{j2}) } and
+\eqn{c_i} be  be the resulting combination score for the \eqn{ i\text{th}} individual.
+
+The available methods are:
+
 \itemize{
-\item \code{scoring}: Combination score obtained using the estimated
-beta/regression coefficients values of the relevant logistic regression model
-\item \code{SL}: Su and Liu combination score obtained by using Fisher's
-discriminant function under the assumption of multivariate normal
-distribution model and proportionate covariance matrices
-\item \code{logistic}: Combination score obtained by fitting a logistic
-regression model
-\item \code{minmax}: Linearly combines the minimum and maximum values of
-the markers
-\item \code{PT}: Pepe and Thompson combination score obtained by
-proportioning the slope values the relevant logistic regression model
-\item \code{PCL}: Pepe, Cai and Langton combination score obtained by using
-AUC as the parameter of a logistic regression model
-\item \code{minimax}: Combination score obtained with the Minimax procedure
-\item \code{TS}: Combination score obtained by using the trigonometric
-functions of the theta value that optimizes the AUC
-}
-\bold{IMPORTANT}: See Details for further information.}
+\item \bold{Logistic Regression} \code{(logistic)}: Combination score obtained
+by fitting a logistic regression modelis as follows:
+\deqn{ c_i = \left(\frac{e^ {\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1 + e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}\right)}
+A combination score obtained by fitting a logistic regression model typically refers
+to the predicted probability or score assigned to each observation
+in a dataset based on the logistic regression model’s
+fitted values
+
+\item \bold{Scoring based on Logistic Regression} \code{(scoring)}: Combination score is obtained using the
+slope values of the relevant logistic regression model, slope values are rounded to the number of
+digits taken from the user.
+\deqn{c_i = \beta_1 x_{i1} + \beta_2 x_{i2}}
+
+\item \bold{Pepe & Thompson’s method} \code{(PT)}: The Pepe and Thompson combination score,
+developed using their optimal linear combination technique, aims to maximize
+the Mann-Whitney statistic in the same way that the Min-max method does. Unlike
+the Min-max method, the Pepe and Thomson method takes into account all marker
+values instead of just the lowest and maximum values.
+\deqn{  maximize\; U(\alpha) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i1} + \alpha D_{i2} >= H_{j1} + \alpha H_{j2})}}
+\cr
+\deqn{c_i = x_{i1} + \alpha x_{i2}}
+
+\item \bold{Pepe, Cai & Langton’s method} \code{(PCL)}: Pepe, Cai and Langton combination score
+obtained by using AUC as the parameter of a logistic regression model.
+\deqn{maximize\; U(\alpha) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i1} + \alpha D_{i2} >}}
+\deqn{H_{j1} + \alpha H_{j2}) + \left(\frac{1}{2} \right) I(D_{i1} + \alpha D_{i2} = H_{j1} + \alpha H_{j2})}
+
+\item \bold{Min-Max method} \code{(minmax)}: This method linearly combines the minimum
+and maximum values of the markers by finding a parameter,\eqn{\alpha}  , that
+maximizes the Mann-Whitney statistic, an empirical estimate of the ROC area.
+\deqn{ maximize\;U( \alpha ) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i,max} + \alpha D_{i,min} > H_{j,max} + \alpha H_{j,min})}}
+\cr
+\deqn{c_i = x_{i,max} + \alpha x_{i,min}}
+
+where \eqn{x_{i,max} = max(x_{i1},x_{i2})} and \eqn{ x_{i,min} = min(x_{i1}, x_{i2})}
+
+\item \bold{Su & Liu’s method} \code{(SL)}: The Su and Liu combination score is computed through
+Fisher’s discriminant coefficients, which assumes that the underlying
+data follow a multivariate normal distribution, and the covariance matrices across
+different classes are assumed to be proportional.Assuming that
+\eqn{D\sim N(\mu_D,\textstyle \sum_D)}
+and
+\eqn{H\sim N(\mu_H,\textstyle \sum_H)} represent
+the multivariate normal distributions for the diseased and non-diseased groups,
+respectively. The Fisher’s coefficients are as follows:
+
+\deqn{(\alpha , \beta) = (\textstyle \sum_{D}+\sum_{H})^{\;-1}\mu}
+\eqn{ \text{where} \mu_=\mu_D - \mu_H. \text{The combination score in this case is:}}
+\deqn{ c_i = \alpha x_{i1} + \beta x_{i2}}
+
+\item \bold{Minimax approach} \code{(minimax)}: Combination score obtained with the Minimax procedure;
+\eqn{t} parameter is chosen as the value that gives the maximum AUC from the
+combination score. Suppose that D follows a multivariate normal distribution
+\eqn{D\sim N(\mu_D,\textstyle \sum_D)}, representing diseased group and H follows
+a multivariate normal distribution \eqn{H\sim N(\mu_H,\textstyle \sum_H)} , representing the non-diseased group.
+Then Fisher’s coefficients are as follows:
+\deqn{ (\alpha , \beta) = {[t { \textstyle \sum_{D}} + (1 - t)  \textstyle \sum_{H}] ^ {-1}}{(\mu_D - \mu_H)}}
+\deqn{    c_i = b_1 x_1 + b_2 x_2}
+\item \bold{Todor & Saplacan’s method} \code{(TS)}:Combination score obtained by using
+the trigonometric functions of the \eqn{\Theta} value that optimizes the corresponding AUC.
+\deqn{ c_i = sin(\theta) x_{i1} + cos(\theta) x_{i2}}
+}}
 
 \item{resample}{a \code{character} string indicating the name of the
-resampling options. Bootstrapping Cross validation and repeated cross
-validation are given as the options for resampling along with the number
+resampling options. Bootstrapping Cross-validation and repeated cross-validation
+are given as the options for resampling, along with the number
 of folds and number of repeats.
 \itemize{
-\item \code{boot}: Bootstrapping is performed in a similar way; the dataset
+\item \code{boot}: Bootstrapping is performed similarly; the dataset
 is divided into folds with replacement and models are trained and tested
 in these folds to determine the best parameters for the given method and
 dataset.
-\item \code{cv}: Cross-validation resampling, the dataset is divided into
-the number of folds given without replacement, in each iteration one fold
-is selected as the test set, the model is built using the remaining folds
-and tested on the test set. The corresponding AUC values are kept in a list
-as well as the parameters used for the combination. The best performed model
-is selected and the combination score returned for the whole dataset.
-\item \code{repeatedcv}: repeated cross-validation the process is repeated
-and the best performed models selected at each step is stored in another
-list, the best performed among these models is selected to be applied to
+\item \code{cv}: Cross-validation resampling, the dataset is divided into the
+number of folds given without replacement; in each iteration, one fold is
+selected as the test set, and the model is built using the remaining folds
+and tested on the test set. The corresponding AUC values and the parameters
+used for the combination are kept in a list. The best-performed model is
+selected, and the combination score is returned for the whole dataset.
+\item \code{repeatedcv}: Repeated cross-validation the process is repeated,
+and the best-performed models selected at each step are stored in another
+list; the best performed among these models is selected to be applied to
 the entire dataset.
 }}
 
@@ -88,13 +157,36 @@ bootstrapped resampling iterations (10, default)}
 standardization method. The default option is no standardization applied.
 Available options are:
 \itemize{
-\item \code{range}: Standardization to a range between 0 and 1
-\item \code{zScore}: Standardization using z scores with mean = 0
-and standard deviation = 1
-\item \code{tScore}: Standardization using T scores. The range varies between
-usually 20 and 80
-\item \code{mean}: Standardization with sample mean = 1
-\item \code{deviance}: Standardization with sample standard deviation = 1
+\item \bold{Z-score} \code{(zScore)}: This method scales the data to have a mean
+of 0 and a standard deviation of 1. It subtracts the mean and divides by the standard
+deviation for each feature. Mathematically,
+\deqn{ Z-score = \frac{x - (\overline x)}{sd(x)}}
+
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker and \eqn{sd(x)} is the standard deviation of the marker.
+\item \bold{T-score} \code{(tScore)}: T-score is commonly used
+in data analysis to transform raw scores into a standardized form.
+The standard formula for converting a raw score \eqn{x} into a T-score is:
+\deqn{T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50}
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
+and \eqn{sd(x)} is the standard deviation of the marker.
+
+\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
+a specific range, between 0 and 1. The formula for this method is:
+\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+
+\item \bold{Mean} \code{(mean)}: This method, which helps
+to understand the relative size of a single observation concerning
+the mean of dataset, calculates the ratio of each data point to the mean value
+of the dataset.
+\deqn{Mean =  \frac{x}{\overline{x}}}
+where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
+
+\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+comparison of individual data points in relation to the overall spread of
+the data, calculates the ratio of each data point to the standard deviation
+of the dataset.
+\deqn{Deviance = \frac{x}{sd(x)}}
+where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 
 \item{ndigits}{a \code{integer} value to indicate the number of decimal
@@ -104,9 +196,9 @@ places to be used for rounding in Scoring method (0, default)}
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
-comparison will be made.  “>”: if the predictor values for the control group
+comparison will be made.  ">": if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
-“<”: if the predictor values for the control group are lower or equal than
+"<": if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
 \item{conf.level}{a \code{numeric} values determines the confidence interval
@@ -116,41 +208,53 @@ for the roc curve(0.95, default).}
 for the roc curve.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
-
-\item{init.param}{a \code{numeric} initial value to be used for optimization
-in minmax, PCL, minimax and TS methods}
 }
 \value{
 A list of \code{numeric} linear combination scores calculated
-according to the given method and standardization option
+according to the given method and standardization option.
 }
 \description{
 The \code{linComb} function calculates the combination
 scores of two diagnostic tests selected among several linear combination
-methods and standardization options
+methods and standardization options.
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- exampleData1[, -1]
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
-score1 <- linComb(markers = markers, status = status, event = "needed",
-method = "minimax", resample = "none", show.plot = TRUE,
-standardize = "none", direction = "<", cutoff.method = "youden")
+score1 <- linComb(
+  markers = markers, status = status, event = event,
+  method = "logistic", resample = "none", show.plot = TRUE,
+  standardize = "none", direction = "<", cutoff.method = "Youden"
+)
 
-score2 <- linComb(markers = markers, status = status, event = event,
-method = "TS", resample = "boot", standardize = "range", direction = "<",
-cutoff.method = "youden")
+# call data
+data(exampleData2)
 
-score3 <- linComb(markers = markers, status = status, event = event,
-method = "PT", resample = "none", direction = "<",
-cutoff.method = "youden")
+# define the function parameters
+markers <- exampleData2[, -c(1:3, 6:7)]
+status <- factor(exampleData2$Group, levels = c("normals", "carriers"))
+event <- "carriers"
+
+score2 <- linComb(
+  markers = markers, status = status, event = event,
+  method = "PT", resample = "none", standardize = "none", direction = "<",
+  cutoff.method = "Youden"
+)
+
+score3 <- linComb(
+  markers = markers, status = status, event = event,
+  method = "minmax", resample = "none", direction = "<",
+  cutoff.method = "Youden"
+)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

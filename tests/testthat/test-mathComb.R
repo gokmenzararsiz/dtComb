@@ -1,12 +1,9 @@
-library(APtools)
-library(usethis)
-
 data("exampleData1")
 Data <- exampleData1[-c(83:138), ]
-markers <- Data[,-1]
+markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-data(mayo)
+load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
@@ -24,10 +21,12 @@ load("result_data/test_mathComb.rda")
 
 ###############################################################################
 
-for (distance in c("lorentzian",
-                   "avg",
-                   "taneja",
-                   "kumar-johnson")) {
+for (distance in c(
+  "lorentzian",
+  "avg",
+  "taneja",
+  "kumar-johnson"
+)) {
   set.seed(14042022)
   res <- mathComb(
     markers = markers,
@@ -36,35 +35,44 @@ for (distance in c("lorentzian",
     method = "distance",
     distance = distance,
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("mathComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Distance == distance][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Distance == distance][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Distance == distance][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Distance == distance][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Distance == distance][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("add",
-                 "multiply",
-                 "divide",
-                 "subtract",
-                 "baseinexp",
-                 "expinbase"
-                 )) {
+for (method in c(
+  "add",
+  "multiply",
+  "divide",
+  "subtract",
+  "baseinexp",
+  "expinbase"
+)) {
   set.seed(14042022)
   res <- mathComb(
     markers = markers2,
@@ -72,32 +80,42 @@ for (method in c("add",
     event = "1",
     method = method,
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("mathComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Method == method],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (distance in c("kulczynski_d",
-                 "euclidean",
-                 "manhattan",
-                 "chebyshev")) {
+for (distance in c(
+  "kulczynski_d",
+  "euclidean",
+  "manhattan",
+  "chebyshev"
+)) {
   set.seed(14042022)
   res <- mathComb(
     markers = markers3,
@@ -106,23 +124,31 @@ for (distance in c("kulczynski_d",
     method = "distance",
     distance = distance,
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("mathComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance], tolerance =
-                   0.1)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Distance == distance][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Distance == distance][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Distance == distance][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$CombScore), r$Comb.score[r$Distance == distance],
+      tolerance =
+        0.1
+    )
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Distance == distance][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Distance == distance][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Distance == distance][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Distance == distance][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
@@ -144,7 +170,7 @@ test_that("mathComb functions ...", {
     ),
     "the number of status levels should be 2"
   )
-  
+
   expect_error(
     mathComb(
       markers = Data3[, 4:6],
@@ -167,11 +193,11 @@ test_that("mathComb functions ...", {
       event = "M",
       direction = "<",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “add”, “multiply”, “divide”, “subtract” ,“distance”, “baseinexp”, “expinbase”"
+    "method should be one of 'add', 'multiply', 'divide', 'subtract' ,'distance', 'baseinexp', 'expinbase'"
   )
-  
+
   expect_error(
     mathComb(
       markers = markers3,
@@ -180,11 +206,11 @@ test_that("mathComb functions ...", {
       method = "adsadad",
       direction = "auto",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “add”, “multiply”, “divide”, “subtract” ,“distance”, “baseinexp”, “expinbase”"
+    "method should be one of 'add', 'multiply', 'divide', 'subtract' ,'distance', 'baseinexp', 'expinbase'"
   )
-  
+
   expect_error(
     mathComb(
       markers = markers3,
@@ -193,11 +219,11 @@ test_that("mathComb functions ...", {
       method = "add",
       direction = "auto",
       standardize = "asdada",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "standardize should be one of “range”, “zScore”, “tScore”, “mean”, “deviance”"
+    "standardize should be one of 'range', 'zScore', 'tScore', 'mean', 'deviance'"
   )
-  
+
   expect_error(
     mathComb(
       markers = markers2,
@@ -206,11 +232,11 @@ test_that("mathComb functions ...", {
       method = "baseinexp",
       direction = "asdada",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "direction should be one of “auto”, “<”, “>”"
+    "direction should be one of 'auto', '<', '>'"
   )
-  
+
   expect_error(
     mathComb(
       markers = markers2,
@@ -221,7 +247,7 @@ test_that("mathComb functions ...", {
       standardize = "none",
       cutoff.method = "sadda"
     ),
-    "cutoff.method should be one of “youden”, “roc01”"
+    "The entered cutoff.method is invalid"
   )
 
   expect_warning(
@@ -233,11 +259,11 @@ test_that("mathComb functions ...", {
       distance = "kumar-johnson",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Infinity or NaNs values generated in markers, standardization changed to 'none'."
   )
-  
+
   expect_warning(
     mathComb(
       markers = markers,
@@ -246,7 +272,7 @@ test_that("mathComb functions ...", {
       method = "expinbase",
       transform = "exp",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Infinity or NaNs values generated in markers, transformation changed to 'none'."
   )
@@ -258,11 +284,11 @@ test_that("mathComb functions ...", {
       method = "distance",
       direction = "auto",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "distance should be one of “euclidean”, “manhattan”, “chebyshev”, “kulczynski_d”, “lorentzian”, “avg”, “taneja”, “kumar-johnson”"
+    "distance should be one of 'euclidean', 'manhattan', 'chebyshev', 'kulczynski_d', 'lorentzian', 'avg', 'taneja', 'kumar-johnson'"
   )
-  
+
   expect_error(
     mathComb(
       markers = markers3,
@@ -273,9 +299,9 @@ test_that("mathComb functions ...", {
       direction = "auto",
       standardize = "none",
       transform = "adsd",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "transforms should be one of “none”, “log”, “exp”, “sin”, “cos”"
+    "transforms should be one of 'none', 'log', 'exp', 'sin', 'cos'"
   )
   expect_error(
     mathComb(
@@ -286,11 +312,10 @@ test_that("mathComb functions ...", {
       distance = "dscsdcs",
       direction = "auto",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "distance should be one of “euclidean”, “manhattan”, “chebyshev”, “kulczynski_d”, “lorentzian”, “avg”, “taneja”, “kumar-johnson”"
+    "distance should be one of 'euclidean', 'manhattan', 'chebyshev', 'kulczynski_d', 'lorentzian', 'avg', 'taneja', 'kumar-johnson'"
   )
-  
 })
 
 ###############################################################################
@@ -306,7 +331,7 @@ test_that("mathComb functions ...", {
       method = "add",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "at least one variable is not numeric"
   )
@@ -318,7 +343,7 @@ test_that("mathComb functions ...", {
       method = "add",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "status does not include event"
   )
@@ -338,7 +363,7 @@ test_that("mathComb functions ...", {
       method = "divide",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since status include NA"
   )
@@ -356,9 +381,8 @@ test_that("mathComb functions ...", {
       method = "add",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since markers include NA"
   )
 })
-

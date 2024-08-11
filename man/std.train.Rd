@@ -13,13 +13,36 @@ std.train(data, standardize = NULL)
 standardization method. The default option is no standardization applied.
 Available options are:
 \itemize{
-\item \code{range}: Standardization to a range between 0 and 1
-\item \code{zScore}: Standardization using z scores with mean = 0
-and standard deviation = 1
-\item \code{tScore}: Standardization using T scores. The range varies between
-usually 20 and 80
-\item \code{mean}: Standardization with sample mean = 1
-\item \code{deviance}: Standardization with sample standard deviation = 1
+\item \bold{Z-score} \code{(zScore)}: This method scales the data to have a mean
+of 0 and a standard deviation of 1. It subtracts the mean and divides by the standard
+deviation for each feature. Mathematically,
+\deqn{ Z-score = \frac{x - (\overline x)}{sd(x)}}
+
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker and \eqn{sd(x)} is the standard deviation of the marker.
+\item \bold{T-score} \code{(tScore)}: T-score is commonly used
+in data analysis to transform raw scores into a standardized form.
+The standard formula for converting a raw score \eqn{x} into a T-score is:
+\deqn{T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50}
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
+and \eqn{sd(x)} is the standard deviation of the marker.
+
+\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
+a specific range, between 0 and 1. The formula for this method is:
+\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+
+\item \bold{Mean} \code{(mean)}: This method, which helps
+to understand the relative size of a single observation concerning
+the mean of dataset, calculates the ratio of each data point to the mean value
+of the dataset.
+\deqn{Mean =  \frac{x}{\overline{x}}}
+where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
+
+\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+comparison of individual data points in relation to the overall spread of
+the data, calculates the ratio of each data point to the standard deviation
+of the dataset.
+\deqn{Deviance = \frac{x}{sd(x)}}
+where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 }
 \value{
@@ -27,18 +50,19 @@ A \code{numeric} data.frame of standardized biomarkers
 }
 \description{
 The \code{std.train} Standardization (range, zScore etc.) can be
-estimated from the training data and applied to any data set with the same
+estimated from the training data and applied to any dataset with the same
 variables.
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- exampleData1[, -1]
 markers2 <- std.train(markers, "deviance")
 
 }
 \author{
-Serra Ilayda  Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

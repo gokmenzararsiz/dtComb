@@ -3,7 +3,7 @@
 \docType{data}
 \name{exampleData1}
 \alias{exampleData1}
-\title{Example data for the dtComb package}
+\title{Examples data for the dtComb package}
 \format{
 A data frame with 225 rows and 3 variables:
 \describe{
@@ -18,16 +18,16 @@ per mcL}
 data(exampleData1)
 }
 \description{
-A data set containing the results of diagnostic laparoscopy procedure for 225
-patients
+A data set containing the results of diagnostic laparoscopy procedures for 225
+patients.
 }
 \examples{
 data(exampleData1)
-exampleData1$group<-factor(exampleData1$group)
+exampleData1$group <- factor(exampleData1$group)
 gcol <- c("#E69F00", "#56B4E9")
 plot(exampleData1$ddimer, exampleData1$log_leukocyte,
-                  col = gcol[as.numeric(exampleData1$group)])
-
+  col = gcol[as.numeric(exampleData1$group)]
+)
 
 }
 \keyword{datasets}

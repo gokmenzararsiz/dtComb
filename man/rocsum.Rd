@@ -3,7 +3,7 @@
 \name{rocsum}
 \alias{rocsum}
 \title{Generate ROC curves and related  statistics for the given markers and
-combined score.}
+Combination score.}
 \usage{
 rocsum(
   markers = NULL,
@@ -12,7 +12,12 @@ rocsum(
   event = NULL,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01"),
+  cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
+    "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
+    "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
+    "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
+    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
+    "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
   show.plot = show.plot
 )
 }
@@ -49,11 +54,12 @@ A list of \code{numeric} ROC Curves, AUC statistics and Confusion
 matrices.
 }
 \description{
-The code{rocsum} function returns the ROC curves with
-coordinates, Area Under the Curves of markers and combined score, Area Under
-the Curve comparison of markers and combined score, Confusion matrices for both
-markers and combined score with the cutoff values derived from the ROC Curves.
+The \code{rocsum} function returns the ROC curves with
+coordinates, Area Under the Curves of markers and combination score, Area Under
+the Curve comparison of markers and combination score, Confusion matrices for both
+markers and combination score with the cutoff values derived from the ROC Curves.
 }
 \author{
-Serra Ilayda  Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

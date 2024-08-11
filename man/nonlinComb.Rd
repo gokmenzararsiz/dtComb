@@ -8,8 +8,7 @@ nonlinComb(
   markers = NULL,
   status = NULL,
   event = NULL,
-  method = c("polyreg", "ridgereg", "lassoreg", "elasticreg", "splines", "sgam",
-    "nsgam"),
+  method = c("polyreg", "ridgereg", "lassoreg", "elasticreg", "splines", "sgam", "nsgam"),
   degree1 = 3,
   degree2 = 3,
   df1 = 4,
@@ -24,7 +23,12 @@ nonlinComb(
   show.plot = TRUE,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01"),
+  cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
+    "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
+    "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
+    "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
+    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
+    "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
   ...
 )
 }
@@ -41,38 +45,37 @@ to be considered as positive event}
 \item{method}{a \code{character} string specifying the method used for
 combining the markers. The available methods are:
 \itemize{
-\item \code{polyreg}: The method builds a logistic regression model with the
-feature space created and returns the probability of a positive event for
-each observation.
-\item \code{ridgereg}: Ridge regression is a shrinkage method used to
-estimate the coefficients of highly correlated variables and in this case
-the polynomial feature space created from two biomarkers. For the
-implementation of the method, glmnet library is used with two functions:
-cv.glmnet() to run a cross validation  model to determine the tuning
-parameter λ and glmnet() to fit the model with the selected tuning parameter.
-\item \code{lassoreg}: Lasso regression is also a shrinkage method with one
-difference is that at the end this method returns the coefficients of some
-features as 0, makes this method useful for feature elimination as well.
-The implementation is similar to Ridge regression, cross validation for
-parameter selection and model fit are implemented with glmnet library.
-\item \code{elasticreg}: Elastic Net regression is obtained by combining the
-penalties of Ridge and Lasso regression to get the best of both models. The
-model again includes a tuning parameter λ as well as a mixing parameter α
-taken form the user which takes a value between 0 (ridge) and 1 (lasso) to
-determine the weights of the loss functions of Ridge and Lasso regressions.
-\item \code{splines}: With the applications of regression models in a
-polynomial feature space the second non-linear approach to combining
-biomarkers comes from applying several regression models to the data set
-using a function derived from pecewise polynomials. Splines are implemented
-with degrees of freedom and degrees of the fitted polynomials taken from the
-user. For the implementation splines library is used to build piecewise
-logistic regression models with base splines.
-\item \code{sgam}: In addition to the basic spline structure, Generalized
-Additive Models are applied with smoothing splines using the gam
-library R.
-\item \code{nsgam}: In addition to the basic spline structure, Generalized
-Additive Models are applied with natural cubic splines using the gam
-library R.
+\item \bold{Logistic Regression with Polynomial Feature Space} \code{(polyreg)}:  The method
+builds a logistic regression model with the polynomial feature space and returns the probability
+of a positive event for each observation.
+\item \bold{Ridge Regression with Polynomial Feature Space} \code{(ridgereg)}: Ridge regression is a
+shrinkage method used to estimate the coefficients of highly correlated variables and in this case
+the polynomial feature space created from two markers. For the implementation of the method,
+glmnet() library is used with two functions: cv.glmnet() to run a cross
+validation model to determine the tuning parameter \eqn{\lambda} and glmnet() to fit the
+model with the selected tuning parameter. For Ridge regression,
+the glmnet() package is integrated into the dtComb package to facilitate the implementation
+of this method.
+\item \bold{Lasso Regression with Polynomial Feature Space} \code{(lassoreg)}: Lasso regression,
+like Ridge regression, is a type of shrinkage method. However, a notable difference is that
+Lasso tends to set some feature coefficients to zero, making it useful for feature elimination.
+It also employs cross-validation for parameter selection and model fitting using the glmnet library.
+\item \bold{Elastic Net Regression with Polynomial Feature Space} \code{(elasticreg)}: Elastic Net
+regression is a hybrid model that merges the penalties from Ridge and Lasso regression, aiming
+to leverage the strengths of both approaches. This model involves two parameters: \eqn{\lambda},
+similar to Ridge and Lasso, and \eqn{\alpha}, a user-defined mixing parameter ranging between 0 (representing Ridge)
+and 1 (representing Lasso). The \eqn{\alpha} parameter determines the balance or weights between the loss functions
+of Ridge and Lasso regressions.
+\item \bold{Splines} \code{(splines)}: Another non-linear approach to combine markers
+involves employing regression models within a polynomial feature space. This approach
+applies multiple regression models to the dataset using a function derived from
+piecewise polynomials. This implementation uses splines with user-defined degrees
+of freedom and degrees for the fitted polynomials. The splines library
+is employed to construct piecewise logistic regression models using base splines.
+\item \bold{Generalized Additive Models with Smoothing Splines and Generalized Additive Models
+with Natural Cubic Splines} \code{(sgam & nsgam)}: In addition to the basic spline structure,
+Generalized Additive Models are applied with natural cubic splines and smoothing splines
+using the gam library in R.
 }}
 
 \item{degree1}{a \code{numeric} value for polynomial based methods indicates
@@ -92,23 +95,23 @@ degrees of freedom in spline based methods for marker 1 (4, default)}
 degrees of freedom in spline based methods for marker 2 (4, default)}
 
 \item{resample}{a \code{character} string indicating the name of the
-resampling options. Bootstrapping Cross validation and repeated cross
-validation are given as the options for resampling along with the number
+resampling options. Bootstrapping Cross-validation and repeated cross-validation
+are given as the options for resampling, along with the number
 of folds and number of repeats.
 \itemize{
-\item \code{boot}: Bootstrapping is performed in a similar way; the dataset
+\item \code{boot}: Bootstrapping is performed similarly; the dataset
 is divided into folds with replacement and models are trained and tested
 in these folds to determine the best parameters for the given method and
 dataset.
-\item \code{cv}: Cross-validation resampling, the dataset is divided into
-the number of folds given without replacement, in each iteration one fold
-is selected as the test set, the model is built using the remaining folds
-and tested on the test set. The corresponding AUC values are kept in a list
-as well as the parameters used for the combination. The best performed model
-is selected and the combination score returned for the whole dataset.
-\item \code{repeatedcv}: repeated cross-validation the process is repeated
-and the best performed models selected at each step is stored in another
-list, the best performed among these models is selected to be applied to
+\item \code{cv}: Cross-validation resampling, the dataset is divided into the
+number of folds given without replacement; in each iteration, one fold is
+selected as the test set, and the model is built using the remaining folds
+and tested on the test set. The corresponding AUC values and the parameters
+used for the combination are kept in a list. The best-performed model is
+selected, and the combination score is returned for the whole dataset.
+\item \code{repeatedcv}: Repeated cross-validation the process is repeated,
+and the best-performed models selected at each step are stored in another
+list; the best performed among these models is selected to be applied to
 the entire dataset.
 }}
 
@@ -125,13 +128,36 @@ bootstrapped resampling iterations (10, default)}
 standardization method. The default option is no standardization applied.
 Available options are:
 \itemize{
-\item \code{range}: Standardization to a range between 0 and 1
-\item \code{zScore}: Standardization using z scores with mean = 0
-and standard deviation = 1
-\item \code{tScore}: Standardization using T scores. The range varies between
-usually 20 and 80
-\item \code{mean}: Standardization with sample mean = 1
-\item \code{deviance}: Standardization with sample standard deviation = 1
+\item \bold{Z-score} \code{(zScore)}: This method scales the data to have a mean
+of 0 and a standard deviation of 1. It subtracts the mean and divides by the standard
+deviation for each feature. Mathematically,
+\deqn{ Z-score = \frac{x - (\overline x)}{sd(x)}}
+
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker and \eqn{sd(x)} is the standard deviation of the marker.
+\item \bold{T-score} \code{(tScore)}: T-score is commonly used
+in data analysis to transform raw scores into a standardized form.
+The standard formula for converting a raw score \eqn{x} into a T-score is:
+\deqn{T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50}
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
+and \eqn{sd(x)} is the standard deviation of the marker.
+
+\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
+a specific range, between 0 and 1. The formula for this method is:
+\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+
+\item \bold{Mean} \code{(mean)}: This method, which helps
+to understand the relative size of a single observation concerning
+the mean of dataset, calculates the ratio of each data point to the mean value
+of the dataset.
+\deqn{Mean =  \frac{x}{\overline{x}}}
+where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
+
+\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+comparison of individual data points in relation to the overall spread of
+the data, calculates the ratio of each data point to the standard deviation
+of the dataset.
+\deqn{Deviance = \frac{x}{sd(x)}}
+where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 
 \item{include.interact}{a \code{logical} indicator that specifies whether to
@@ -145,9 +171,9 @@ Regression method (0.5, default)}
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
-comparison will be made.  “>”: if the predictor values for the control group
+comparison will be made.  ">": if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
-“<”: if the predictor values for the control group are lower or equal than
+"<": if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
 \item{conf.level}{a \code{numeric} values determines the confidence interval
@@ -155,6 +181,8 @@ for the ROC curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the ROC curve.}
+
+\item{\dots}{further arguments. Currently has no effect on the results.}
 }
 \value{
 A list of \code{numeric} nonlinear combination scores calculated
@@ -172,22 +200,29 @@ data <- exampleData1
 markers <- data[, -1]
 status <- factor(data$group, levels = c("not_needed", "needed"))
 event <- "needed"
-direction <- "<"
-cutoff.method <- "youden"
+cutoff.method <- "Youden"
 
-score1 <- nonlinComb(markers = markers, status = status, event = event,
-method = "ridgereg",  include.interact = FALSE, cutoff.method = "youden",  
-direction = "<")
+score1 <- nonlinComb(
+  markers = markers, status = status, event = event,
+  method = "lassoreg", include.interact = FALSE, resample = "boot", niters = 5,
+  degree1 = 4, degree2 = 4, cutoff.method = cutoff.method,
+  direction = "<"
+)
 
-score2 <- nonlinComb(markers = markers, status = status, event = event,
-method = "splines", resample = "none", cutoff.method = "youden",
-standardize = "tScore", direction = "<")
+score2 <- nonlinComb(
+  markers = markers, status = status, event = event,
+  method = "splines", resample = "none", cutoff.method = cutoff.method,
+  standardize = "tScore", direction = "<"
+)
 
-score3 <- nonlinComb(markers = markers, status = status, event = event,
-method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
-cutoff.method = "youden", standardize = "zScore", direction = "auto")
+score3 <- nonlinComb(
+  markers = markers, status = status, event = event,
+  method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
+  cutoff.method = "ROC01", standardize = "zScore", direction = "auto"
+)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

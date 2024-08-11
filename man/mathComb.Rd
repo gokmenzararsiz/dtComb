@@ -15,11 +15,15 @@ mathComb(
     "avg", "taneja", "kumar-johnson"),
   standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
   transform = c("none", "log", "exp", "sin", "cos"),
-  power.transform = FALSE,
   show.plot = TRUE,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01"),
+  cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
+    "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
+    "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
+    "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
+    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
+    "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
   ...
 )
 }
@@ -49,35 +53,58 @@ distance measures.
 \item{distance}{a \code{character} string specifying the method used for
 combining the markers. The available methods are:
 \itemize{
-\item \code{euclidean}:
-Euclidean: d = sqrt( ∑ | P_i - Q_i |^2)
-\item \code{manhattan}:
-Manhattan : d = ∑ | P_i - Q_i |
-\item \code{chebyshev}:
-Chebyshev : $d = max | P_i - Q_i |$
-\item \code{kulczynski_d}:
-Kulczynski d : d = ∑ | P_i - Q_i | / ∑ min(P_i , Q_i)
-\item \code{lorentzian}:
-Lorentzian : d = ∑ ln(1 + | P_i - Q_i |)
-\item \code{avg}:
-Avg(L_1, L_n) : d = ∑ | P_i - Q_i| + max{ | P_i - Q_i |} / 2
-\item \code{taneja}:
-Taneja : d = ∑ ( P_i + Q_i / 2) * log( P_i + Q_i / ( 2 * sqrt( P_i * Q_i)) )
-\item \code{kumar-johnson}:
-Kumar-Johnson : d = ∑ (P_i^2 - Q_i^2)^2 / 2 * (P_i * Q_i)^1.5
+\item \bold{Euclidean} (\code{euclidean}):
+\eqn{c_i = {\sqrt{(x_{i1}-0)^2+(x_{i2}-0)^2}}}
+\item \bold{Manhattan}(\code{manhattan}):
+\eqn{c_i = |x_{i1}-0|+|x_{i2}-0|}
+\item \bold{Chebyshev} (\code{chebyshev}):
+\eqn{c_i = max{|x_{i1}-0|,|x_{i2}-0|}}
+\item \bold{Kulczynski} (\code{kulczynski_d}):
+\eqn{c_i = \frac{|x_{i1}-0|+|x_{i2}-0|}{min(x_{i1},x_{i2})}}
+\item \bold{Lorentzian} (\code{lorentzian}):
+\eqn{c_i = (ln(1+|x_{i1}-0|))+ (ln(1+|x_{i2}-0|))}
+\item \bold{Taneja} (\code{taneja}):
+\eqn{c_i = z_1\times\Biggl(log\frac{z_1}{\sqrt{(x_{i1}\times \epsilon )}}\Biggl)+z_2\times\Biggl(log\frac{z_2}{\sqrt{(x_{i2}\times\epsilon)}}\Biggl)}
+\item \bold{Kumar-Johnson} (\code{kumar-johnson}):
+\eqn{c_i = {\frac{(x_{i1}-0)^2}{2(x_{i1}\times\epsilon)}}+{\frac{(x_{i2}-0)^2}{2(x_{i2}\times\epsilon)}}, \epsilon = 0.00001}
+\item \bold{Avg} (\code{avg}):
+\deqn{(L_1, L_n) = \frac{|x_{i1}-0|+|x_{i2}-0| + max{(x_{i1}-0),(x_{i2}-0)}}{2}}
 }}
 
 \item{standardize}{a \code{character} string indicating the name of the
 standardization method. The default option is no standardization applied.
 Available options are:
 \itemize{
-\item \code{range}: Standardization to a range between 0 and 1
-\item \code{zScore}: Standardization using z scores with mean = 0
-and standard deviation = 1
-\item \code{tScore}: Standardization using T scores. The range varies
-between usually 20 and 80
-\item \code{mean}: Standardization with sample mean = 1
-\item \code{deviance}: Standardization with sample standard deviation = 1
+\item \bold{Z-score} \code{(zScore)}: This method scales the data to have a mean
+of 0 and a standard deviation of 1. It subtracts the mean and divides by the standard
+deviation for each feature. Mathematically,
+\deqn{ Z-score = \frac{x - (\overline x)}{sd(x)}}
+
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker and \eqn{sd(x)} is the standard deviation of the marker.
+\item \bold{T-score} \code{(tScore)}: T-score is commonly used
+in data analysis to transform raw scores into a standardized form.
+The standard formula for converting a raw score \eqn{x} into a T-score is:
+\deqn{T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50}
+where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
+and \eqn{sd(x)} is the standard deviation of the marker.
+
+\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
+a specific range, between 0 and 1. The formula for this method is:
+\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+
+\item \bold{Mean} \code{(mean)}: This method, which helps
+to understand the relative size of a single observation concerning
+the mean of dataset, calculates the ratio of each data point to the mean value
+of the dataset.
+\deqn{Mean =  \frac{x}{\overline{x}}}
+where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
+
+\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+comparison of individual data points in relation to the overall spread of
+the data, calculates the ratio of each data point to the standard deviation
+of the dataset.
+\deqn{Deviance = \frac{x}{sd(x)}}
+where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 
 \item{transform}{a \code{character} string indicating the name of the
@@ -94,17 +121,13 @@ calculatin combination score
 calculating combination score
 }}
 
-\item{power.transform}{a \code{logical} variable that determines whether to
-apply power to the markers giving the optimum AUC value in the \link{-3, 3}
-range, before calculating the combination score (FALSE, default).}
-
 \item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
-comparison will be made.  “>”: if the predictor values for the control group
+comparison will be made.  ">": if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
-“<”: if the predictor values for the control group are lower or equal than
+"<": if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
 \item{conf.level}{a \code{numeric} values determines the confidence interval
@@ -131,21 +154,27 @@ markers <- exampleData1[, -1]
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 direction <- "<"
-cutoff.method <- "youden"
+cutoff.method <- "Youden"
 
-score1 <- mathComb(markers = markers, status = status, event = event,
-method = "distance", distance = "avg", direction = direction, show.plot = FALSE,
-standardize = "none", cutoff.method = cutoff.method)
+score1 <- mathComb(
+  markers = markers, status = status, event = event,
+  method = "distance", distance = "avg", direction = direction, show.plot = FALSE,
+  standardize = "none", cutoff.method = cutoff.method
+)
 
-score2 <- mathComb(markers = markers, status = status, event = event,
-method = "baseinexp", transform = "exp", direction = direction,
-cutoff.method = cutoff.method)
+score2 <- mathComb(
+  markers = markers, status = status, event = event,
+  method = "baseinexp", transform = "exp", direction = direction,
+  cutoff.method = cutoff.method
+)
 
-score3 <- mathComb(markers = markers, status = status, event = event,
-method = "add",  direction = direction, power.transform = TRUE,
-cutoff.method = cutoff.method)
+score3 <- mathComb(
+  markers = markers, status = status, event = event,
+  method = "subtract", direction = "auto", cutoff.method = "MinValueSp", transform = "sin"
+)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

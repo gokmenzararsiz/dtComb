@@ -1,0 +1,316 @@
+% \VignetteEngine{knitr::knitr}
+% \VignetteEncoding{UTF-8}
+% \VignetteIndexEntry{dtComb}
+
+\documentclass[10pt]{article}
+\usepackage[left=3cm, top=2.5cm, right=2.5cm, bottom=2cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  filecolor=magenta,      
+  urlcolor=blue
+}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{Sweave}
+\usepackage[numbers]{natbib}
+\usepackage{nameref} % cross-reference for section names.
+\usepackage{booktabs}
+\usepackage{caption}
+\RequirePackage{graphicx, fancyvrb, textcomp}
+\usepackage{authblk}  % authors and affiliations
+\setcounter{Maxaffil}{0}
+\renewcommand\Affilfont{\itshape\small}
+
+%%% New Commands %%%
+\newcommand{\dtComb}{\textit{dtComb}}
+% \newcommand{\Biocpkg}[1]{\href{https://www.bioconductor.org/packages/release/bioc/html/#1.html}{\texttt{#1}}}
+\newcommand{\CRANpkg}[1]{\href{https://cran.r-project.org/web/packages/#1/index.html}{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{\texttt{#1}}
+\newcommand{\Rcode}[1]{\texttt{#1}}
+\newcommand{\Rclass}[1]{\texttt{#1}}
+\newcommand{\software}[1]{\texttt{#1}}
+
+%%%% Set knitr options %%%%
+<<echo=FALSE>>=
+library(knitr)
+opts_chunk$set(tidy = FALSE, dev = "pdf", message = FALSE, fig.align = "center", cache = FALSE)
+@
+
+%%%% Load required packages %%%%
+
+
+\title{\textbf{dtComb: A Comprehensive R Package for Combining Two Diagnostic Tests}}
+
+\author[1,2]{Serra İlayda YERLİTAŞ }
+\author[2]{Serra Berşan GENGEÇ }
+\author[3]{Necla KOÇHAN}
+\author[1,2]{Gözde ERTÜRK ZARARSIZ}
+\author[4]{Selçuk KORKMAZ}
+\author[1,2${}^{\dagger}$]{Gökmen ZARARSIZ}
+
+
+\affil[1]{Erciyes University Faculty of Medicine Department of Biostatistics, Kayseri, Türkiye \vspace*{0.3em}}
+\affil[2]{Erciyes University Drug Application and Research Center (ERFARMA) , Kayseri, Türkiye \vspace*{0.3em}}
+\affil[3]{Izmir University of Economics-Department of Mathematics, 35330, İzmir, Türkiye \vspace*{0.3em}}
+\affil[4]{Trakya University Faculty of Medicine Department of Biostatistics, Edirne, Türkiye \vspace*{0.3em}}
+% 
+\renewcommand\Authands{ and }
+
+\date{
+  \today
+}
+\begin{document}
+\maketitle
+\vspace*{10pt}
+
+\begin{abstract}
+\CRANpkg{dtComb} is a comprehensive R package that combines two different diagnostic tests. Using its extensive collection of 143 combination methods, the \CRANpkg{dtComb} package enables researchers to standardize their data and merge diagnostic tests. Users can load the dataset containing the reference list and the diagnostic tests they intend to utilize. The package includes combination methods grouped into four main categories: linear combination methods (\Rfunction{linComb}), non-linear combination methods (\Rfunction{nonlinComb}), mathematical operators (\Rfunction{mathComb}), and machine-learning algorithms (\Rfunction{mlComb}). The package incorporates eight specific combination methods from the literature within the scope of linear combination methods. Non-linear combination methods encompass statistical approaches like polynomial regression, penalized regression methods, and splines, incorporating the interactions between the diagnostic tests. Mathematical operators involve arithmetic operations and eight \texttt{distance measures} adaptable to various data structures. Finally, machine-learning algorithms include 113 models from the \CRANpkg{caret} package tailored for \CRANpkg{dtComb}'s data structure. The data standardization step includes five different methods: Z-score, T-score, Mean, Deviance, and Range standardization. The \CRANpkg{dtComb} integrates machine-learning approaches, enabling the utilization of preprocessing methods available in the \CRANpkg{caret} package for standardization purposes within the \CRANpkg{dtComb} environment. The \CRANpkg{dtComb} package allows users to fine-tune hyperparameters while building a model. This is accomplished through resampling techniques such as 10-fold cross-validation, bootstrapping, and 10-fold repeated cross-validation. Since machine-learning algorithms are directly adapted from the \CRANpkg{caret} package, all resampling methods available in the \CRANpkg{caret} package are applicable within the \CRANpkg{dtComb} environment. Following the model building, the \Rfunction{predict} function predicts the class labels and returns the combination scores of new observations from the test set. The \CRANpkg{dtComb} package is designed to be user-friendly and easy to use and is currently the most comprehensive package developed to combine diagnostic tests in the literature. This vignette was created to guide researchers on how to use this package. 
+%%%%%%%%%
+\vspace{1em}
+\noindent\textbf{dtComb version:} \Sexpr{packageDescription("dtComb")$Version}
+\end{abstract}
+\section{Introduction}
+Diagnostic tests are critical in distinguishing diseases and determining accurate diagnoses for patients, and they significantly impact clinical decisions. Beyond their fundamental role in medical diagnosis, these tests also aid in developing appropriate treatment strategies while lowering treatment costs. The widespread availability of these diagnostic tests depends on their accuracy, performance, and reliability. When it comes to diagnosing medical conditions, there may be several tests available, and some may perform better than others and eventually replace established protocols. Studies have shown that using multiple tests rather than relying on a single test improves diagnostic performance \citep{amini2019application, yu2019covariate, aznar2021incorporating}. A number of approaches to combining diagnostic tests are available in the literature. The \dtComb{} package includes a variety of combination methods existing in the literature, data standardization approaches for different data structure, and resampling methods for model building. 
+In this vignette, users will learn how to combine two diagnostic tests with different combination methods. \dtComb{} package can be loaded as below: 
+<<>>=
+library(dtComb)
+@
+\section{Preparing the input data}
+The methods provided within this package are designed to require a \Rclass{DataFrame} comprising three columns, where the first column represents class labels, and the subsequent columns correspond to the values of the corresponding markers. The class label is a binary variable (i.e., negative/positive, present/absent) representing the outcomes of a reference test used in disease precision. 
+This vignette will use the dataset \texttt{exampleData1}, included in this package. This dataset contains information from patients admitted to the General Surgery Department of Erciyes University Medical Faculty with complaints regarding abdominal pain. The dataset comprises 225 patients split into two groups: those requiring immediate laparotomy (110 patients) and those not requiring it (115 patients). Patients who had surgery due to postoperative pathologies are in the first group, whereas those with negative laparotomy results belong to the second group \citep{akyildiz2010value}. 
+<<eval = TRUE, echo=TRUE>>=
+data(exampleData1)
+head(exampleData1)
+@
+The dataset is divided into two parts: the training and the test sets. The training set consists of $75\%$ of the dataset and is used to train classification models and to compare different model performances. The remaining portion of the dataset is saved as the \texttt{test} set, which will later be used in the prediction phase.
+The \texttt{train} and the \texttt{test} sets are built as follows:
+<<>>=
+# # train set from the exampleData1
+set.seed(2128)
+inTrain <- caret::createDataPartition(exampleData1$group, p = 3 / 4, list = FALSE)
+trainData <- exampleData1[inTrain, ]
+head(trainData)
+@
+<<>>=
+# # test set from the exampleData1
+set.seed(2128)
+testData <- exampleData1[-inTrain, -1]
+@
+We have a total of 170 patients in the training set, with 83 requiring laparotomy and 87 not requiring laparotomy. The training dataset is divided into two parts: \texttt{markers} (i.e., diagnostic test results) and \texttt{status} (i.e., reference test results or class labels). The class label is also converted into a factor variable if it is not a factor. The remaining 55 patients are assigned to the test set. 
+<<>>=
+markers <- trainData[, -1]
+status <- factor(trainData$group, levels = c("not_needed", "needed"))
+@
+\section{Available methods}
+The \dtComb{} package contains 143 methods for combining diagnostic tests. These methods are classified as linear methods, non-linear methods, mathematical operators, and machine-learning (ML) algorithms, each briefly explained below.\\
+\textbf{Notations:} \\
+Before getting into these methods, let us introduce some notations used throughout this vignette. 
+Let $D_i$, $i = 1, 2, …, n_1$ be the marker values of \emph{i}th individual in diseased group, where $D_i$ = $(D_{i1},D_{i2})$, and $H_j$, $j = 1, 2, …,n_2$ be the marker values of \emph{j}th individual in healthy group, where $H_j = H_{j1},H_{j2}$. Let $x_{i1} = c(D_{i1}, H_{j1})$ be the values of the first marker, and $x_{i2} = c(D_{i2}, H_{j2})$ be values of the second marker for the \emph{i}th individual $i = 1, 2,...,n$. Let $D_{i,min} = min(D_{i1}, D_{i2})$, $D_{i,max} = max (D_{i1},D_{i2})$, $H_{j,min} = min(H_{j1}, H_{j2})$, $H_{j,max} = max(H_{j1}, H_{j2})$ and $c_i$ be the resulting combination score for the \emph{i}th individual. 
+\subsection{Linear combination methods:}
+\begin{itemize}
+  \item \textbf{Logistic Regression (\texttt{logistic})}: Combination score obtained by fitting a logistic regression model is as follows:
+    \begin{gather*} 
+    c_i = \left(\frac{e^ {\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}{1 + e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2}}}\right)
+    \end{gather*}
+A combination score obtained by fitting a logistic regression model typically refers to the predicted probability or score assigned to each observation in a dataset based on the logistic regression model's fitted values \citep{walker1967estimation}.
+  \item \textbf{Scoring based on Logistic Regression (\texttt{scoring})}: The combination score is obtained using the slope values of the relevant logistic regression model, slope values are rounded to the number of digits taken from the user \citep{leon2006bedside}.
+    \begin{gather*} 
+    c_i = \beta_1 x_{i1} + \beta_2 x_{i2}
+    \end{gather*}
+      \item \textbf{Pepe \& Thompson's method (\texttt{PT})}: The Pepe and Thompson combination score, developed using their optimal linear combination technique, aims to maximize the Mann-Whitney U statistic like the Min-max method. Unlike the Min-max method, the Pepe and Thomson method considers all marker values instead of the lowest and maximum values \citep{pepe2000combining}.
+    \begin{gather*} 
+    maximize\; U(\alpha) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i1} + \alpha D_{i2} >= H_{j1} + \alpha H_{j2})} \\
+    c_i = x_{i1} + \alpha x_{i2}
+    \end{gather*}
+    \item \textbf{Pepe, Cai \& Langton's method (\texttt{PCL})}: Pepe, Cai and Langton combination score obtained by using AUC as the parameter of a logistic regression model \citep{pepe2006combining}.
+    \begin{gather*} 
+    maximize\; U(\alpha) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i1} + \alpha D_{i2} > H_{j1} + \alpha H_{j2}) + \left(\frac{1}{2} \right) I(D_{i1} + \alpha D_{i2} = H_{j1} + \alpha H_{j2})} \\
+    c_i = x_{i1} + \alpha x_{i2}
+    \end{gather*}
+  \item \textbf{Min-Max method (\texttt{minmax})}: This method linearly combines the minimum and maximum values of the markers by finding a parameter, $\alpha$ , that maximizes the Mann-Whitney statistic, an empirical estimate of the ROC area \citep{liu2011min}.
+    \begin{gather*}
+    maximize\;U( \alpha ) = \left(\frac{1}{n_1,n_2}\right) {\sum_{i=1}^{n_1} {\sum_{j=1}^{n_2}}I(D_{i,max} + \alpha D_{i,min} > H_{j,max} + \alpha H_{j,min})} \\
+    c_i = x_{i,max} + \alpha x_{i,min}
+    \end{gather*}
+where $x_{,max}=max(x_{i1}, x_{i2})$ and $x_{,min}=min(x_{i1}, x_{i2})$.
+\item \textbf{Su \& Liu's method (\texttt{SL})}: The Su and Liu combination score is computed through Fisher's discriminant coefficients, which assumes that the underlying data follow a multivariate normal distribution, and the covariance matrices across different classes are assumed to be proportional \citep{su1993linear}. Assuming that $D\sim N(\mu_D,\textstyle \sum_D)$  and $H\sim N(\mu_H,\textstyle \sum_H)$ represent the multivariate normal distributions for the diseased and non-diseased groups, respectively. The Fisher’s coefficients are as follows:
+    \begin{gather*} 
+    (\alpha , \beta) = (\textstyle \sum_{D}+\sum_{H})^{\;-1}\mu
+     \end{gather*} 
+    where $\mu_=\mu_D - \mu_H$. The combination score in this case is:
+    \begin{gather*}
+    c_i = \alpha x_{i1} + \beta x_{i2}
+    \end{gather*}
+\item \textbf{Minimax approach (\texttt{minimax}):} Combination score obtained with the Minimax procedure; \emph{t} parameter is chosen as the value that gives the maximum AUC from the combination score \citep{sameera2016binary}. Suppose that D follows a multivariate normal distribution  $D\sim N(\mu_D,\textstyle \sum_D)$, representing the diseased group, and H follows a multivariate normal distribution $H\sim N(\mu_H,\textstyle \sum_H)$, representing the non-diseased group. Then Fisher’s coefficients are as follows:
+  \begin{gather*} 
+    (\alpha , \beta) = {[t { \textstyle \sum_{D}} + (1 - t)  \textstyle \sum_{H}] ^ {-1}}{(\mu_D - \mu_H)} \\
+    c_i = b_1 x_1 + b_2 x_2
+    \end{gather*}
+    \item \textbf{Todor \& Saplacan’s method (\texttt{TS})}: Combination score obtained using the trigonometric functions of the $\Theta$ value that optimizes the corresponding AUC \citep{todor2014tools}.
+    \begin{align*} 
+    c_i = sin(\theta) x_{i1} + cos(\theta) x_{i2}
+    \end{align*}
+\end{itemize} 
+\subsection{Nonlinear combination methods:}
+\begin{itemize}
+  \item \textbf{Logistic Regression with Polynomial Feature Space (\texttt{polyreg})}: The method builds a logistic regression model with the polynomial feature space and returns the probability of a positive event for each observation.
+ \item \textbf{Ridge Regression with Polynomial Feature Space (\texttt{ridgereg})}: Ridge regression is a shrinkage method used to estimate the coefficients of highly correlated variables and in this case the polynomial feature space created from two markers. For the implementation of the method, the \CRANpkg{glmnet} library is used with two functions: \Rfunction{cv.glmnet} to run a cross-validation model to determine the tuning parameter $\lambda$ and \Rfunction{glmnet} to fit the model with the selected tuning parameter \citep{friedman2010regularization}. For Ridge regression, the \CRANpkg{glmnet} package is integrated into the dtComb package to facilitate the implementation of this method.
+  \item \textbf{Lasso Regression with Polynomial Feature Space (\texttt{lassoreg})}: Lasso regression, like Ridge regression, is a type of shrinkage method. However, a notable difference is that Lasso tends to set some feature coefficients to zero, making it useful for feature elimination. It also employs cross-validation for parameter selection and model fitting using the \CRANpkg{glmnet} library \citep{friedman2010regularization}.
+  \item \textbf{Elastic-Net Regression with Polynomial Feature Space (\texttt{elasticreg})}: Elastic-Net Regression is a hybrid model that merges the penalties from Ridge and Lasso regression, aiming to leverage the strengths of both approaches. This model involves two parameters: $\lambda$, similar to Ridge and Lasso, and $\alpha$, a user-defined mixing parameter ranging between 0 (representing Ridge) and 1 (representing Lasso). The $\alpha$ parameter determines the balance or weights between the loss functions of Ridge and Lasso regressions \citep{friedman2010regularization}.
+  \item \textbf{Splines (\texttt{splines})}: Another non-linear approach to combining markers involves employing regression models within a polynomial feature space. This approach applies multiple regression models to the dataset using a function derived from piecewise polynomials. This implementation uses splines with user-defined degrees of freedom and degrees for the fitted polynomials. The \CRANpkg{splines} library is employed to construct piecewise logistic regression models using base splines \citep{team2013r}.
+  \item \textbf{Generalized Additive Models with Smoothing Splines and Generalized Additive Models with Natural Cubic Splines (\texttt{sgam} and \texttt{nsgam})}: In addition to the basic spline structure, Generalized Additive Models are applied with natural cubic splines and smoothing splines using the \CRANpkg{gam} library in R \citep{hastie2019gam}.
+\end{itemize}
+Possible interactions between the two diagnostic tests can also be considered within the non-linear approach. This may be advantageous, particularly if there is a correlation between these two markers.  The \texttt{include.interact} option in the \Rfunction{nonlinComb} function can be set to \texttt{TRUE} to include interactions when building the model.
+\subsection{Mathematical operators:}
+\begin{itemize}
+  \item \textbf{Arithmetic Operators} : Arithmetic operators such as addition (\texttt{add}), subtraction (\texttt{subtract}), multiplication (\texttt{multiply}), and division (\texttt{divide}) can be used as mathematical operators within the \CRANpkg{dtComb} package.
+  \item \textbf{Distance Measures}: The combination of markers using these mathematical operators is evaluated based on distance measures, which assess the relationships between marker values \citep{cha2007comprehensive,pandit2011comparative, minaev2018distance}. The included distance measures with their respective formulas within the package are outlined as follows:
+    \begin{itemize}
+      \item \textbf{Euclidean}(\texttt{euclidean}): $c_i= { \sqrt{(x_{i1}-0)^2+(x_{i2}-0)^2}}$
+      \item \textbf{Manhattan}(\texttt{manhattan}): $c_i = |x_{i1}-0|+|x_{i2}-0|$
+      \item \textbf{Chebyshev}(\texttt{chebyshev}): $c_i = max{|x_{i1}-0|,|x_{i2}-0|}$
+      \item \textbf{Kulczynski d}(\texttt{kulczynski-d}): $c_i = \frac{|x_{i1}-0|+|x_{i2}-0|}{min(x_{i1},x_{i2})}$ 
+      \item \textbf{Lorentzian}(\texttt{lorentzian}): $c_i = (ln(1+|x_{i1}-0|))+ (ln(1+|x_{i2}-0|))$
+      \item \textbf{Taneja}(\texttt{taneja}): $c_i = z_1\times\Biggl(log\frac{z_1}{\sqrt{(x_{i1}\times\epsilon )}}\Biggl)+z_2\times\Biggl(log\frac{z_2}{\sqrt{(x_{i2}\times\epsilon)}}\Biggl)$\\
+      where $z_1 = \frac{(x_{i1}-0)}{2}, z_2 = \frac{(x_{i2}-0)}{2}$
+            \item \textbf{Kumar-Johnson}(\texttt{kumar-johnson}): $c_i = {\frac{(x_{i1}-0)^2}{2(x_{i1}\times\epsilon)}}+{\frac{(x_{i2}-0)^2}{2(x_{i2}\times\epsilon)}}$, $\epsilon = 0.00001$
+            \item \textbf{Avg}(\texttt{avg}): $c_i = \frac{|x_{i1}-0|+|x_{i2}-0| + max{(x_{i1}-0),(x_{i2}-0)}}{2}$
+    \end{itemize}
+  \item \textbf{Exponential approach}: This method combines diagnostic tests to examine relationships between diagnostic measurements (i.e., markers). In this approach, one of the two diagnostic tests is considered the base, and the other is an exponent. This relationship is denoted by the terms \texttt{baseinexp} ($x_{i1}^{x_{i2}}$) and \texttt{expinbase} ($x_{i2}^{x_{i1}}$), respectively.
+\end{itemize}
+To increase the performance of the diagnostic test results, one can transform the values of markers before applying mathematical operators. It is possible to apply transformations like \emph{cosine} (\texttt{cos}), \emph{sine} (\texttt{sin}), \emph{exponential} (\texttt{exp}), and \emph{logarithmic} (\texttt{log}). Similarly, when using add and subtract operators, the exponents of markers are iteratively adjusted by 0.1 within the range [-3, 3]. This adjustment aims to optimize the \textbf{AUC}, and the model with the highest \textbf{AUC} is chosen as the final model.
+\subsection{Machine-learning algorithms:}
+Given that the diagnostic test data consists of numerical inputs and aims to predict binary outcomes, we selected 113 models from the \CRANpkg{caret} package that meet these criteria. We benefit from these 113 models to create the \Rfunction{mlComb} function, which combines diagnostic tests using machine-learning algorithms. For a list of machine learning algorithms included in the \CRANpkg{dtComb} package, users can run the \Rfunction{availableMethods} function \citep{kuhn2008building}.
+\section{Standardization}
+Standardization is critical in data analysis, especially when dealing with variables with different units or scales. Standardization plays a vital role in ensuring fair comparisons and accurate modeling in the context of diagnostic tests containing multiple variables measured in different units. In \dtComb{}, while standardization is optional, certain combination methods within the \dtComb{} package such as \texttt{minmax}, \texttt{PCL}, \texttt{PT} enforce standardization by default. For linear and non-linear combination methods and mathematical operators, five different standardization methods are available, listed as follows:
+\begin{itemize}
+  \item \textbf{Z-score}: This method scales the data to have a mean of 0 and a standard deviation of 1. It subtracts the mean and divides by the standard deviation for each feature. Mathematically,
+\begin{gather*} 
+    Z-score = \frac{x - (\overline x)}{sd(x)}
+    \end{gather*}
+     where $x$ is the value of a marker, $\overline{x}$ is the mean of the marker, and $sd(x)$ is the standard deviation of the marker.
+     \item \textbf{T-score}: T-score is commonly used in data analysis to transform raw scores into a standardized form. The standard formula for converting a raw score $x$ into a T-score is:
+    \begin{gather*} 
+    T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50
+    \end{gather*}
+    where $x$ is the value of a marker, $\overline{x}$ is the mean of the marker, and $sd(x)$ is the standard deviation of the marker.
+    \item \textbf{Range (a.k.a. min-max scaling)}: This method transforms data to a specific range between 0 and 1. The formula for this method is:
+  \begin{gather*} 
+    Range = \frac{x - min(x)}{max(x) - min(x)}
+    \end{gather*}
+    \item \textbf{Mean}: This method, which helps to understand the relative size of a single observation concerning the mean of the dataset, calculates the ratio of each data point to the mean value of the dataset.
+      \begin{gather*} 
+   Mean =  \frac{x}{\overline{x}}
+    \end{gather*}
+    where $x$ is the value of a marker and $\overline{x}$ is the mean of the marker.
+    \item \textbf{Deviance}: This method, which allows for the comparison of individual data points about the overall spread of the data, calculates the ratio of each data point to the standard deviation of the dataset.
+   \begin{gather*} 
+   Deviance = \frac{x}{sd(x)}
+    \end{gather*}
+    where $x$ is the value of a marker and $sd(x)$ is the standard deviation of the marker.
+\end{itemize}
+The \Rfunction{mlComb} function, designed for combining two diagnostic tests using machine-learning approaches, leverages the diverse set of standardization methods provided by the \CRANpkg{caret} package. This empowers users to choose the optimal method tailored to their data and model needs. For guidance on default standardization methods or specifying particular standardization techniques for different models, users can refer to the \CRANpkg{caret} documentation.
+\section{Model building}
+The dtComb has four different functions (\texttt{linComb}, \texttt{nonlinComb}, \texttt{mlComb}, \texttt{mathComb}) for the model building and evaluation process. These functions can be used to evaluate selected model providing a set of values for the model parameters, return the optimal model as well as the overall performance of the model for the training set.
+\subsection{Resampling methods to optimize the model parameters}
+The dtComb package optimizes model parameters for linear and non-linear approaches by employing various validation techniques: (i) n-fold cross-validation, which involves splitting the training data into \texttt{nfolds} groups for the model assessment, (ii) 10-fold repeated cross-validation where 10-fold division is repeated \texttt{nrepeat} times to ensure robust model evaluation and (iii) bootstrapping which makes use of \texttt{niters} subgroups from the training dataset to enhance parameter optimization and model validation. The resampling function embedded within the \CRANpkg{caret} package is used by the mlComb function to perform resampling and hyper-parameter optimization. The relevant section of the \CRANpkg{caret} package documentation contains detailed information about this process \citep{kuhn2008building}.
+\subsection{Model evaluation in the training phase}
+Metrics such as Receiver Operating Characteristic (ROC) curves and Area Under the Curve (AUC) values evaluate the model's performance during training. These metrics provide insights into the model's ability to distinguish between different classes or categories, offering valuable information regarding its performance characteristics. While measuring the ROC curves, an argument called \texttt{direction} argument is given as input to the relevant function, and the default value of the \texttt{direction} is set to \texttt{auto}. Moreover, the cut-off point which determines AUC is controlled by the \texttt{cutoff.method} argument within the package. 34 methods are available to determine the cut-off point, accessible through the \CRANpkg{OptimalCutpoints} package in R \citep{lopez2014optimalcutpoints}.
+Now, we will provide examples of how to use each approach's specific functions separately. We selected the cutoff.method for each scenario as the \texttt{Youden Index} and specified the ROC curve's direction as \texttt{<}.\\
+Using the training data provided earlier, for a linear combination approach, the \texttt{linComb} function is employed with the \texttt{range}. Standardization method and 5-fold cross-validation in the following manner:
+<<fig.height=4.8, fig.width=5>>=
+set.seed(2128)
+
+# linComb Function
+fit.lin <- linComb(
+  markers = markers,
+  status = status,
+  event = "needed",
+  method = "scoring",
+  resample = "cv",
+  standardize = "range",
+  ndigits = 2, direction = "auto",
+  cutoff.method = "Youden"
+)
+@
+Let us now assume that we aim to fit the same training data using the Lasso regression method, which falls under the category of non-linear approaches. We'll use the \texttt{nonlinComb} function for a non-linear combination method, incorporating the bootstrapping resampling method with \texttt{niter=10}, and specifying additional arguments as follows:
+<<fig.height=4.8, fig.width=5>>=
+# nonlinComb Function
+set.seed(2128)
+
+fit.nonlin <- nonlinComb(
+  markers = markers,
+  status = status,
+  event = "needed",
+  method = "lassoreg",
+  include.interact = "TRUE",
+  resample = "boot",
+  direction = "auto",
+  cutoff.method = "Youden"
+)
+@
+In the following example, we fit the training data using the \texttt{knn} (K-Nearest Neighbors) method, a machine-learning approach. We will use the \texttt{mlComb} function, incorporating the 10-folds repeated cross-validation technique (i.e.,\texttt{nfolds = 10}, \texttt{nrepeats = 5}) as follows:
+<<fig.height=4.8, fig.width=5>>=
+# mlComb Function
+set.seed(2128)
+
+fit.ml <- mlComb(
+  markers = markers,
+  status = status,
+  event = "needed",
+  method = "knn",
+  resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+  preProcess = c("center", "scale"),
+  direction = "<", cutoff.method = "Youden"
+)
+@
+In the final example, we'll implement the \texttt{mathComb} function, specifically designed for mathematical operators. Using the same training dataset as in the previous examples, the chosen method involves utilizing the \texttt{Euclidean} distance metric to train the model as follows:
+<<fig.height=4.8, fig.width=5>>=
+# mathComb Function
+fit.math <- mathComb(
+  markers = markers,
+  status = status,
+  event = "needed",
+  method = "distance",
+  distance = "euclidean",
+  direction = "<",
+  cutoff.method = "Youden"
+)
+@
+The results of the four described approaches and single diagnostic tests are summarized in Table \ref{tbl:Res}. The findings indicate that the combined diagnostic tests outperformed the individual ones. Notably, the \texttt{Lasso regression} method had the highest AUC value among the combined approaches. In this vignette, we compared only a few models and demonstrated how to train models. Acknowledging that different data and models might yield different results is essential. We will use the model trained by the \texttt{Lasso regression} method to make predictions on the test set since it exhibited superior performance on the training set.
+\begin{table}[!ht]
+\centering
+\caption{Combination results for train data}
+\label{tbl:Res}
+\begin{tabular}{p{4cm}p{2cm}c}
+\toprule
+Metot & AUC & Accuracy \\
+\midrule
+D-dimer & 0.822 & 0.77 \\
+log(leukocyte) & 0.795 & 0.77 \\
+scoring & 0.878 & 0.82 \\
+lassoreg & 0.919 & 0.85 \\
+knn & 0.910 & 0.81 \\
+distance(euclidean) & 0.880 & 0.81 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\section{Predicting the class labels of test samples}
+We use the model parameters obtained during the training phase to predict the class labels of test samples. For instance, when training a model using the \texttt{Lasso regression} method, the labels of the test set are predicted based on the parameters optimized during training. However, the test set must undergo the same standardization or preprocessing steps as the training set to ensure both sets are on the same scale before making predictions. The \Rfunction{predict} function is then applied to the standardized test samples to estimate the class label (status) of new samples, as shown below:
+<<>>=
+predict(fit.nonlin, testData)
+@
+When employed on models trained with the \Rfunction{linComb} or \Rfunction{mathComb} functions, the \Rfunction{predict} function returns the combination score of the applied method and the estimated label. The \Rfunction{predict} function, on the other hand, returns the probability of positive and negative cases for each test observation for models trained with the \Rfunction{nonlinComb} or \Rfunction{mlComb} function.
+\section{Session info}
+<<>>=
+sessionInfo()
+@
+\bibliographystyle{unsrtnat}
+\bibliography{dtComb}
+\end{document}

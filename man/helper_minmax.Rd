@@ -21,24 +21,25 @@ A \code{numeric} value for the estimated optimized value
 }
 \description{
 The \code{helper_minmax} function estimates optimized value of
-given biomarkers for minmax method
+given biomarkers for the minmax method.
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 
 neg.set <- markers[status == levels(status)[1], ]
 pos.set <- markers[status == levels(status)[2], ]
 
-lambda = 0.5
+lambda <- 0.5
 
 stat <- helper_minmax(lambda, neg.set = neg.set, pos.set = pos.set)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

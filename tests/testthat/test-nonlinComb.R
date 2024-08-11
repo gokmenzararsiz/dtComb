@@ -1,13 +1,10 @@
-library(APtools)
-library(usethis)
-
 data("exampleData1")
-Data <- exampleData1[-c(83:138),]
+Data <- exampleData1[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-data(mayo)
-Data2 <- mayo[-c(42:119),]
+load("result_data/mayo.rda")
+Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
@@ -16,7 +13,7 @@ Data3 <-
     "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
     header = FALSE
   )
-Data3 <- Data3[-c(121:262),]
+Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
@@ -24,8 +21,10 @@ status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 load("result_data/test_nonlinComb.rda")
 
-for (method in c("polyreg",
-                 "ridgereg")) {
+for (method in c(
+  "polyreg",
+  "ridgereg"
+)) {
   set.seed(14042022)
   res <- nonlinComb(
     markers = markers,
@@ -34,28 +33,36 @@ for (method in c("polyreg",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("nonlinComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("lassoreg",
-                 "elasticreg")) {
+for (method in c(
+  "lassoreg",
+  "elasticreg"
+)) {
   set.seed(14042022)
   res <- nonlinComb(
     markers = markers2,
@@ -64,29 +71,37 @@ for (method in c("lassoreg",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("nonlinComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
 ###############################################################################
 
-for (method in c("splines",
-                 "sgam",
-                 "nsgam")) {
+for (method in c(
+  "splines",
+  "sgam",
+  "nsgam"
+)) {
   set.seed(14042022)
   res <- nonlinComb(
     markers = markers3,
@@ -95,21 +110,27 @@ for (method in c("splines",
     method = method,
     resample = "none",
     direction = "<",
-    cutoff.method = "youden"
+    cutoff.method = "Youden"
   )
-  
+
   test_that("nonlinComb functions ...", {
-    expect_length(res, 11)
-    expect_equal(as.numeric(res$AUC_table$AUC[[3]]),  r$AUC[r$Method == method][1], tolerance =
-                   0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$sp[[1]]),
-                 r$SPE[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$DiagStatCombined$detail$se[[1]]),
-                 r$SENS[r$Method == method][1],
-                 tolerance = 0.01)
-    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1], tolerance =
-                   0.01)
+    expect_length(res, 15)
+    expect_equal(as.numeric(res$AUC_table$AUC[[3]]), r$AUC[r$Method == method][1],
+      tolerance =
+        0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[4, 2]),
+      r$SPE[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$DiagStatCombined$detail[3, 2]),
+      r$SENS[r$Method == method][1],
+      tolerance = 0.01
+    )
+    expect_equal(as.numeric(res$ThresholdCombined), r$Cutoff[r$Method == method][1],
+      tolerance =
+        0.01
+    )
   })
 }
 
@@ -131,7 +152,7 @@ test_that("nonlinComb functions ...", {
     ),
     "the number of status levels should be 2"
   )
-  
+
   expect_error(
     nonlinComb(
       markers = Data3[, 4:6],
@@ -154,11 +175,11 @@ test_that("nonlinComb functions ...", {
       event = "M",
       direction = "<",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “polyreg“, “ridgereg“, “lassoreg“, “elasticreg“, “splines“, “sgam“, “nsgam“"
+    "method should be one of 'polyreg', 'ridgereg', 'lassoreg', 'elasticreg', 'splines', 'sgam', 'nsgam'"
   )
-  
+
   expect_error(
     nonlinComb(
       markers = markers3,
@@ -167,11 +188,11 @@ test_that("nonlinComb functions ...", {
       method = "asaddsa",
       direction = "auto",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "method should be one of “polyreg“, “ridgereg“, “lassoreg“, “elasticreg“, “splines“, “sgam“, “nsgam“"
+    "method should be one of 'polyreg', 'ridgereg', 'lassoreg', 'elasticreg', 'splines', 'sgam', 'nsgam'"
   )
-  
+
   expect_error(
     nonlinComb(
       markers = markers3,
@@ -181,11 +202,11 @@ test_that("nonlinComb functions ...", {
       direction = "auto",
       resample = "cv",
       standardize = "asdada",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "standardize should be one of “range”, “zScore”, “tScore”, “mean”, “deviance”"
+    "standardize should be one of 'range', 'zScore', 'tScore', 'mean', 'deviance'"
   )
-  
+
   expect_error(
     nonlinComb(
       markers = markers2,
@@ -194,11 +215,11 @@ test_that("nonlinComb functions ...", {
       method = "ridgereg",
       direction = "asdada",
       standardize = "none",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "direction should be one of “auto”, “<”, “>”"
+    "direction should be one of 'auto', '<', '>'"
   )
-  
+
   expect_error(
     nonlinComb(
       markers = markers2,
@@ -209,7 +230,7 @@ test_that("nonlinComb functions ...", {
       standardize = "tScore",
       cutoff.method = "sadda"
     ),
-    "cutoff.method should be one of “youden”, “roc01”"
+    "The entered cutoff.method is invalid"
   )
   expect_error(
     nonlinComb(
@@ -220,11 +241,10 @@ test_that("nonlinComb functions ...", {
       resample = "sada",
       standardize = "range",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "resample should be one of “none“, “cv“, “repeatedcv“, “boot“"
+    "resample should be one of 'none', 'cv', 'repeatedcv', 'boot'"
   )
-  
 })
 
 ###############################################################################
@@ -240,7 +260,7 @@ test_that("nonlinComb functions ...", {
       method = "ridgereg",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "at least one variable is not numeric"
   )
@@ -252,7 +272,7 @@ test_that("nonlinComb functions ...", {
       method = "ridgereg",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "status does not include event"
   )
@@ -272,7 +292,7 @@ test_that("nonlinComb functions ...", {
       method = "ridgereg",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since status include NA"
   )
@@ -290,7 +310,7 @@ test_that("nonlinComb functions ...", {
       method = "ridgereg",
       direction = "<",
       standardize = "zScore",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "Rows with NA removed from the dataset since markers include NA"
   )

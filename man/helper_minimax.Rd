@@ -27,13 +27,13 @@ using t
 }
 \description{
 The \code{helper_minimax} function calculates the combination
-coefficient and optimized value of given biomarkers for minimax method
+coefficient and optimized value of given biomarkers for the minimax method.
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 
@@ -42,10 +42,13 @@ pos.set <- markers[status == levels(status)[2], ]
 
 t <- 0.5
 
-stat <- helper_minimax(t, neg.set = neg.set, pos.set = pos.set,
-markers = markers, status)
+stat <- helper_minimax(t,
+  neg.set = neg.set, pos.set = pos.set,
+  markers = markers, status
+)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

@@ -1,13 +1,10 @@
-library(APtools)
-library(usethis)
-
 data("exampleData1")
-Data <- exampleData1[-c(83:138),]
+Data <- exampleData1[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-data(mayo)
-Data2 <- mayo[-c(42:119),]
+load("result_data/mayo.rda")
+Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
 status2 <- factor(Data2[, 2], levels = c(1, 0))
 
@@ -16,7 +13,7 @@ Data3 <-
     "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data",
     header = FALSE
   )
-Data3 <- Data3[-c(121:262),]
+Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
@@ -33,11 +30,11 @@ test_that("mlComb functions ...", {
       event = "M",
       method = "knn",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "the number of status levels should be 2"
   )
-  
+
   expect_error(
     mlComb(
       markers = Data3[, 4:6],
@@ -58,7 +55,7 @@ test_that("mlComb functions ...", {
       status = status,
       event = "needed",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "The response given method is not available for mlComb function. See availableMethods function for the list of methods available."
   )
@@ -70,7 +67,7 @@ test_that("mlComb functions ...", {
       event = "M",
       method = "asaddsa",
       direction = "auto",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "The response given method is not available for mlComb function. See availableMethods function for the list of methods available."
   )
@@ -82,11 +79,11 @@ test_that("mlComb functions ...", {
       event = "1",
       method = "rf",
       direction = "asdada",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
-    "direction should be one of “auto”, “<”, “>”"
+    "direction should be one of 'auto', '<', '>'"
   )
-  
+
   expect_error(
     mlComb(
       markers = markers2,
@@ -96,9 +93,8 @@ test_that("mlComb functions ...", {
       direction = "auto",
       cutoff.method = "sadda"
     ),
-    "cutoff.method should be one of “youden”, “roc01”"
+    "The entered cutoff.method is invalid"
   )
-  
 })
 
 ###############################################################################
@@ -113,7 +109,7 @@ test_that("mlComb functions ...", {
       event = "M",
       method = "rf",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "at least one variable is not numeric"
   )
@@ -124,9 +120,8 @@ test_that("mlComb functions ...", {
       event = "C",
       method = "glm",
       direction = "<",
-      cutoff.method = "youden"
+      cutoff.method = "Youden"
     ),
     "status does not include event"
   )
 })
-

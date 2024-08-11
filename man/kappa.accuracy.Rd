@@ -8,11 +8,12 @@
 }
 \arguments{
 \item{DiagStatCombined}{a \code{numeric} table of confusion matrix of the
-calculated combined score.}
+calculated combination score.}
 }
 \description{
-The code{kappa.accuracy} calculates Cohen's kappa and accuracy.
+The \code{kappa.accuracy} calculates Cohen's kappa and accuracy.
 }
 \author{
-Serra Ilayda  Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

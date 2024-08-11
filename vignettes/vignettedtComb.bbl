@@ -1,0 +1,146 @@
+\begin{thebibliography}{20}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Amini et~al.(2019)Amini, Kazemnejad, Zayeri, Amirian, and
+  Kariman]{amini2019application}
+Maedeh Amini, Anoshirvan Kazemnejad, Farid Zayeri, Azam Amirian, and
+  Nourossadat Kariman.
+\newblock Application of adjusted-receiver operating characteristic curve
+  analysis in combination of biomarkers for early detection of gestational
+  diabetes mellitus.
+\newblock \emph{Koomesh}, 2019.
+
+\bibitem[Yu(2019)]{yu2019covariate}
+Suizhi Yu.
+\newblock A covariate-adjusted classi cation model for multiple biomarkers in
+  disease screening and diagnosis.
+\newblock \emph{Kansas State University}, 2019.
+
+\bibitem[Aznar-Gimeno et~al.(2021)Aznar-Gimeno, Esteban, Sanz, del Hoyo-Alonso,
+  and Savir{\'o}n-Cornudella]{aznar2021incorporating}
+Roc{\'\i}o Aznar-Gimeno, Luis~M Esteban, Gerardo Sanz, Rafael del Hoyo-Alonso,
+  and Ricardo Savir{\'o}n-Cornudella.
+\newblock Incorporating a new summary statistic into the min--max approach: a
+  min--max--median, min--max--iqr combination of biomarkers for maximising the
+  youden index.
+\newblock \emph{Mathematics}, 9\penalty0 (19):\penalty0 2497, 2021.
+
+\bibitem[Akyildiz et~al.(2010)Akyildiz, Sozuer, Akcan, Ku{\c{c}}uk, Artis,
+  Biri, Y{\i}lmaz, et~al.]{akyildiz2010value}
+Hizir~Yakup Akyildiz, Erdogan Sozuer, Alper Akcan, Can Ku{\c{c}}uk, Tarik
+  Artis, {\.I}smail Biri, Nam{\i}k Y{\i}lmaz, et~al.
+\newblock The value of d-dimer test in the diagnosis of patients with
+  nontraumatic acute abdomen.
+\newblock \emph{Turkish Journal of Trauma and Emergency Surgery}, 16\penalty0
+  (1):\penalty0 22--26, 2010.
+
+\bibitem[Walker and Duncan(1967)]{walker1967estimation}
+Strother~H Walker and David~B Duncan.
+\newblock Estimation of the probability of an event as a function of several
+  independent variables.
+\newblock \emph{Biometrika}, 54\penalty0 (1-2):\penalty0 167--179, 1967.
+
+\bibitem[Le{\'o}n et~al.(2006)Le{\'o}n, Ruiz-Santana, Saavedra, Almirante,
+  Nolla-Salas, {\'A}lvarez-Lerma, Garnacho-Montero, Le{\'o}n, Group,
+  et~al.]{leon2006bedside}
+Crist{\'o}bal Le{\'o}n, Sergio Ruiz-Santana, Pedro Saavedra, Benito Almirante,
+  Juan Nolla-Salas, Francisco {\'A}lvarez-Lerma, Jos{\'e} Garnacho-Montero,
+  Mar{\'\i}a~{\'A}ngeles Le{\'o}n, EPCAN~Study Group, et~al.
+\newblock A bedside scoring system (“candida score”) for early antifungal
+  treatment in nonneutropenic critically ill patients with candida
+  colonization.
+\newblock \emph{Critical care medicine}, 34\penalty0 (3):\penalty0 730--737,
+  2006.
+
+\bibitem[Pepe and Thompson(2000)]{pepe2000combining}
+Margaret~Sullivan Pepe and Mary~Lou Thompson.
+\newblock Combining diagnostic test results to increase accuracy.
+\newblock \emph{Biostatistics}, 1\penalty0 (2):\penalty0 123--140, 2000.
+
+\bibitem[Pepe et~al.(2006)Pepe, Cai, and Longton]{pepe2006combining}
+Margaret~Sullivan Pepe, Tianxi Cai, and Gary Longton.
+\newblock Combining predictors for classification using the area under the
+  receiver operating characteristic curve.
+\newblock \emph{Biometrics}, 62\penalty0 (1):\penalty0 221--229, 2006.
+
+\bibitem[Liu et~al.(2011)Liu, Liu, and Halabi]{liu2011min}
+Chunling Liu, Aiyi Liu, and Susan Halabi.
+\newblock A min--max combination of biomarkers to improve diagnostic accuracy.
+\newblock \emph{Statistics in medicine}, 30\penalty0 (16):\penalty0 2005--2014,
+  2011.
+
+\bibitem[Su and Liu(1993)]{su1993linear}
+John~Q Su and Jun~S Liu.
+\newblock Linear combinations of multiple diagnostic markers.
+\newblock \emph{Journal of the American Statistical Association}, 88\penalty0
+  (424):\penalty0 1350--1355, 1993.
+
+\bibitem[Sameera et~al.(2016)Sameera, Vardhan, and Sarma]{sameera2016binary}
+G~Sameera, R~Vishnu Vardhan, and KVS Sarma.
+\newblock Binary classification using multivariate receiver operating
+  characteristic curve for continuous data.
+\newblock \emph{Journal of biopharmaceutical statistics}, 26\penalty0
+  (3):\penalty0 421--431, 2016.
+
+\bibitem[Todor et~al.(2014)Todor, Todor, and
+  S{\u{a}}pl{\u{a}}can]{todor2014tools}
+Nicolae Todor, Irina Todor, and Gavril S{\u{a}}pl{\u{a}}can.
+\newblock Tools to identify linear combination of prognostic factors which
+  maximizes area under receiver operator curve.
+\newblock \emph{Journal of clinical bioinformatics}, 4\penalty0 (1):\penalty0
+  1--7, 2014.
+
+\bibitem[Friedman et~al.(2010)Friedman, Hastie, and
+  Tibshirani]{friedman2010regularization}
+Jerome Friedman, Trevor Hastie, and Rob Tibshirani.
+\newblock Regularization paths for generalized linear models via coordinate
+  descent.
+\newblock \emph{Journal of statistical software}, 33\penalty0 (1):\penalty0 1,
+  2010.
+
+\bibitem[Team et~al.(2013)]{team2013r}
+R~Core Team et~al.
+\newblock R: A language and environment for statistical computing.
+\newblock 2013.
+
+\bibitem[Hastie(2019)]{hastie2019gam}
+Trevor Hastie.
+\newblock gam: Generalized additive models. r package version 1.16. 1.
+\newblock \emph{Von https://CRAN. R-project. org/package= gam abgerufen}, 2019.
+
+\bibitem[Cha(2007)]{cha2007comprehensive}
+Sung-Hyuk Cha.
+\newblock Comprehensive survey on distance/similarity measures between
+  probability density functions.
+\newblock \emph{City}, 1\penalty0 (2):\penalty0 1, 2007.
+
+\bibitem[Pandit et~al.(2011)Pandit, Gupta, et~al.]{pandit2011comparative}
+Shraddha Pandit, Suchita Gupta, et~al.
+\newblock A comparative study on distance measuring approaches for clustering.
+\newblock \emph{International journal of research in computer science},
+  2\penalty0 (1):\penalty0 29--31, 2011.
+
+\bibitem[Minaev et~al.(2018)Minaev, Pich{\'e}, and Visa]{minaev2018distance}
+Georgy Minaev, Robert Pich{\'e}, and Ari Visa.
+\newblock Distance measures for classification of numerical features.
+\newblock \emph{Tampere University of Technology, Finland}, 2018.
+
+\bibitem[Kuhn(2008)]{kuhn2008building}
+Max Kuhn.
+\newblock Building predictive models in r using the caret package.
+\newblock \emph{Journal of statistical software}, 28:\penalty0 1--26, 2008.
+
+\bibitem[L{\'o}pez-Rat{\'o}n et~al.(2014)L{\'o}pez-Rat{\'o}n,
+  Rodr{\'\i}guez-{\'A}lvarez, Cadarso-Su{\'a}rez, and
+  Gude-Sampedro]{lopez2014optimalcutpoints}
+M{\'o}nica L{\'o}pez-Rat{\'o}n, Mar{\'\i}a~Xos{\'e} Rodr{\'\i}guez-{\'A}lvarez,
+  Carmen Cadarso-Su{\'a}rez, and Francisco Gude-Sampedro.
+\newblock Optimalcutpoints: an r package for selecting optimal cutpoints in
+  diagnostic tests.
+\newblock \emph{Journal of statistical software}, 61:\penalty0 1--36, 2014.
+
+\end{thebibliography}

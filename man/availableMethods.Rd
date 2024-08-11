@@ -8,7 +8,7 @@ availableMethods()
 }
 \description{
 This function returns a data.frame of available classification
-methods in \code{dtComb}. These methods are imported from caret package.
+methods in \code{dtComb}. These methods are imported from the caret package.
 }
 \examples{
 
@@ -16,5 +16,6 @@ availableMethods()
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

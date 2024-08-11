@@ -18,7 +18,12 @@ mlComb(
   B = 25,
   direction = c("auto", "<", ">"),
   conf.level = 0.95,
-  cutoff.method = c("youden", "roc01"),
+  cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
+    "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
+    "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
+    "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
+    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
+    "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
   ...
 )
 }
@@ -68,9 +73,9 @@ bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV".
 (25, default)}
 
 \item{direction}{a \code{character} string determines in which direction the
-comparison will be made.  “>”: if the predictor values for the control group
+comparison will be made.  ">": if the predictor values for the control group
 are higher than the values of the case group (controls > cases).
-“<”: if the predictor values for the control group are lower or equal than
+"<": if the predictor values for the control group are lower or equal than
 the values of the case group (controls < cases).}
 
 \item{conf.level}{a \code{numeric} value to  determine the confidence interval
@@ -94,19 +99,22 @@ scores of two diagnostic tests selected among several Machine Learning
 Algorithms
 }
 \examples{
-#call data
+# call data
 data(exampleData1)
 
-#define the function parameters
+# define the function parameters
 markers <- exampleData1[, -1]
 status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
-score1 <- mlComb(markers = markers, status = status, event = event,
-method = "rf", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
-preProcess = c("center", "scale"), direction = "<", cutoff.method ="youden")
+model <- mlComb(
+  markers = markers, status = status, event = event,
+  method = "knn", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+  preProcess = c("center", "scale"), direction = "<", cutoff.method = "Youden"
+)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec
+Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }
