@@ -298,6 +298,12 @@ nonlinComb <- function(markers = NULL,
   }
 
   status_levels <- levels(status)
+  if (status_levels[1] == event) {
+    firstStatus <- status_levels[1]
+    secondStatus <- status_levels[2]
+    status_levels[1] <- secondStatus
+    status_levels[2] <- firstStatus
+  }
   status <- factor(ifelse(status == event, 1, 0), ordered = TRUE)
 
   if (length(which(is.na(markers))) > 0) {

@@ -42,8 +42,8 @@ opts_chunk$set(tidy = FALSE, dev = "pdf", message = FALSE, fig.align = "center",
 
 \title{\textbf{dtComb: A Comprehensive R Package for Combining Two Diagnostic Tests}}
 
-\author[1,2]{Serra İlayda YERLİTAŞ }
-\author[2]{Serra Berşan GENGEÇ }
+\author[1,2]{S. İlayda YERLİTAŞ TAŞTAN}
+\author[2]{Serra Berşan GENGEÇ}
 \author[3]{Necla KOÇHAN}
 \author[1,2]{Gözde ERTÜRK ZARARSIZ}
 \author[4]{Selçuk KORKMAZ}

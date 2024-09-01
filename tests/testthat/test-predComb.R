@@ -3,14 +3,14 @@
 data("exampleData1")
 Data <- exampleData1[-c(83:138), ]
 markers <- Data[, -1]
-status <- factor(Data$group, levels = c("not_needed", "needed"))
+status <- Data$group
 
 newmarkers <- exampleData1[c(83:138), -1]
 
 load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]
 markers2 <- Data2[, 3:4]
-status2 <- factor(Data2[, 2], levels = c(1, 0))
+status2 <- factor(Data2[, 2])
 
 newmarkers2 <- mayo[c(42:119), 3:4]
 
