@@ -24,6 +24,7 @@ mathComb(
     "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
     "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
     "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
+  show.result = FALSE,
   ...
 )
 }
@@ -121,7 +122,7 @@ calculatin combination score
 calculating combination score
 }}
 
-\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+\item{show.plot}{a \code{logical}. If TRUE, a ROC curve is
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
@@ -135,6 +136,9 @@ for the roc curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
+
+\item{show.result}{a \code{logical} string indicating whether the results
+should be printed to the console.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
 }

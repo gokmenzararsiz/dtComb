@@ -24,6 +24,7 @@ linComb(
     "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
     "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
     "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
+  show.result = FALSE,
   ...
 )
 }
@@ -192,7 +193,7 @@ where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation
 \item{ndigits}{a \code{integer} value to indicate the number of decimal
 places to be used for rounding in Scoring method (0, default)}
 
-\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+\item{show.plot}{a \code{logical}. If TRUE, a ROC curve is
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
@@ -206,6 +207,9 @@ for the roc curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
+
+\item{show.result}{a \code{logical} string indicating whether the results
+should be printed to the console.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
 }
@@ -244,7 +248,7 @@ event <- "carriers"
 score2 <- linComb(
   markers = markers, status = status, event = event,
   method = "PT", resample = "none", standardize = "none", direction = "<",
-  cutoff.method = "Youden"
+  cutoff.method = "Youden", show.result = "TRUE"
 )
 
 score3 <- linComb(

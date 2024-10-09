@@ -97,7 +97,7 @@
 #'  calculating combination score
 #' }
 #'
-#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
 #' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
@@ -111,6 +111,9 @@
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #'  for the roc curve.
+#'
+#' @param show.result a \code{logical} string indicating whether the results
+#' should be printed to the console.
 #'
 #' @param \dots further arguments. Currently has no effect on the results.
 #'
@@ -188,7 +191,7 @@ mathComb <- function(markers = NULL,
                        "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
                        "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                        "ObservedPrev", "MeanPrev", "PrevalenceMatching"
-                     ), ...) {
+                     ), show.result = FALSE, ...) {
   methods <-
     c(
       "add",
@@ -521,26 +524,26 @@ mathComb <- function(markers = NULL,
 
   allres$fit <- model_fit
 
-  print_model <- list(
-    CombType = "mathComb",
-    Method = method,
-    Distance = distance,
-    rowcount = nrow(markers),
-    colcount = ncol(markers),
-    classification = status_levels,
-    Pre_processing = standardize,
-    Transform = transform,
-    MaxPower = max_power,
-    AUC_table = allres$AUC_table,
-    MultComp_table = allres$MultComp_table,
-    DiagStatCombined = allres$DiagStatCombined,
-    Cutoff_method = cutoff.method,
-    ThresholdCombined = allres$ThresholdCombined,
-    Criterion = allres$Criterion.c
-  )
-
-  print_train(print_model)
-
+  if (show.result) {
+    print_model <- list(
+      CombType = "mathComb",
+      Method = method,
+      Distance = distance,
+      rowcount = nrow(markers),
+      colcount = ncol(markers),
+      classification = status_levels,
+      Pre_processing = standardize,
+      Transform = transform,
+      MaxPower = max_power,
+      AUC_table = allres$AUC_table,
+      MultComp_table = allres$MultComp_table,
+      DiagStatCombined = allres$DiagStatCombined,
+      Cutoff_method = cutoff.method,
+      ThresholdCombined = allres$ThresholdCombined,
+      Criterion = allres$Criterion.c
+    )
+    print_train(print_model)
+  }
   invisible(allres)
 }
 

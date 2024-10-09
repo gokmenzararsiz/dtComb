@@ -45,7 +45,7 @@
 #' bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV".
 #' (25, default)
 #'
-#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
 #' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
@@ -59,6 +59,9 @@
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the ROC curve.
+#'
+#' @param show.result a \code{logical} string indicating whether the results
+#' should be printed to the console.
 #'
 #' @param \dots optional arguments passed to selected classifiers.
 #'
@@ -112,8 +115,7 @@ mlComb <- function(markers = NULL,
                      "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
                      "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                      "ObservedPrev", "MeanPrev", "PrevalenceMatching"
-                   ),
-                   ...) {
+                   ), show.result = FALSE, ...) {
   directions <- c("auto", "<", ">")
 
   cutoff.methods <- c(
@@ -401,19 +403,20 @@ mlComb <- function(markers = NULL,
 
   allres$fit <- model_fit
 
-  print_model <- list(
-    CombType = "mlComb",
-    Model = modelFit,
-    AUC_table = allres$AUC_table,
-    MultComp_table = allres$MultComp_table,
-    DiagStatCombined = allres$DiagStatCombined,
-    Cutoff_method = cutoff.method,
-    ThresholdCombined = allres$ThresholdCombined,
-    Criterion = allres$Criterion.c
-  )
+  if (show.result) {
+    print_model <- list(
+      CombType = "mlComb",
+      Model = modelFit,
+      AUC_table = allres$AUC_table,
+      MultComp_table = allres$MultComp_table,
+      DiagStatCombined = allres$DiagStatCombined,
+      Cutoff_method = cutoff.method,
+      ThresholdCombined = allres$ThresholdCombined,
+      Criterion = allres$Criterion.c
+    )
 
-  print_train(print_model)
-
+    print_train(print_model)
+  }
   invisible(allres)
 }
 

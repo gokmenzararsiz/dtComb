@@ -24,6 +24,7 @@ mlComb(
     "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
     "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
     "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
+  show.result = FALSE,
   ...
 )
 }
@@ -65,7 +66,7 @@ pre-processing methods are: "BoxCox", "YeoJohnson", "expoTrans", "center",
 "spatialSign", "corr", "zv", "nzv", and "conditionalX". For detailed
 information about the methods see ?caret::preProcess}
 
-\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+\item{show.plot}{a \code{logical}. If TRUE, a ROC curve is
 plotted. Default is TRUE}
 
 \item{B}{a \code{numeric} value that is the number of bootstrap samples for
@@ -83,6 +84,9 @@ for the ROC curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the ROC curve.}
+
+\item{show.result}{a \code{logical} string indicating whether the results
+should be printed to the console.}
 
 \item{\dots}{optional arguments passed to selected classifiers.}
 }

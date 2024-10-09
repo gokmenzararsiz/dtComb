@@ -176,7 +176,7 @@
 #' places to be used for rounding in Scoring method (0, default)
 #'
 #'
-#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
 #' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
@@ -190,6 +190,9 @@
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the roc curve.
+#'
+#' @param show.result a \code{logical} string indicating whether the results
+#' should be printed to the console.
 #'
 #' @param \dots further arguments. Currently has no effect on the results.
 #'
@@ -225,7 +228,7 @@
 #' score2 <- linComb(
 #'   markers = markers, status = status, event = event,
 #'   method = "PT", resample = "none", standardize = "none", direction = "<",
-#'   cutoff.method = "Youden"
+#'   cutoff.method = "Youden", show.result = "TRUE"
 #' )
 #'
 #' score3 <- linComb(
@@ -270,7 +273,7 @@ linComb <- function(markers = NULL,
                       "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
                       "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                       "ObservedPrev", "MeanPrev", "PrevalenceMatching"
-                    ), ...) {
+                    ), show.result = FALSE, ...) {
   methods <-
     c(
       "scoring",
@@ -1334,25 +1337,27 @@ linComb <- function(markers = NULL,
 
   allres$fit <- model_fit
 
-  print_model <- list(
-    CombType = "linComb",
-    Method = method,
-    rowcount = nrow(markers),
-    colcount = ncol(markers),
-    classification = status_levels,
-    Pre_processing = standardize,
-    Resampling = resample,
-    niters = niters,
-    nfolds = nfolds,
-    nrepeats = nrepeats,
-    AUC_table = allres$AUC_table,
-    MultComp_table = allres$MultComp_table,
-    DiagStatCombined = allres$DiagStatCombined,
-    Cutoff_method = cutoff.method,
-    ThresholdCombined = allres$ThresholdCombined,
-    Criterion = allres$Criterion.c
-  )
-  print_train(print_model)
+  if (show.result) {
+    print_model <- list(
+      CombType = "linComb",
+      Method = method,
+      rowcount = nrow(markers),
+      colcount = ncol(markers),
+      classification = status_levels,
+      Pre_processing = standardize,
+      Resampling = resample,
+      niters = niters,
+      nfolds = nfolds,
+      nrepeats = nrepeats,
+      AUC_table = allres$AUC_table,
+      MultComp_table = allres$MultComp_table,
+      DiagStatCombined = allres$DiagStatCombined,
+      Cutoff_method = cutoff.method,
+      ThresholdCombined = allres$ThresholdCombined,
+      Criterion = allres$Criterion.c
+    )
+    print_train(print_model)
+  }
 
   invisible(allres)
 }

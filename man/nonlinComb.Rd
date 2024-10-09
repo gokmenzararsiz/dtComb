@@ -29,6 +29,7 @@ nonlinComb(
     "MinValuePPV", "ValueNPV", "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
     "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV", "ValueDLR.Negative",
     "ValueDLR.Positive", "MinPvalue", "ObservedPrev", "MeanPrev", "PrevalenceMatching"),
+  show.result = FALSE,
   ...
 )
 }
@@ -167,7 +168,7 @@ polynomial based methods (FALSE, default)}
 \item{alpha}{a \code{numeric} value as the mixing parameter in Elastic Net
 Regression method (0.5, default)}
 
-\item{show.plot}{a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+\item{show.plot}{a \code{logical}. If TRUE, a ROC curve is
 plotted. Default is TRUE}
 
 \item{direction}{a \code{character} string determines in which direction the
@@ -181,6 +182,9 @@ for the ROC curve(0.95, default).}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the ROC curve.}
+
+\item{show.result}{a \code{logical} string indicating whether the results
+should be printed to the console.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
 }

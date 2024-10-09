@@ -138,7 +138,7 @@
 #' @param alpha a \code{numeric} value as the mixing parameter in Elastic Net
 #' Regression method (0.5, default)
 #'
-#' @param show.plot a \code{logical} a \code{logical}. If TRUE, a ROC curve is
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
 #' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
@@ -152,6 +152,9 @@
 #'
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the ROC curve.
+#'
+#' @param show.result a \code{logical} string indicating whether the results
+#' should be printed to the console.
 #'
 #' @param \dots further arguments. Currently has no effect on the results.
 #'
@@ -229,7 +232,7 @@ nonlinComb <- function(markers = NULL,
                          "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
                          "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                          "ObservedPrev", "MeanPrev", "PrevalenceMatching"
-                       ), ...) {
+                       ), show.result = FALSE, ...) {
   methods <-
     c(
       "polyreg",
@@ -1265,25 +1268,26 @@ nonlinComb <- function(markers = NULL,
 
   allres$fit <- model_fit
 
-  print_model <- list(
-    CombType = "nonlinComb",
-    Method = method,
-    rowcount = nrow(markers),
-    colcount = ncol(markers),
-    classification = status_levels,
-    Pre_processing = standardize,
-    Resampling = resample,
-    niters = niters,
-    nfolds = nfolds,
-    nrepeats = nrepeats,
-    AUC_table = allres$AUC_table,
-    MultComp_table = allres$MultComp_table,
-    DiagStatCombined = allres$DiagStatCombined,
-    Cutoff_method = cutoff.method,
-    ThresholdCombined = allres$ThresholdCombined,
-    Criterion = allres$Criterion.c
-  )
-  print_train(print_model)
-
+  if (show.result) {
+    print_model <- list(
+      CombType = "nonlinComb",
+      Method = method,
+      rowcount = nrow(markers),
+      colcount = ncol(markers),
+      classification = status_levels,
+      Pre_processing = standardize,
+      Resampling = resample,
+      niters = niters,
+      nfolds = nfolds,
+      nrepeats = nrepeats,
+      AUC_table = allres$AUC_table,
+      MultComp_table = allres$MultComp_table,
+      DiagStatCombined = allres$DiagStatCombined,
+      Cutoff_method = cutoff.method,
+      ThresholdCombined = allres$ThresholdCombined,
+      Criterion = allres$Criterion.c
+    )
+    print_train(print_model)
+  }
   invisible(allres)
 }
