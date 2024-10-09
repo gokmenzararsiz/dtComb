@@ -15,7 +15,7 @@ jobs:
       - name: Create Package
         run: |
             Rscript -e " install.packages(c('epiR'))
-            install.packages("udunits2") 
+            install.packages(udunits2) 
             library(udunits2) 
             library(units)
             library(epiR)
