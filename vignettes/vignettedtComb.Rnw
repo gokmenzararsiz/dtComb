@@ -77,24 +77,24 @@ library(dtComb)
 @
 \section{Preparing the input data}
 The methods provided within this package are designed to require a \Rclass{DataFrame} comprising three columns, where the first column represents class labels, and the subsequent columns correspond to the values of the corresponding markers. The class label is a binary variable (i.e., negative/positive, present/absent) representing the outcomes of a reference test used in disease precision. 
-This vignette will use the dataset \texttt{exampleData1}, included in this package. This dataset contains information from patients admitted to the General Surgery Department of Erciyes University Medical Faculty with complaints regarding abdominal pain. The dataset comprises 225 patients split into two groups: those requiring immediate laparotomy (110 patients) and those not requiring it (115 patients). Patients who had surgery due to postoperative pathologies are in the first group, whereas those with negative laparotomy results belong to the second group \citep{akyildiz2010value}. 
+This vignette will use the dataset \texttt{laparoscopy}, included in this package. This dataset contains information from patients admitted to the General Surgery Department of Erciyes University Medical Faculty with complaints regarding abdominal pain. The dataset comprises 225 patients split into two groups: those requiring immediate laparotomy (110 patients) and those not requiring it (115 patients). Patients who had surgery due to postoperative pathologies are in the first group, whereas those with negative laparotomy results belong to the second group \citep{akyildiz2010value}. 
 <<eval = TRUE, echo=TRUE>>=
-data(exampleData1)
-head(exampleData1)
+data(laparoscopy)
+head(laparoscopy)
 @
 The dataset is divided into two parts: the training and the test sets. The training set consists of $75\%$ of the dataset and is used to train classification models and to compare different model performances. The remaining portion of the dataset is saved as the \texttt{test} set, which will later be used in the prediction phase.
 The \texttt{train} and the \texttt{test} sets are built as follows:
 <<>>=
-# # train set from the exampleData1
+# # train set from the laparoscopy
 set.seed(2128)
-inTrain <- caret::createDataPartition(exampleData1$group, p = 3 / 4, list = FALSE)
-trainData <- exampleData1[inTrain, ]
+inTrain <- caret::createDataPartition(laparoscopy$group, p = 3 / 4, list = FALSE)
+trainData <- laparoscopy[inTrain, ]
 head(trainData)
 @
 <<>>=
-# # test set from the exampleData1
+# # test set from the laparoscopy
 set.seed(2128)
-testData <- exampleData1[-inTrain, -1]
+testData <- laparoscopy[-inTrain, -1]
 @
 We have a total of 170 patients in the training set, with 83 requiring laparotomy and 87 not requiring laparotomy. The training dataset is divided into two parts: \texttt{markers} (i.e., diagnostic test results) and \texttt{status} (i.e., reference test results or class labels). The class label is also converted into a factor variable if it is not a factor. The remaining 55 patients are assigned to the test set. 
 <<>>=

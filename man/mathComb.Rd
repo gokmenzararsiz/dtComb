@@ -153,9 +153,9 @@ measures, standardization, and transform options.
 }
 \examples{
 
-data(exampleData1)
-markers <- exampleData1[, -1]
-status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+data(laparoscopy)
+markers <- laparoscopy[, -1]
+status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 event <- "needed"
 direction <- "<"
 cutoff.method <- "Youden"

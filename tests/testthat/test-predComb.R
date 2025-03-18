@@ -1,11 +1,11 @@
 # library(usethis)
 
-data("exampleData1")
-Data <- exampleData1[-c(83:138), ]
+data("laparoscopy")
+Data <- laparoscopy[-c(83:138), ]
 markers <- Data[, -1]
 status <- Data$group
 
-newmarkers <- exampleData1[c(83:138), -1]
+newmarkers <- laparoscopy[c(83:138), -1]
 
 load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]

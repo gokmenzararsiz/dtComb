@@ -198,8 +198,8 @@ scores of two diagnostic tests selected among several non-linear combination
 methods and standardization options
 }
 \examples{
-data("exampleData1")
-data <- exampleData1
+data("laparoscopy")
+data <- laparoscopy
 
 markers <- data[, -1]
 status <- factor(data$group, levels = c("not_needed", "needed"))

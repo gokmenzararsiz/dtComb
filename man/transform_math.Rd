@@ -21,8 +21,8 @@ transformation from \code{log} \code{exp} \code{sin} \code{cos} transformations
 for biomarkers.
 }
 \examples{
-data(exampleData1)
-markes <- exampleData1[, -1]
+data(laparoscopy)
+markes <- laparoscopy[, -1]
 transform_math(markes, transform = "log")
 
 }

@@ -55,10 +55,10 @@ variables.
 }
 \examples{
 # call data
-data(exampleData1)
+data(laparoscopy)
 
 # define the function parameters
-markers <- exampleData1[, -1]
+markers <- laparoscopy[, -1]
 markers2 <- std.train(markers, "deviance")
 
 }

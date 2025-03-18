@@ -5,9 +5,9 @@
 #'
 #' @docType data
 #'
-#' @usage data(exampleData1)
+#' @usage data(laparoscopy)
 #'
-#' @name exampleData1
+#' @name laparoscopy
 #'
 #' @format A data frame with 225 rows and 3 variables:
 #' \describe{
@@ -19,14 +19,14 @@
 #' }
 #'
 #' @examples
-#' data(exampleData1)
-#' exampleData1$group <- factor(exampleData1$group)
+#' data(laparoscopy)
+#' laparoscopy$group <- factor(laparoscopy$group)
 #' gcol <- c("#E69F00", "#56B4E9")
-#' plot(exampleData1$ddimer, exampleData1$log_leukocyte,
-#'   col = gcol[as.numeric(exampleData1$group)]
+#' plot(laparoscopy$ddimer, laparoscopy$log_leukocyte,
+#'   col = gcol[as.numeric(laparoscopy$group)]
 #' )
 #'
-"exampleData1"
+"laparoscopy"
 
 ###############################################################################
 #'

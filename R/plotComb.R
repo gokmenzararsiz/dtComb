@@ -18,11 +18,11 @@
 #' @examples
 #'
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- exampleData1[, -1]
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- laparoscopy[, -1]
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
 #'
 #' score1 <- linComb(
@@ -65,7 +65,7 @@ plotComb <- function(model, status) {
     ggplot2::xlab("Combination Score") +
     ggplot2::ylab("Density") +
     ggplot2::geom_density(size = 2) +
-    ggplot2::ggtitle("Distribution Plot") +
+    ggplot2::ggtitle("Density Plot") +
     ggplot2::geom_vline(xintercept = model$ThresholdCombined, linetype = "dotted") +
     ggplot2::theme_classic() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 22, face = "bold")) +
@@ -86,8 +86,8 @@ plotComb <- function(model, status) {
     color = Labels
   )) +
     ggplot2::ylab("Combination Score") +
-    ggplot2::geom_point(size = 3) +
-    ggplot2::geom_jitter(width = 0.40) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::geom_jitter(width = 0.40, size = 2) +
     ggplot2::geom_point() +
     ggplot2::ggtitle("Scatter Plot") +
     ggplot2::geom_hline(yintercept = model$ThresholdCombined, linetype = "dotted") +

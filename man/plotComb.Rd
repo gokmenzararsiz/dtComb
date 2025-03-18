@@ -24,11 +24,11 @@ function are three different plots generated from the combination scores.
 \examples{
 
 # call data
-data(exampleData1)
+data(laparoscopy)
 
 # define the function parameters
-markers <- exampleData1[, -1]
-status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+markers <- laparoscopy[, -1]
+status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- linComb(

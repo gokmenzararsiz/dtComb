@@ -125,9 +125,9 @@
 #'
 #' @examples
 #'
-#' data(exampleData1)
-#' markers <- exampleData1[, -1]
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' data(laparoscopy)
+#' markers <- laparoscopy[, -1]
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
 #' direction <- "<"
 #' cutoff.method <- "Youden"
@@ -565,8 +565,8 @@ mathComb <- function(markers = NULL,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
-#' data(exampleData1)
-#' markes <- exampleData1[, -1]
+#' data(laparoscopy)
+#' markes <- laparoscopy[, -1]
 #' transform_math(markes, transform = "log")
 #'
 #' @export

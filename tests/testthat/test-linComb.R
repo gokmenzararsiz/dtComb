@@ -1,9 +1,9 @@
-data("exampleData1")
-Data <- exampleData1[-c(83:138), ]
+data("laparoscopy")
+Data <- laparoscopy[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-test <- exampleData1[c(83:138), ]
+test <- laparoscopy[c(83:138), ]
 
 load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]

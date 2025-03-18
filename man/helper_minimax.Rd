@@ -31,11 +31,11 @@ coefficient and optimized value of given biomarkers for the minimax method.
 }
 \examples{
 # call data
-data(exampleData1)
+data(laparoscopy)
 
 # define the function parameters
-markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 
 neg.set <- markers[status == levels(status)[1], ]
 pos.set <- markers[status == levels(status)[2], ]

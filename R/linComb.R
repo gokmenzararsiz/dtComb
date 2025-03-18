@@ -204,11 +204,11 @@
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- exampleData1[, -1]
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- laparoscopy[, -1]
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
 #'
 #' score1 <- linComb(
@@ -1383,11 +1383,11 @@ linComb <- function(markers = NULL,
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #'
 #' neg.set <- markers[status == levels(status)[1], ]
 #' pos.set <- markers[status == levels(status)[2], ]
@@ -1442,11 +1442,11 @@ helper_minmax <- function(lambda, neg.set, pos.set) {
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #'
 #' neg.set <- markers[status == levels(status)[1], ]
 #' pos.set <- markers[status == levels(status)[2], ]
@@ -1511,11 +1511,11 @@ helper_PCL <- function(lambda, neg.set, pos.set) {
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #'
 #' neg.set <- markers[status == levels(status)[1], ]
 #' pos.set <- markers[status == levels(status)[2], ]
@@ -1564,11 +1564,11 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status) {
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #'
 #' t <- 0.5
 #'
@@ -1609,11 +1609,11 @@ helper_TS <- function(theta, markers, status) {
 #'
 #' @examples
 #' # call data
-#' data(exampleData1)
+#' data(laparoscopy)
 #'
 #' # define the function parameters
-#' markers <- cbind(exampleData1$ddimer, exampleData1$log_leukocyte)
-#' status <- factor(exampleData1$group, levels = c("not_needed", "needed"))
+#' markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
+#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
 #'
 #' neg.set <- markers[status == levels(status)[1], ]
 #' pos.set <- markers[status == levels(status)[2], ]
