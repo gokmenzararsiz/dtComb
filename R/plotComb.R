@@ -18,11 +18,11 @@
 #' @examples
 #'
 #' # call data
-#' data(laparoscopy)
+#' data(laparotomy)
 #'
 #' # define the function parameters
-#' markers <- laparoscopy[, -1]
-#' status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+#' markers <- laparotomy[, -1]
+#' status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 #' event <- "needed"
 #'
 #' score1 <- linComb(
@@ -65,7 +65,7 @@ plotComb <- function(model, status) {
     ggplot2::xlab("Combination Score") +
     ggplot2::ylab("Density") +
     ggplot2::geom_density(size = 2) +
-    ggplot2::ggtitle("Density Plot") +
+    ggplot2::ggtitle("Kernel density plot") +
     ggplot2::geom_vline(xintercept = model$ThresholdCombined, linetype = "dotted") +
     ggplot2::theme_classic() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 22, face = "bold")) +
@@ -89,7 +89,7 @@ plotComb <- function(model, status) {
     ggplot2::geom_point(size = 2) +
     ggplot2::geom_jitter(width = 0.40, size = 2) +
     ggplot2::geom_point() +
-    ggplot2::ggtitle("Scatter Plot") +
+    ggplot2::ggtitle("Individual-value plot") +
     ggplot2::geom_hline(yintercept = model$ThresholdCombined, linetype = "dotted") +
     ggplot2::theme_classic() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 22, face = "bold")) +
@@ -115,7 +115,7 @@ plotComb <- function(model, status) {
     ggplot2::theme(text = ggplot2::element_text(size = 20)) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(size = 20)) +
     ggplot2::theme(axis.text.y = ggplot2::element_text(size = 20)) +
-    ggplot2::ggtitle("Sensitivity&Specificity Plot") +
+    ggplot2::ggtitle("Sensitivity&Specificity plot") +
     ggplot2::labs(y = "Value", x = "Combination Score", color = "Labels") +
     ggplot2::scale_color_manual(values = colors) +
     ggplot2::geom_vline(xintercept = model$ThresholdCombined, linetype = "dotted") +

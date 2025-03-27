@@ -3,7 +3,8 @@
 \docType{data}
 \name{exampleData3}
 \alias{exampleData3}
-\title{A simulation data containing 250 diseased and 250 healthy individuals.}
+\title{Simulated data with healthy and diseased individuals
+A simulation data containing 250 diseased and 250 healthy individuals.}
 \format{
 A data frame with 500 rows and 3 variables:
 \describe{
@@ -16,6 +17,7 @@ A data frame with 500 rows and 3 variables:
 data(exampleData3)
 }
 \description{
+Simulated data with healthy and diseased individuals
 A simulation data containing 250 diseased and 250 healthy individuals.
 }
 \examples{

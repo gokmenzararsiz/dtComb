@@ -1,35 +1,35 @@
 #' Examples data for the dtComb package
-#'
-#' A data set containing the results of diagnostic laparoscopy procedures for 225
+#' @title Diagnostic laparotomy dataset
+#' A data set containing the results of diagnostic laparotomy procedures for 225
 #' patients.
 #'
 #' @docType data
 #'
-#' @usage data(laparoscopy)
+#' @usage data(laparotomy)
 #'
-#' @name laparoscopy
+#' @name laparotomy
 #'
 #' @format A data frame with 225 rows and 3 variables:
 #' \describe{
-#'   \item{group}{Indicator if the procedure was needed, values needed and
-#'   not_needed}
+#'   \item{group}{Indicator whether the procedure was needed; values:
+#'    \code{"needed"} or \code{"not_needed"}.}
 #'   \item{ddimer}{Biomarker 1, D-Dimer protein level in blood, ng/mL}
 #'   \item{log_leukocyte}{Biomarker 2, Logarithm of Leukocyte count in blood,
 #'   per mcL}
 #' }
 #'
 #' @examples
-#' data(laparoscopy)
-#' laparoscopy$group <- factor(laparoscopy$group)
+#' data(laparotomy)
+#' laparotomy$group <- factor(laparotomy$group)
 #' gcol <- c("#E69F00", "#56B4E9")
-#' plot(laparoscopy$ddimer, laparoscopy$log_leukocyte,
-#'   col = gcol[as.numeric(laparoscopy$group)]
+#' plot(laparotomy$ddimer, laparotomy$log_leukocyte,
+#'   col = gcol[as.numeric(laparotomy$group)]
 #' )
 #'
-"laparoscopy"
+"laparotomy"
 
 ###############################################################################
-#'
+#' @title Biomarker data from carriers of a rare genetic disorder
 #' A data set containing the carriers of a rare genetic disorder for 120 samples.
 #'
 #' @docType data
@@ -40,8 +40,8 @@
 #'
 #' @format A data frame with 120 rows and 5 variables:
 #' \describe{
-#'   \item{Group}{Indicator if the person was carriers, values carriers and
-#'   normals}
+#'   \item{Group}{Indicator whether the person is a carrier; values:
+#'   \code{"carriers"} and \code{"normals"}.}
 #'   \item{m1}{Biomarker 1, 1. measurement blood sample}
 #'   \item{m2}{Biomarker 2, 2. measurement blood sample}
 #'   \item{m3}{Biomarker 3, 3. measurement blood sample}
@@ -59,6 +59,7 @@
 "exampleData2"
 
 ###############################################################################
+#' @title Simulated data with healthy and diseased individuals
 #' A simulation data containing 250 diseased and 250 healthy individuals.
 #' @docType data
 #'
@@ -84,6 +85,7 @@
 "exampleData3"
 
 ###############################################################################
+#' @title Machine learning model table for mlComb()
 #' Includes machine learning models used for the mlComb function
 #' @docType data
 #'

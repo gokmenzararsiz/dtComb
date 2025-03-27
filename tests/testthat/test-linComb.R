@@ -1,9 +1,9 @@
-data("laparoscopy")
-Data <- laparoscopy[-c(83:138), ]
+data("laparotomy")
+Data <- laparotomy[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
-test <- laparoscopy[c(83:138), ]
+test <- laparotomy[c(83:138), ]
 
 load("result_data/mayo.rda")
 Data2 <- mayo[-c(42:119), ]
@@ -120,7 +120,7 @@ for (method in c(
     event = "M",
     method = method,
     resample = "none",
-    standardize = "range",
+    standardize = "min_max_scale",
     direction = "<",
     cutoff.method = "Youden"
   )
@@ -220,7 +220,7 @@ test_that("linComb functions ...", {
       standardize = "asdada",
       cutoff.method = "Youden"
     ),
-    "standardize should be one of 'range', 'zScore', 'tScore', 'mean', 'deviance'"
+    "standardize should be one of 'min_max_scale', 'zScore', 'tScore', 'scale_mean_to_one', 'scale_sd_to_one'"
   )
 
   expect_error(
@@ -255,7 +255,7 @@ test_that("linComb functions ...", {
       event = "1",
       method = "scoring",
       resample = "sada",
-      standardize = "range",
+      standardize = "min_max_scale",
       direction = "<",
       cutoff.method = "Youden"
     ),
@@ -342,7 +342,7 @@ test_that("linComb functions ...", {
       direction = "<",
       cutoff.method = "Youden"
     ),
-    "The used combination method requires range standardization. All biomarker values are standardized to a range between 0 and 1."
+    "The used combination method requires min_max_scale standardization. All biomarker values are standardized to a scale between 0 and 1."
   )
 })
 

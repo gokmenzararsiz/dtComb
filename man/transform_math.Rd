@@ -2,28 +2,26 @@
 % Please edit documentation in R/mathComb.R
 \name{transform_math}
 \alias{transform_math}
-\title{Mathematical transformations for biomarkers.}
+\title{Mathematical transformations for biomarkers}
 \usage{
 transform_math(markers, transform)
 }
 \arguments{
-\item{markers}{a \code{numeric} data frame that contains the biomarkers}
+\item{markers}{A \code{numeric} data frame that contains the biomarkers.}
 
-\item{transform}{a \code{numeric} string specifying the method used for transform
-the markers. The available methods are: \code{log} \code{exp} \code{sin} \code{cos}.}
+\item{transform}{A character string specifying the transformation method to be applied.
+Supported methods are: \code{"log"}, \code{"exp"}, \code{"sin"}, \code{"cos"}.}
 }
 \value{
-A \code{numeric} dataframe of standardized biomarkers
+A \code{numeric} data frame containing the transformed biomarkers.
 }
 \description{
-The \code{transform_math} function applies a user preference
-transformation from \code{log} \code{exp} \code{sin} \code{cos} transformations
-for biomarkers.
+Applies a selected mathematical transformation (\code{"log"}, \code{"exp"}, \code{"sin"}, or \code{"cos"}) to biomarker data.
 }
 \examples{
-data(laparoscopy)
-markes <- laparoscopy[, -1]
-transform_math(markes, transform = "log")
+data(laparotomy)
+markers <- laparotomy[, -1]
+transform_math(markers, transform = "log")
 
 }
 \author{

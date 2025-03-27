@@ -65,7 +65,7 @@ opts_chunk$set(tidy = FALSE, dev = "pdf", message = FALSE, fig.align = "center",
 \vspace*{10pt}
 
 \begin{abstract}
-\CRANpkg{dtComb} is a comprehensive R package that combines two different diagnostic tests. Using its extensive collection of 143 combination methods, the \CRANpkg{dtComb} package enables researchers to standardize their data and merge diagnostic tests. Users can load the dataset containing the reference list and the diagnostic tests they intend to utilize. The package includes combination methods grouped into four main categories: linear combination methods (\Rfunction{linComb}), non-linear combination methods (\Rfunction{nonlinComb}), mathematical operators (\Rfunction{mathComb}), and machine-learning algorithms (\Rfunction{mlComb}). The package incorporates eight specific combination methods from the literature within the scope of linear combination methods. Non-linear combination methods encompass statistical approaches like polynomial regression, penalized regression methods, and splines, incorporating the interactions between the diagnostic tests. Mathematical operators involve arithmetic operations and eight \texttt{distance measures} adaptable to various data structures. Finally, machine-learning algorithms include 113 models from the \CRANpkg{caret} package tailored for \CRANpkg{dtComb}'s data structure. The data standardization step includes five different methods: Z-score, T-score, Mean, Deviance, and Range standardization. The \CRANpkg{dtComb} integrates machine-learning approaches, enabling the utilization of preprocessing methods available in the \CRANpkg{caret} package for standardization purposes within the \CRANpkg{dtComb} environment. The \CRANpkg{dtComb} package allows users to fine-tune hyperparameters while building a model. This is accomplished through resampling techniques such as 10-fold cross-validation, bootstrapping, and 10-fold repeated cross-validation. Since machine-learning algorithms are directly adapted from the \CRANpkg{caret} package, all resampling methods available in the \CRANpkg{caret} package are applicable within the \CRANpkg{dtComb} environment. Following the model building, the \Rfunction{predict} function predicts the class labels and returns the combination scores of new observations from the test set. The \CRANpkg{dtComb} package is designed to be user-friendly and easy to use and is currently the most comprehensive package developed to combine diagnostic tests in the literature. This vignette was created to guide researchers on how to use this package. 
+\CRANpkg{dtComb} is a comprehensive R package that combines two different diagnostic tests. Using its extensive collection of 143 combination methods, the \CRANpkg{dtComb} package enables researchers to standardize their data and merge diagnostic tests. Users can load the dataset containing the reference list and the diagnostic tests they intend to utilize. The package includes combination methods grouped into four main categories: linear combination methods (\Rfunction{linComb}), non-linear combination methods (\Rfunction{nonlinComb}), mathematical operators (\Rfunction{mathComb}), and machine-learning algorithms (\Rfunction{mlComb}). The package incorporates eight specific combination methods from the literature within the scope of linear combination methods. Non-linear combination methods encompass statistical approaches like polynomial regression, penalized regression methods, and splines, incorporating the interactions between the diagnostic tests. Mathematical operators involve arithmetic operations and eight \texttt{distance measures} adaptable to various data structures. Finally, machine-learning algorithms include 113 models from the \CRANpkg{caret} package tailored for \CRANpkg{dtComb}'s data structure. The data standardization step includes five different methods: Z-score, T-score, scale\_mean\_to\_one, scale\_sd\_to\_one, and min\_max\_scale standardization. The \CRANpkg{dtComb} integrates machine-learning approaches, enabling the utilization of preprocessing methods available in the \CRANpkg{caret} package for standardization purposes within the \CRANpkg{dtComb} environment. The \CRANpkg{dtComb} package allows users to fine-tune hyperparameters while building a model. This is accomplished through resampling techniques such as 10-fold cross-validation, bootstrapping, and 10-fold repeated cross-validation. Since machine-learning algorithms are directly adapted from the \CRANpkg{caret} package, all resampling methods available in the \CRANpkg{caret} package are applicable within the \CRANpkg{dtComb} environment. Following the model building, the \Rfunction{predict} function predicts the class labels and returns the combination scores of new observations from the test set. The \CRANpkg{dtComb} package is designed to be user-friendly and easy to use and is currently the most comprehensive package developed to combine diagnostic tests in the literature. This vignette was created to guide researchers on how to use this package. 
 \vspace{1em}
 \noindent\textbf{dtComb version:} \Sexpr{packageDescription("dtComb")$Version}
 \end{abstract}
@@ -77,24 +77,24 @@ library(dtComb)
 @
 \section{Preparing the input data}
 The methods provided within this package are designed to require a \Rclass{DataFrame} comprising three columns, where the first column represents class labels, and the subsequent columns correspond to the values of the corresponding markers. The class label is a binary variable (i.e., negative/positive, present/absent) representing the outcomes of a reference test used in disease precision. 
-This vignette will use the dataset \texttt{laparoscopy}, included in this package. This dataset contains information from patients admitted to the General Surgery Department of Erciyes University Medical Faculty with complaints regarding abdominal pain. The dataset comprises 225 patients split into two groups: those requiring immediate laparotomy (110 patients) and those not requiring it (115 patients). Patients who had surgery due to postoperative pathologies are in the first group, whereas those with negative laparotomy results belong to the second group \citep{akyildiz2010value}. 
+This vignette will use the dataset \texttt{laparotomy}, included in this package. This dataset contains information from patients admitted to the General Surgery Department of Erciyes University Medical Faculty with complaints regarding abdominal pain. The dataset comprises 225 patients split into two groups: those requiring immediate laparotomy (110 patients) and those not requiring it (115 patients). Patients who had surgery due to postoperative pathologies are in the first group, whereas those with negative laparotomy results belong to the second group \citep{akyildiz2010value}. 
 <<eval = TRUE, echo=TRUE>>=
-data(laparoscopy)
-head(laparoscopy)
+data(laparotomy)
+head(laparotomy)
 @
 The dataset is divided into two parts: the training and the test sets. The training set consists of $75\%$ of the dataset and is used to train classification models and to compare different model performances. The remaining portion of the dataset is saved as the \texttt{test} set, which will later be used in the prediction phase.
 The \texttt{train} and the \texttt{test} sets are built as follows:
 <<>>=
-# # train set from the laparoscopy
+# # train set from the laparotomy
 set.seed(2128)
-inTrain <- caret::createDataPartition(laparoscopy$group, p = 3 / 4, list = FALSE)
-trainData <- laparoscopy[inTrain, ]
+inTrain <- caret::createDataPartition(laparotomy$group, p = 3 / 4, list = FALSE)
+trainData <- laparotomy[inTrain, ]
 head(trainData)
 @
 <<>>=
-# # test set from the laparoscopy
+# # test set from the laparotomy
 set.seed(2128)
-testData <- laparoscopy[-inTrain, -1]
+testData <- laparotomy[-inTrain, -1]
 @
 We have a total of 170 patients in the training set, with 83 requiring laparotomy and 87 not requiring laparotomy. The training dataset is divided into two parts: \texttt{markers} (i.e., diagnostic test results) and \texttt{status} (i.e., reference test results or class labels). The class label is also converted into a factor variable if it is not a factor. The remaining 55 patients are assigned to the test set. 
 <<>>=
@@ -194,18 +194,18 @@ Standardization is critical in data analysis, especially when dealing with varia
     T-score = \Biggl(\frac{x - (\overline x)}{sd(x)}\times 10 \Biggl) +50
     \end{gather*}
     where $x$ is the value of a marker, $\overline{x}$ is the mean of the marker, and $sd(x)$ is the standard deviation of the marker.
-    \item \textbf{Range (a.k.a. min-max scaling)}: This method transforms data to a specific range between 0 and 1. The formula for this method is:
+   \item \textbf{min\_max\_scale}: This method transforms data to a specific scale between 0 and 1. The formula for this method is:
   \begin{gather*} 
-    Range = \frac{x - min(x)}{max(x) - min(x)}
+    min_max_scale = \frac{x - min(x)}{max(x) - min(x)}
     \end{gather*}
-    \item \textbf{Mean}: This method, which helps to understand the relative size of a single observation concerning the mean of the dataset, calculates the ratio of each data point to the mean value of the dataset.
+    \item \textbf{scale\_mean\_to\_one}: This method scales the arithmetic mean to 1. The formula for this method is:
       \begin{gather*} 
-   Mean =  \frac{x}{\overline{x}}
+   scale_mean_to_one =  \frac{x}{\overline{x}}
     \end{gather*}
     where $x$ is the value of a marker and $\overline{x}$ is the mean of the marker.
-    \item \textbf{Deviance}: This method, which allows for the comparison of individual data points about the overall spread of the data, calculates the ratio of each data point to the standard deviation of the dataset.
+    \item \textbf{scale\_sd\_to\_one}: This method, which allows for the comparison of individual data points about the overall spread of the data, scales the standard deviation to 1. . The formula for this method is:
    \begin{gather*} 
-   Deviance = \frac{x}{sd(x)}
+   scale_sd_to_one = \frac{x}{sd(x)}
     \end{gather*}
     where $x$ is the value of a marker and $sd(x)$ is the standard deviation of the marker.
 \end{itemize}
@@ -217,7 +217,7 @@ The dtComb package optimizes model parameters for linear and non-linear approach
 \subsection{Model evaluation in the training phase}
 Metrics such as Receiver Operating Characteristic (ROC) curves and Area Under the Curve (AUC) values evaluate the model's performance during training. These metrics provide insights into the model's ability to distinguish between different classes or categories, offering valuable information regarding its performance characteristics. While measuring the ROC curves, an argument called \texttt{direction} argument is given as input to the relevant function, and the default value of the \texttt{direction} is set to \texttt{auto}. Moreover, the cut-off point which determines AUC is controlled by the \texttt{cutoff.method} argument within the package. 34 methods are available to determine the cut-off point, accessible through the \CRANpkg{OptimalCutpoints} package in R \citep{lopez2014optimalcutpoints}.
 Now, we will provide examples of how to use each approach's specific functions separately. We selected the cutoff.method for each scenario as the \texttt{Youden Index} and specified the ROC curve's direction as \texttt{<}.\\
-Using the training data provided earlier, for a linear combination approach, the \texttt{linComb} function is employed with the \texttt{range}. Standardization method and 5-fold cross-validation in the following manner:
+Using the training data provided earlier, for a linear combination approach, the \texttt{linComb} function is employed with the \texttt{min\_max\_scale}. Standardization method and 5-fold cross-validation in the following manner:
 <<fig.height=4.8, fig.width=5>>=
 set.seed(2128)
 
@@ -228,7 +228,7 @@ fit.lin <- linComb(
   event = "needed",
   method = "scoring",
   resample = "cv",
-  standardize = "range",
+  standardize = "min_max_scale",
   ndigits = 2, direction = "auto",
   cutoff.method = "Youden"
 )

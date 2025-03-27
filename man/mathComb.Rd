@@ -13,7 +13,8 @@ mathComb(
     "expinbase"),
   distance = c("euclidean", "manhattan", "chebyshev", "kulczynski_d", "lorentzian",
     "avg", "taneja", "kumar-johnson"),
-  standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
+  standardize = c("none", "min_max_scale", "zScore", "tScore", "scale_mean_to_one",
+    "scale_sd_to_one"),
   transform = c("none", "log", "exp", "sin", "cos"),
   show.plot = TRUE,
   direction = c("auto", "<", ">"),
@@ -89,28 +90,25 @@ The standard formula for converting a raw score \eqn{x} into a T-score is:
 where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
 and \eqn{sd(x)} is the standard deviation of the marker.
 
-\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
-a specific range, between 0 and 1. The formula for this method is:
-\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+\item \bold{min_max_scale} \code{(min_max_scale)}: This method transforms data to
+a specific scale, between 0 and 1. The formula for this method is:
+\deqn{min_max_scale = \frac{x - min(x)}{max(x) - min(x)}}
 
-\item \bold{Mean} \code{(mean)}: This method, which helps
-to understand the relative size of a single observation concerning
-the mean of dataset, calculates the ratio of each data point to the mean value
-of the dataset.
-\deqn{Mean =  \frac{x}{\overline{x}}}
+\item \bold{scale_mean_to_one} \code{(scale_mean_to_one)}: This method scales
+the arithmetic mean to 1. The formula for this method is:
+\deqn{scale_mean_to_one =  \frac{x}{\overline{x}}}
 where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
 
-\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+\item \bold{scale_sd_to_one} \code{(scale_sd_to_one)}: This method, which allows for
 comparison of individual data points in relation to the overall spread of
-the data, calculates the ratio of each data point to the standard deviation
-of the dataset.
-\deqn{Deviance = \frac{x}{sd(x)}}
+the data, scales the standard deviation to 1. The formula for this method is:
+\deqn{scale_sd_to_one = \frac{x}{sd(x)}}
 where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 
-\item{transform}{a \code{character} string indicating the name of the
-standardization method. The default option is no standardization applied.
-Available options are:
+\item{transform}{A \code{character} string specifying the mathematical
+transformation method.
+Available options: \code{"log"}, \code{"exp"}, \code{"sin"}, \code{"cos"}.
 \itemize{
 \item \code{log}: Applies logarithm transform to markers before calculating
 combination score
@@ -137,14 +135,14 @@ for the roc curve(0.95, default).}
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
 
-\item{show.result}{a \code{logical} string indicating whether the results
+\item{show.result}{A \code{logical} value indicating whether the results
 should be printed to the console.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
 }
 \value{
-A list of \code{numeric} mathematical combination scores calculated
-according to the given method and standardization option
+A list containing the computed combination scores and, optionally,
+diagnostic performance metrics.
 }
 \description{
 The \code{mathComb} function returns the combination results of
@@ -153,9 +151,9 @@ measures, standardization, and transform options.
 }
 \examples{
 
-data(laparoscopy)
-markers <- laparoscopy[, -1]
-status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+data(laparotomy)
+markers <- laparotomy[, -1]
+status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 event <- "needed"
 direction <- "<"
 cutoff.method <- "Youden"

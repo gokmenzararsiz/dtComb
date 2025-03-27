@@ -1,5 +1,5 @@
-data("laparoscopy")
-Data <- laparoscopy[-c(83:138), ]
+data("laparotomy")
+Data <- laparotomy[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
@@ -221,7 +221,7 @@ test_that("mathComb functions ...", {
       standardize = "asdada",
       cutoff.method = "Youden"
     ),
-    "standardize should be one of 'range', 'zScore', 'tScore', 'mean', 'deviance'"
+    "standardize should be one of 'min_max_scale', 'zScore', 'tScore', 'scale_mean_to_one', 'scale_sd_to_one'"
   )
 
   expect_error(

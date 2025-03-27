@@ -1,5 +1,5 @@
-data("laparoscopy")
-Data <- laparoscopy[-c(83:138), ]
+data("laparotomy")
+Data <- laparotomy[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 

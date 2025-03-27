@@ -29,11 +29,11 @@ combination scores and labels of object type.
 \examples{
 
 # call data
-data(laparoscopy)
+data(laparotomy)
 
 # define the function parameters
-markers <- laparoscopy[, -1]
-status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+markers <- laparotomy[, -1]
+status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- linComb(

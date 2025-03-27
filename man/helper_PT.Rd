@@ -25,11 +25,11 @@ given biomarkers for the PT method.
 }
 \examples{
 # call data
-data(laparoscopy)
+data(laparotomy)
 
 # define the function parameters
-markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
-status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+markers <- cbind(laparotomy$ddimer, laparotomy$log_leukocyte)
+status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 
 neg.set <- markers[status == levels(status)[1], ]
 pos.set <- markers[status == levels(status)[2], ]

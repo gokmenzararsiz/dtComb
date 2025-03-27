@@ -1,16 +1,16 @@
-data("laparoscopy")
-Data <- laparoscopy[-c(83:138), ]
+data("laparotomy")
+Data <- laparotomy[-c(83:138), ]
 markers <- Data[, -1]
 status <- factor(Data$group, levels = c("not_needed", "needed"))
 
 load("result_data/test_std.train.rda")
 
 for (standardize in c(
-  "range",
+  "min_max_scale",
   "zScore",
   "tScore",
-  "mean",
-  "deviance"
+  "scale_mean_to_one",
+  "scale_sd_to_one"
 )) {
   res <- std.train(markers, standardize = standardize)
 
@@ -29,16 +29,16 @@ for (standardize in c(
 
 ###############################################################################
 
-test <- laparoscopy[c(83:138), -1]
+test <- laparotomy[c(83:138), -1]
 
 load("result_data/test_std.test.rda")
 
 for (standardize in c(
-  "range",
+  "min_max_scale",
   "zScore",
   "tScore",
-  "mean",
-  "deviance"
+  "scale_mean_to_one",
+  "scale_sd_to_one"
 )) {
   res <- linComb(
     markers = markers,

@@ -3,12 +3,13 @@
 \docType{data}
 \name{exampleData2}
 \alias{exampleData2}
-\title{A data set containing the carriers of a rare genetic disorder for 120 samples.}
+\title{Biomarker data from carriers of a rare genetic disorder
+A data set containing the carriers of a rare genetic disorder for 120 samples.}
 \format{
 A data frame with 120 rows and 5 variables:
 \describe{
-\item{Group}{Indicator if the person was carriers, values carriers and
-normals}
+\item{Group}{Indicator whether the person is a carrier; values:
+\code{"carriers"} and \code{"normals"}.}
 \item{m1}{Biomarker 1, 1. measurement blood sample}
 \item{m2}{Biomarker 2, 2. measurement blood sample}
 \item{m3}{Biomarker 3, 3. measurement blood sample}
@@ -19,6 +20,7 @@ normals}
 data(exampleData2)
 }
 \description{
+Biomarker data from carriers of a rare genetic disorder
 A data set containing the carriers of a rare genetic disorder for 120 samples.
 }
 \examples{

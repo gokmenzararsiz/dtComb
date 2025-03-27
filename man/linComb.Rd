@@ -2,7 +2,7 @@
 % Please edit documentation in R/linComb.R
 \name{linComb}
 \alias{linComb}
-\title{Combine two diagnostic tests with several linear combination methods.}
+\title{Linear Combination Methods for Diagnostic Test Scores}
 \usage{
 linComb(
   markers = NULL,
@@ -13,7 +13,8 @@ linComb(
   nfolds = 5,
   nrepeats = 3,
   niters = 10,
-  standardize = c("none", "range", "zScore", "tScore", "mean", "deviance"),
+  standardize = c("none", "min_max_scale", "zScore", "tScore", "scale_mean_to_one",
+    "scale_sd_to_one"),
   ndigits = 0,
   show.plot = TRUE,
   direction = c("auto", "<", ">"),
@@ -171,22 +172,19 @@ The standard formula for converting a raw score \eqn{x} into a T-score is:
 where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
 and \eqn{sd(x)} is the standard deviation of the marker.
 
-\item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
-a specific range, between 0 and 1. The formula for this method is:
-\deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+\item \bold{min_max_scale} \code{(min_max_scale)}: This method transforms data to
+a specific scale, between 0 and 1. The formula for this method is:
+\deqn{min_max_scale = \frac{x - min(x)}{max(x) - min(x)}}
 
-\item \bold{Mean} \code{(mean)}: This method, which helps
-to understand the relative size of a single observation concerning
-the mean of dataset, calculates the ratio of each data point to the mean value
-of the dataset.
-\deqn{Mean =  \frac{x}{\overline{x}}}
+\item \bold{scale_mean_to_one} \code{(scale_mean_to_one)}: This method scales
+the arithmetic mean to 1. The formula for this method is:
+\deqn{scale_mean_to_one =  \frac{x}{\overline{x}}}
 where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
 
-\item \bold{Deviance} \code{(deviance)}: This method, which allows for
+\item \bold{scale_sd_to_one} \code{(scale_sd_to_one)}: This method, which allows for
 comparison of individual data points in relation to the overall spread of
-the data, calculates the ratio of each data point to the standard deviation
-of the dataset.
-\deqn{Deviance = \frac{x}{sd(x)}}
+the data, scales the standard deviation to 1. The formula for this method is:
+\deqn{scale_sd_to_one = \frac{x}{sd(x)}}
 where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 }}
 
@@ -208,7 +206,7 @@ for the roc curve(0.95, default).}
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the roc curve.}
 
-\item{show.result}{a \code{logical} string indicating whether the results
+\item{show.result}{a \code{logical} value indicating whether the results
 should be printed to the console.}
 
 \item{\dots}{further arguments. Currently has no effect on the results.}
@@ -224,11 +222,11 @@ methods and standardization options.
 }
 \examples{
 # call data
-data(laparoscopy)
+data(laparotomy)
 
 # define the function parameters
-markers <- laparoscopy[, -1]
-status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+markers <- laparotomy[, -1]
+status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 event <- "needed"
 
 score1 <- linComb(

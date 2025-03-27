@@ -3,7 +3,8 @@
 \docType{data}
 \name{allMethods}
 \alias{allMethods}
-\title{Includes machine learning models used for the mlComb function}
+\title{Machine learning model table for mlComb()
+Includes machine learning models used for the mlComb function}
 \format{
 A data frame with 113 rows and 2 variables:
 \describe{
@@ -15,6 +16,7 @@ A data frame with 113 rows and 2 variables:
 data(allMethods)
 }
 \description{
+Machine learning model table for mlComb()
 Includes machine learning models used for the mlComb function
 }
 \examples{

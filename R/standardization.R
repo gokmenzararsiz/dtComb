@@ -1,6 +1,6 @@
 #' @title Standardization according to the chosen method.
 #'
-#' @description The \code{std.train} Standardization (range, zScore etc.) can be
+#' @description The \code{std.train} Standardization (min_max_scale, zScore etc.) can be
 #' estimated from the training data and applied to any dataset with the same
 #' variables.
 #'
@@ -23,22 +23,19 @@
 #'   where \eqn{x} is the value of a marker, \eqn{\overline{x}} is the mean of the marker
 #'    and \eqn{sd(x)} is the standard deviation of the marker.
 #'
-#' \item \bold{Range (a.k.a. min-max scaling)} \code{(range)}: This method transforms data to
-#' a specific range, between 0 and 1. The formula for this method is:
-#' \deqn{Range = \frac{x - min(x)}{max(x) - min(x)}}
+#' \item \bold{min_max_scale} \code{(min_max_scale)}: This method transforms data to
+#' a specific scale, between 0 and 1. The formula for this method is:
+#' \deqn{min_max_scale = \frac{x - min(x)}{max(x) - min(x)}}
 #'
-#' \item \bold{Mean} \code{(mean)}: This method, which helps
-#' to understand the relative size of a single observation concerning
-#' the mean of dataset, calculates the ratio of each data point to the mean value
-#' of the dataset.
-#' \deqn{Mean =  \frac{x}{\overline{x}}}
+#' \item \bold{scale_mean_to_one} \code{(scale_mean_to_one)}: This method scales
+#' the arithmetic mean to 1. The formula for this method is:
+#' \deqn{scale_mean_to_one =  \frac{x}{\overline{x}}}
 #' where \eqn{x} is the value of a marker and \eqn{\overline{x}} is the mean of the marker.
 #'
-#' \item \bold{Deviance} \code{(deviance)}: This method, which allows for
+#' \item \bold{scale_sd_to_one} \code{(scale_sd_to_one)}: This method, which allows for
 #' comparison of individual data points in relation to the overall spread of
-#' the data, calculates the ratio of each data point to the standard deviation
-#' of the dataset.
-#' \deqn{Deviance = \frac{x}{sd(x)}}
+#' the data, scales the standard deviation to 1. The formula for this method is:
+#' \deqn{scale_sd_to_one = \frac{x}{sd(x)}}
 #' where \eqn{x} is the value of a marker and \eqn{sd(x)} is the standard deviation of the marker.
 #' }
 #'
@@ -49,10 +46,10 @@
 #'
 #' @examples
 #' # call data
-#' data(laparoscopy)
+#' data(laparotomy)
 #'
 #' # define the function parameters
-#' markers <- laparoscopy[, -1]
+#' markers <- laparotomy[, -1]
 #' markers2 <- std.train(markers, "deviance")
 #'
 #' @export
@@ -72,7 +69,7 @@ std.train <- function(data, standardize = NULL) {
     }
   }
 
-  if (any(standardize == "range")) {
+  if (any(standardize == "min_max_scale")) {
     for (i in 1:ncol(data)) {
       data[, i] <- (data[, i] - min(data[, i])) /
         (max(data[, i]) - min(data[, i]))
@@ -86,11 +83,11 @@ std.train <- function(data, standardize = NULL) {
       data[, i] <- (10 * ((data[, i] - mean(data[, i]))
       / sd(data[, i]))) + 50
     }
-  } else if (any(standardize == "mean")) {
+  } else if (any(standardize == "scale_mean_to_one")) {
     for (i in 1:ncol(data)) {
       data[, i] <- data[, i] / mean(data[, i])
     }
-  } else if (any(standardize == "deviance")) {
+  } else if (any(standardize == "scale_sd_to_one")) {
     for (i in 1:ncol(data)) {
       data[, i] <- data[, i] / sd(data[, i])
     }
@@ -123,7 +120,7 @@ std.train <- function(data, standardize = NULL) {
 
 
 std.test <- function(newdata, model) {
-  if (any(model$fit$Standardize == "range")) {
+  if (any(model$fit$Standardize == "min_max_scale")) {
     for (i in 1:ncol(newdata)) {
       newdata[, i] <- ((newdata[, i] - model$fit$Std.model[i, 3]) /
         (model$fit$Std.model[i, 4] - model$fit$Std.model[i, 3]))
@@ -138,11 +135,11 @@ std.test <- function(newdata, model) {
       newdata[, i] <- (10 * ((newdata[, i] - model$fit$Std.model[i, 1]) /
         model$fit$Std.model[i, 2])) + 50
     }
-  } else if (any(model$fit$Standardize == "mean")) {
+  } else if (any(model$fit$Standardize == "scale_mean_to_one")) {
     for (i in 1:ncol(newdata)) {
       newdata[, i] <- newdata[, i] / model$fit$Std.model[i, 1]
     }
-  } else if (any(model$fit$Standardize == "deviance")) {
+  } else if (any(model$fit$Standardize == "scale_sd_to_one")) {
     for (i in 1:ncol(newdata)) {
       newdata[, i] <- newdata[, i] / model$fit$Std.model[i, 2]
     }

@@ -25,11 +25,11 @@ coefficient and optimized value of given biomarkers for the TS method.
 }
 \examples{
 # call data
-data(laparoscopy)
+data(laparotomy)
 
 # define the function parameters
-markers <- cbind(laparoscopy$ddimer, laparoscopy$log_leukocyte)
-status <- factor(laparoscopy$group, levels = c("not_needed", "needed"))
+markers <- cbind(laparotomy$ddimer, laparotomy$log_leukocyte)
+status <- factor(laparotomy$group, levels = c("not_needed", "needed"))
 
 t <- 0.5
 

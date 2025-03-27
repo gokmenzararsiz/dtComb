@@ -4,13 +4,16 @@
 \name{dtComb}
 \alias{dtComb-package}
 \alias{dtComb}
-\title{dtComb: A Comprehensive R Library for Combining Diagnostic Tests}
+\title{dtComb: A Comprehensive R Package for Combining Diagnostic Tests}
 \description{
-The dtComb package calculates combination scores of two biomarkers given
-under four main categories: linear combinations with the linComb function,
-non-linear combinations with the nonlinComb function,
-mathematical operators with the mathComb function, and machine learning
-algorithms with the mlComb function.
+The \pkg{dtComb} package provides tools to calculate combination scores of
+two biomarkers, categorized into four main types:
+\itemize{
+\item \code{linComb}: Linear combinations,
+\item \code{nonlinComb}: Non-linear combinations,
+\item \code{mathComb}: Mathematical operator-based combinations,
+\item \code{mlComb}: Machine learning–based combinations.
+}
 }
 \seealso{
 Useful links:
