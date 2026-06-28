@@ -17,7 +17,7 @@ mathComb(
     "scale_sd_to_one"),
   transform = c("none", "log", "exp", "sin", "cos"),
   show.plot = TRUE,
-  direction = c("auto", "<", ">"),
+  direction = c("<", ">"),
   conf.level = 0.95,
   cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
     "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
@@ -172,11 +172,11 @@ score2 <- mathComb(
 
 score3 <- mathComb(
   markers = markers, status = status, event = event,
-  method = "subtract", direction = "auto", cutoff.method = "MinValueSp", transform = "sin"
+  method = "subtract", direction = "<", cutoff.method = "MinValueSp", transform = "sin"
 )
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

@@ -27,7 +27,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Serra Ilayda Yerlitas \email{ilaydayerlitas340@gmail.com} [contributor]
+  \item Serra Ilayda Yerlitas Tastan \email{ilaydayerlitas340@gmail.com} [contributor]
   \item Serra Bersan Gengec \email{serrabersan@gmail.com} [contributor]
   \item Necla Kochan \email{necla.kayaalp@gmail.com} [contributor]
   \item Gozde Erturk Zararsiz \email{gozdeerturk9@gmail.com} [contributor]

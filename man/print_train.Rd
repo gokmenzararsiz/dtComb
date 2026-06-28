@@ -20,6 +20,6 @@ The \code{print_train} function prints the summary statistics of
 the fitted model
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

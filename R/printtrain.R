@@ -10,7 +10,7 @@
 #'
 #' @return \code{No return value} writes a summary of the results to the console.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 
 
@@ -87,7 +87,7 @@ print_train <- function(print_model) {
 #'
 #' @return A \code{list} of Cohen's kappa and accuracy values
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 
 kappa.accuracy <- function(DiagStatCombined) {

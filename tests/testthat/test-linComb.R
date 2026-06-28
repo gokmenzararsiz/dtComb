@@ -18,6 +18,7 @@ Data3 <-
 Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
+cutoff.method <- "Youden"
 
 ###############################################################################
 
@@ -114,13 +115,17 @@ for (method in c(
   "minmax"
 )) {
   set.seed(14042022)
+  standardize <- "min_max_scale"
+  if (method == "PT") {
+    standardize <- "zScore"
+  }
   res <- linComb(
     markers = markers3,
     status = status3,
     event = "M",
     method = method,
     resample = "none",
-    standardize = "min_max_scale",
+    standardize = standardize,
     direction = "<",
     cutoff.method = "Youden"
   )
@@ -162,7 +167,7 @@ test_that("linComb functions ...", {
       status = status4,
       event = "M",
       method = "scoring",
-      direction = direction,
+      direction = "<",
       standardize = "zScore",
       cutoff.method = cutoff.method
     ),
@@ -175,7 +180,7 @@ test_that("linComb functions ...", {
       status = status3,
       event = "M",
       method = "PT",
-      direction = direction,
+      direction = "<",
       standardize = "zScore",
       cutoff.method = cutoff.method
     ),
@@ -201,8 +206,8 @@ test_that("linComb functions ...", {
       markers = markers3,
       status = status3,
       event = "M",
-      method = "asaddsa",
-      direction = "auto",
+      method = "ipsum",
+      direction = "<",
       standardize = "none",
       cutoff.method = "Youden"
     ),
@@ -215,9 +220,9 @@ test_that("linComb functions ...", {
       status = status3,
       event = "M",
       method = "minmax",
-      direction = "auto",
+      direction = "<",
       resample = "cv",
-      standardize = "asdada",
+      standardize = "ipsum",
       cutoff.method = "Youden"
     ),
     "standardize should be one of 'min_max_scale', 'zScore', 'tScore', 'scale_mean_to_one', 'scale_sd_to_one'"
@@ -229,11 +234,11 @@ test_that("linComb functions ...", {
       status = status2,
       event = "1",
       method = "minimax",
-      direction = "asdada",
+      direction = "direction",
       standardize = "none",
       cutoff.method = "Youden"
     ),
-    "direction should be one of 'auto', '<', '>'"
+    "direction should be one of '<', '>'"
   )
 
   expect_error(
@@ -242,9 +247,9 @@ test_that("linComb functions ...", {
       status = status2,
       event = "1",
       method = "SL",
-      direction = "auto",
+      direction = "<",
       standardize = "tScore",
-      cutoff.method = "sadda"
+      cutoff.method = "ipsum"
     ),
     "The entered cutoff.method is invalid"
   )
@@ -254,7 +259,7 @@ test_that("linComb functions ...", {
       status = status2,
       event = "1",
       method = "scoring",
-      resample = "sada",
+      resample = "ipsum",
       standardize = "min_max_scale",
       direction = "<",
       cutoff.method = "Youden"
@@ -300,7 +305,7 @@ markers3 <- Data3[, 4:5]
 status3[[12]] <- NA
 
 test_that("linComb functions ...", {
-  expect_warning(
+  expect_error(
     linComb(
       markers = markers3,
       status = status3,
@@ -310,7 +315,7 @@ test_that("linComb functions ...", {
       standardize = "zScore",
       cutoff.method = "Youden"
     ),
-    "Rows with NA removed from the dataset since status include NA"
+    "status should not include missing values"
   )
 })
 
@@ -318,7 +323,7 @@ markers3[44, 1:2] <- NA
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 test_that("linComb functions ...", {
-  expect_warning(
+  expect_error(
     linComb(
       markers = markers3,
       status = status3,
@@ -328,7 +333,7 @@ test_that("linComb functions ...", {
       standardize = "zScore",
       cutoff.method = "Youden"
     ),
-    "Rows with NA removed from the dataset since markers include NA"
+    "markers should not include missing values"
   )
 })
 

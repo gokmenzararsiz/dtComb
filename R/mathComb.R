@@ -117,7 +117,7 @@
 #' @return A list containing the computed combination scores and, optionally,
 #'  diagnostic performance metrics.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -143,7 +143,7 @@
 #'
 #' score3 <- mathComb(
 #'   markers = markers, status = status, event = event,
-#'   method = "subtract", direction = "auto", cutoff.method = "MinValueSp", transform = "sin"
+#'   method = "subtract", direction = "<", cutoff.method = "MinValueSp", transform = "sin"
 #' )
 #'
 #' @export
@@ -176,7 +176,7 @@ mathComb <- function(markers = NULL,
                      ),
                      transform = c("none", "log", "exp", "sin", "cos"),
                      show.plot = TRUE,
-                     direction = c("auto", "<", ">"),
+                     direction = c("<", ">"),
                      conf.level = 0.95,
                      cutoff.method = c(
                        "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
@@ -189,87 +189,41 @@ mathComb <- function(markers = NULL,
                        "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                        "ObservedPrev", "MeanPrev", "PrevalenceMatching"
                      ), show.result = FALSE, ...) {
-  methods <-
-    c(
-      "add",
-      "multiply",
-      "divide",
-      "subtract",
-      "distance",
-      "baseinexp",
-      "expinbase"
-    )
-
-  distances <-
-    c(
-      "euclidean",
-      "manhattan",
-      "chebyshev",
-      "kulczynski_d",
-      "lorentzian",
-      "avg",
-      "taneja",
-      "kumar-johnson"
-    )
-
-  standardizes <-
-    c("none", "min_max_scale", "zScore", "tScore", "scale_mean_to_one", "scale_sd_to_one")
-
-  transforms <- c("none", "log", "exp", "sin", "cos")
-
-  directions <- c("auto", "<", ">")
-
-  cutoff.methods <- c(
-    "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
-    "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
-    "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
-    "Youden", "MaxEfficiency", "Minimax", "MaxDOR",
-    "MaxKappa", "MinValueNPV", "MinValuePPV", "ValueNPV",
-    "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
-    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
-    "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
-    "ObservedPrev", "MeanPrev", "PrevalenceMatching"
+  params <- validateParameters(
+    markers = markers,
+    status = status,
+    event = event,
+    method = method,
+    direction = direction,
+    conf.level = conf.level,
+    cutoff.method = cutoff.method,
+    show.plot = show.plot,
+    show.result = show.result
   )
+
+  markers <- params$markers
+  status <- params$status
+  event <- params$event
+  method <- params$method
+  direction <- params$direction
+  conf.level <- params$conf.level
+  cutoff.method <- params$cutoff.method
+  show.plot <- params$show.plot
+  show.result <- params$show.result
+
+  math_params <- validateMathComb(
+    markers = markers,
+    method = method,
+    distance = distance,
+    standardize = standardize,
+    transform = transform
+  )
+
+  standardize <- math_params$standardize
+  transform <- math_params$transform
 
   raw.markers <- markers
   raw.status <- status
-
-  if (!is.data.frame(markers)) {
-    markers <- as.data.frame(markers)
-  }
-
-  for (i in 1:ncol(markers)) {
-    if (!is.numeric(markers[, i])) {
-      stop("at least one variable is not numeric")
-    }
-  }
-
-  if (!ncol(markers) == 2) {
-    stop("the number of markers should be 2")
-  }
-
-  if (!is.factor(status)) {
-    status <- as.factor(status)
-  }
-
-  if (!length(levels(status)) == 2) {
-    stop("the number of status levels should be 2")
-  }
-
-  if (!(event %in% status)) {
-    stop("status does not include event")
-  }
-
-  levels(status)[levels(status) == "NA"] <- NA
-
-  if (nrow(markers) != length(status)) {
-    stop(
-      paste(
-        "the number of rows of markers is not equal to the number of",
-        "elements of the status"
-      )
-    )
-  }
 
   status_levels <- levels(status)
   if (status_levels[1] == event) {
@@ -280,88 +234,10 @@ mathComb <- function(markers = NULL,
   }
   status <- factor(ifelse(status == event, 1, 0), ordered = TRUE)
 
-  if (length(which(is.na(markers))) > 0) {
-    comp <- complete.cases(markers)
-    markers <- markers[comp, ]
-    status <- status[comp]
-    warning(paste(
-      "Rows with NA removed from the dataset since markers",
-      "include NA"
-    ))
-  }
-
-  if (length(which(is.na(status))) > 0) {
-    comp <- complete.cases(status)
-    status <- status[comp]
-    markers <- markers[comp, ]
-    warning(paste(
-      "Rows with NA removed from the dataset since status",
-      "include NA"
-    ))
-  }
-
-  if (length(which(methods == method)) == 0 || length(method) != 1) {
-    stop(
-      paste(
-        "method should be one of 'add', 'multiply', 'divide', 'subtract'",
-        ",'distance', 'baseinexp', 'expinbase'"
-      )
-    )
-  }
-
-  if (method != "distance") {
-    distance <- NULL
-  } else {
-    if (length(which(distances == distance)) == 0 ||
-      length(distance) != 1) {
-      stop(
-        paste(
-          "distance should be one of 'euclidean', 'manhattan',",
-          "'chebyshev', 'kulczynski_d', 'lorentzian', 'avg', 'taneja',",
-          "'kumar-johnson'"
-        )
-      )
-    }
-  }
-
-  if (length(which(standardizes == standardize)) == 0) {
-    stop(
-      paste(
-        "standardize should be one of 'min_max_scale', 'zScore', 'tScore',",
-        "'scale_mean_to_one', 'scale_sd_to_one'"
-      )
-    )
-  }
-
-  if (length(which(transforms == transform)) == 0) {
-    stop("transforms should be one of 'none', 'log', 'exp', 'sin', 'cos'")
-  }
-
-  if (length(which(directions == direction)) == 0) {
-    stop("direction should be one of 'auto', '<', '>'")
-  }
-
-  if (length(direction) != 1) {
-    warning("Direction is set to 'auto'")
-  }
-
-  if (length(which(cutoff.methods == cutoff.method)) == 0 ||
-    length(cutoff.method) != 1) {
-    stop("The entered cutoff.method is invalid")
-  }
-
-  if (length(standardize) != 1) {
-    standardize <- "none"
-  }
-  if (length(transform) != 1) {
-    transform <- "none"
-  }
-
   std.model <- std.train(markers, standardize)
   markers <- std.model$data
 
   markers <- transform_math(markers, transform)
-
 
   n <- as.matrix(seq(-3, 3, 0.1))
   p <- seq(1:nrow(n))
@@ -556,7 +432,7 @@ mathComb <- function(markers = NULL,
 #'
 #' @return A \code{numeric} data frame containing the transformed biomarkers.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples

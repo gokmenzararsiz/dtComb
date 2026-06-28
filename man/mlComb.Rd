@@ -10,14 +10,15 @@ mlComb(
   event = NULL,
   method = NULL,
   resample = NULL,
-  niters = 5,
+  niters = 10,
   nfolds = 5,
   nrepeats = 3,
   preProcess = NULL,
   show.plot = TRUE,
   B = 25,
-  direction = c("auto", "<", ">"),
+  direction = c("<", ">"),
   conf.level = 0.95,
+  p = 0.75,
   cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
     "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
     "Youden", "MaxEfficiency", "Minimax", "MaxDOR", "MaxKappa", "MinValueNPV",
@@ -44,20 +45,26 @@ combining the markers. For the available methods see availableMethods()
 \bold{IMPORTANT}: See https://topepo.github.io/caret/available-models.html
 for further information about the methods used in this function.}
 
-\item{resample}{a \code{character} string that indicates the resampling
-method used while training the model. The available methods are "boot",
-"boot632", "optimism_boot", "boot_all", "cv", "repeatedcv", "LOOCV", "LGOCV",
-"none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for
-details of these resampling methods see ?caret::trainControl}
+\item{resample}{A character string specifying the resampling method used while
+training the model. Available methods are \code{"boot"}, \code{"boot632"},
+\code{"optimism_boot"}, \code{"boot_all"}, \code{"cv"},
+\code{"repeatedcv"}, \code{"LOOCV"}, \code{"LGOCV"}, \code{"none"},
+\code{"oob"}, \code{"adaptive_cv"}, \code{"adaptive_boot"}, and
+\code{"adaptive_LGOCV"}. The \code{"timeslice"} method is not supported by
+\code{mlComb}. If \code{NULL}, \code{"none"} is used.}
 
-\item{niters}{a \code{numeric} value that indicates the number of
-bootstrapped resampling iterations (10, default)}
+\item{niters}{A positive integer indicating the number of bootstrap
+resampling iterations. Used for \code{"boot"}, \code{"boot632"},
+\code{"optimism_boot"}, \code{"boot_all"}, and \code{"adaptive_boot"}.
+Default is 10.}
 
-\item{nfolds}{a \code{numeric} value that indicates the number of folds for
-cross validation based resampling methods  (5, default)}
+\item{nfolds}{A positive integer. For \code{"cv"}, \code{"repeatedcv"},
+and \code{"adaptive_cv"}, it indicates the number of folds. For
+\code{"LGOCV"} and \code{"adaptive_LGOCV"}, it indicates the number of
+repeated training/test splits. Default is 5.}
 
-\item{nrepeats}{a \code{numeric} value that indicates the number of repeats
-for "repeatedcv" option of resampling methods (3, default)}
+\item{nrepeats}{A positive integer indicating the number of repeats for
+\code{"repeatedcv"}. Default is 3.}
 
 \item{preProcess}{a \code{character} string that indicates the pre-processing
 options to be applied in the data before training the model. Available
@@ -81,6 +88,9 @@ the values of the case group (controls < cases).}
 
 \item{conf.level}{a \code{numeric} value to  determine the confidence interval
 for the ROC curve(0.95, default).}
+
+\item{p}{A numeric value between 0 and 1 specifying the training proportion
+used for \code{"LGOCV"} and \code{"adaptive_LGOCV"}. Default is 0.75.}
 
 \item{cutoff.method}{a \code{character} string determines the cutoff method
 for the ROC curve.}
@@ -113,12 +123,16 @@ event <- "needed"
 
 model <- mlComb(
   markers = markers, status = status, event = event,
-  method = "knn", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+  method = "knn", resample = "cv", nfolds = 5,
   preProcess = c("center", "scale"), direction = "<", cutoff.method = "Youden"
 )
 
 }
+\seealso{
+\code{\link{availableMethods}}, \code{caret::train},
+\code{caret::trainControl}
+}
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

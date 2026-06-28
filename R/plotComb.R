@@ -12,7 +12,7 @@
 #'
 #' @return A \code{data.frame} plots
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -43,7 +43,7 @@
 #'
 #' score3 <- mathComb(
 #'   markers = markers, status = status, event = event,
-#'   method = "distance", distance = "euclidean", direction = "auto",
+#'   method = "distance", distance = "euclidean", direction = "<",
 #'   standardize = "tScore", cutoff.method = "Youden"
 #' )
 #'

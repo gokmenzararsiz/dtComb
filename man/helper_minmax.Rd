@@ -40,6 +40,6 @@ stat <- helper_minmax(lambda, neg.set = neg.set, pos.set = pos.set)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

@@ -22,7 +22,7 @@ nonlinComb(
   include.interact = FALSE,
   alpha = 0.5,
   show.plot = TRUE,
-  direction = c("auto", "<", ">"),
+  direction = c("<", ">"),
   conf.level = 0.95,
   cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
     "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
@@ -220,11 +220,11 @@ score2 <- nonlinComb(
 score3 <- nonlinComb(
   markers = markers, status = status, event = event,
   method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
-  cutoff.method = "ROC01", standardize = "zScore", direction = "auto"
+  cutoff.method = "ROC01", standardize = "zScore", direction = "<"
 )
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

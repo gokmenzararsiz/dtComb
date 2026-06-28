@@ -17,7 +17,7 @@ linComb(
     "scale_sd_to_one"),
   ndigits = 0,
   show.plot = TRUE,
-  direction = c("auto", "<", ">"),
+  direction = c("<", ">"),
   conf.level = 0.95,
   cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
     "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
@@ -246,7 +246,7 @@ event <- "carriers"
 score2 <- linComb(
   markers = markers, status = status, event = event,
   method = "PT", resample = "none", standardize = "none", direction = "<",
-  cutoff.method = "Youden", show.result = "TRUE"
+  cutoff.method = "Youden", show.result = TRUE
 )
 
 score3 <- linComb(
@@ -257,6 +257,6 @@ score3 <- linComb(
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

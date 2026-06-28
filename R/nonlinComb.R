@@ -158,7 +158,7 @@
 #' @return A list of \code{numeric} nonlinear combination scores calculated
 #' according to the given method and standardization option
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -186,7 +186,7 @@
 #' score3 <- nonlinComb(
 #'   markers = markers, status = status, event = event,
 #'   method = "lassoreg", resample = "repeatedcv", include.interact = TRUE,
-#'   cutoff.method = "ROC01", standardize = "zScore", direction = "auto"
+#'   cutoff.method = "ROC01", standardize = "zScore", direction = "<"
 #' )
 #'
 #' @export
@@ -217,7 +217,7 @@ nonlinComb <- function(markers = NULL,
                        ),
                        include.interact = FALSE,
                        alpha = 0.5, show.plot = TRUE,
-                       direction = c("auto", "<", ">"),
+                       direction = c("<", ">"),
                        conf.level = 0.95,
                        cutoff.method = c(
                          "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
@@ -230,72 +230,58 @@ nonlinComb <- function(markers = NULL,
                          "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                          "ObservedPrev", "MeanPrev", "PrevalenceMatching"
                        ), show.result = FALSE, ...) {
-  methods <-
-    c(
-      "polyreg",
-      "ridgereg",
-      "lassoreg",
-      "elasticreg",
-      "splines",
-      "sgam",
-      "nsgam"
-    )
-
-  resamples <- c("none", "cv", "repeatedcv", "boot")
-
-  standardizes <-
-    c("none", "min_max_scale", "zScore", "tScore", "scale_mean_to_one", "scale_sd_to_one")
-
-  directions <- c("auto", "<", ">")
-
-  cutoff.methods <- c(
-    "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
-    "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
-    "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
-    "Youden", "MaxEfficiency", "Minimax", "MaxDOR",
-    "MaxKappa", "MinValueNPV", "MinValuePPV", "ValueNPV",
-    "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
-    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
-    "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
-    "ObservedPrev", "MeanPrev", "PrevalenceMatching"
+  params <- validateParameters(
+    markers = markers,
+    status = status,
+    event = event,
+    method = method,
+    direction = direction,
+    conf.level = conf.level,
+    cutoff.method = cutoff.method,
+    show.plot = show.plot,
+    show.result = show.result
   )
 
-  if (!is.data.frame(markers)) {
-    markers <- as.data.frame(markers)
-  }
+  markers <- params$markers
+  status <- params$status
+  event <- params$event
+  method <- params$method
+  direction <- params$direction
+  conf.level <- params$conf.level
+  cutoff.method <- params$cutoff.method
+  show.plot <- params$show.plot
+  show.result <- params$show.result
 
-  for (i in 1:ncol(markers)) {
-    if (!is.numeric(markers[, i])) {
-      stop("at least one variable is not numeric")
-    }
-  }
+  nonlin_params <- validateNonlinComb(
+    method = method,
+    degree1 = degree1,
+    degree2 = degree2,
+    df1 = df1,
+    df2 = df2,
+    resample = resample,
+    standardize = standardize,
+    nfolds = nfolds,
+    nrepeats = nrepeats,
+    niters = niters,
+    include.interact = include.interact,
+    alpha = alpha
+  )
 
-  if (!ncol(markers) == 2) {
-    stop("the number of markers should be 2")
-  }
+  method <- nonlin_params$method
+  degree1 <- nonlin_params$degree1
+  degree2 <- nonlin_params$degree2
+  df1 <- nonlin_params$df1
+  df2 <- nonlin_params$df2
+  resample <- nonlin_params$resample
+  nrepeats <- nonlin_params$nrepeats
+  standardize <- nonlin_params$standardize
+  nfolds <- nonlin_params$nfolds
+  nrepeats <- nonlin_params$nrepeats
+  niters <- nonlin_params$niters
+  standardize <- nonlin_params$standardize
+  include.interact <- nonlin_params$include.interact
+  alpha <- nonlin_params$alpha
 
-  if (!is.factor(status)) {
-    status <- as.factor(status)
-  }
-
-  if (!length(levels(status)) == 2) {
-    stop("the number of status levels should be 2")
-  }
-
-  if (!(event %in% status)) {
-    stop("status does not include event")
-  }
-
-  levels(status)[levels(status) == "NA"] <- NA
-
-  if (nrow(markers) != length(status)) {
-    stop(
-      paste(
-        "the number of rows of markers is not equal to the number of",
-        "elements of the status"
-      )
-    )
-  }
 
   status_levels <- levels(status)
   if (status_levels[1] == event) {
@@ -305,73 +291,6 @@ nonlinComb <- function(markers = NULL,
     status_levels[2] <- firstStatus
   }
   status <- factor(ifelse(status == event, 1, 0), ordered = TRUE)
-
-  if (length(which(is.na(markers))) > 0) {
-    comp <- complete.cases(markers)
-    markers <- markers[comp, ]
-    status <- status[comp]
-    warning(paste(
-      "Rows with NA removed from the dataset since markers",
-      "include NA"
-    ))
-  }
-
-  if (length(which(is.na(status))) > 0) {
-    comp <- complete.cases(status)
-    status <- status[comp]
-    markers <- markers[comp, ]
-    warning(paste(
-      "Rows with NA removed from the dataset since status",
-      "include NA"
-    ))
-  }
-
-  if (length(which(methods == method)) == 0 || length(method) != 1) {
-    stop(
-      paste(
-        "method should be one of 'polyreg', 'ridgereg', 'lassoreg',",
-        "'elasticreg', 'splines', 'sgam', 'nsgam'"
-      )
-    )
-  }
-
-  if (length(which(resamples == resample)) == 0) {
-    stop(paste("resample should be one of 'none', 'cv', 'repeatedcv', 'boot'"))
-  }
-
-  if (any(resample == "none")) {
-    resample <- "none"
-  }
-
-  if (any(resample == "cv")) {
-    nrepeats <- 1
-  }
-
-  if (length(which(standardizes == standardize)) == 0) {
-    stop(
-      paste(
-        "standardize should be one of 'min_max_scale', 'zScore', 'tScore',",
-        "'scale_mean_to_one', 'scale_sd_to_one'"
-      )
-    )
-  }
-
-  if (length(standardize) != 1) {
-    standardize <- "none"
-  }
-
-  if (length(which(directions == direction)) == 0) {
-    stop("direction should be one of 'auto', '<', '>'")
-  }
-
-  if (length(direction) != 1) {
-    warning("Direction is set to 'auto'")
-  }
-
-  if (length(which(cutoff.methods == cutoff.method)) == 0 ||
-    length(cutoff.method) != 1) {
-    stop("The entered cutoff.method is invalid")
-  }
 
   std.model <- std.train(markers, standardize)
   markersData <- std.model$data

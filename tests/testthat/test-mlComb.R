@@ -42,7 +42,7 @@ test_that("mlComb functions ...", {
       event = "M",
       method = "svmLinear",
       direction = "<",
-      cutoff.method = "roc01"
+      cutoff.method = "ROC01"
     ),
     "the number of markers should be 2"
   )
@@ -57,7 +57,8 @@ test_that("mlComb functions ...", {
       direction = "<",
       cutoff.method = "Youden"
     ),
-    "The response given method is not available for mlComb function. See availableMethods function for the list of methods available."
+    "The given method is not available for mlComb function. See availableMethods() for the list of available methods.",
+    fixed = TRUE
   )
 
   expect_error(
@@ -65,11 +66,12 @@ test_that("mlComb functions ...", {
       markers = markers3,
       status = status3,
       event = "M",
-      method = "asaddsa",
-      direction = "auto",
+      method = "ipsum",
+      direction = "<",
       cutoff.method = "Youden"
     ),
-    "The response given method is not available for mlComb function. See availableMethods function for the list of methods available."
+    "The given method is not available for mlComb function. See availableMethods() for the list of available methods.",
+    fixed = TRUE
   )
 
   expect_error(
@@ -78,10 +80,10 @@ test_that("mlComb functions ...", {
       status = status2,
       event = "1",
       method = "rf",
-      direction = "asdada",
+      direction = "ipsum",
       cutoff.method = "Youden"
     ),
-    "direction should be one of 'auto', '<', '>'"
+    "direction should be one of '<', '>'"
   )
 
   expect_error(
@@ -90,8 +92,8 @@ test_that("mlComb functions ...", {
       status = status2,
       event = "1",
       method = "knn",
-      direction = "auto",
-      cutoff.method = "sadda"
+      direction = "<",
+      cutoff.method = "ipsum"
     ),
     "The entered cutoff.method is invalid"
   )

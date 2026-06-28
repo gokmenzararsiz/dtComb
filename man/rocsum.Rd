@@ -10,7 +10,7 @@ rocsum(
   comb.score = NULL,
   status = NULL,
   event = NULL,
-  direction = c("auto", "<", ">"),
+  direction = c("<", ">"),
   conf.level = 0.95,
   cutoff.method = c("CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp", "ValueSe",
     "MinValueSpSe", "MaxSp", "MaxSe", "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
@@ -60,6 +60,6 @@ the Curve comparison of markers and combination score, Confusion matrices for bo
 markers and combination score with the cutoff values derived from the ROC Curves.
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

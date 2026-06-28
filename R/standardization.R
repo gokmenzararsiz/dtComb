@@ -41,7 +41,7 @@
 #'
 #' @return A \code{numeric} data.frame of standardized biomarkers
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -101,7 +101,6 @@ std.train <- function(data, standardize = NULL) {
 }
 
 
-
 #' @title Standardization according to the training model parameters.
 #'
 #' @description The \code{std.test} Standardization parameters will be taken
@@ -114,9 +113,8 @@ std.train <- function(data, standardize = NULL) {
 #
 #' @return A \code{numeric} dataframe of standardized biomarkers
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
-
 
 
 std.test <- function(newdata, model) {

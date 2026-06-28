@@ -6,7 +6,6 @@
 \usepackage[left=3cm, top=2.5cm, right=2.5cm, bottom=2cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
-\usepackage{hyperref}
 \hypersetup{
   colorlinks=true,
   linkcolor=black,
@@ -28,7 +27,7 @@
 \renewcommand\Affilfont{\itshape\small}
 
 \newcommand{\dtComb}{\textit{dtComb}}
-\newcommand{\CRANpkg}[1]{\href{https://cran.r-project.org/web/packages/#1/index.html}{\texttt{#1}}}
+\newcommand{\CRANpkg}[1]{\href{https://CRAN.R-project.org/package=#1}{\texttt{#1}}}
 \newcommand{\Rfunction}[1]{\texttt{#1}}
 \newcommand{\Rcode}[1]{\texttt{#1}}
 \newcommand{\Rclass}[1]{\texttt{#1}}
@@ -215,7 +214,7 @@ The dtComb has four different functions (\texttt{linComb}, \texttt{nonlinComb}, 
 \subsection{Resampling methods to optimize the model parameters}
 The dtComb package optimizes model parameters for linear and non-linear approaches by employing various validation techniques: (i) n-fold cross-validation, which involves splitting the training data into \texttt{nfolds} groups for the model assessment, (ii) 10-fold repeated cross-validation where 10-fold division is repeated \texttt{nrepeat} times to ensure robust model evaluation and (iii) bootstrapping which makes use of \texttt{niters} subgroups from the training dataset to enhance parameter optimization and model validation. The resampling function embedded within the \CRANpkg{caret} package is used by the mlComb function to perform resampling and hyper-parameter optimization. The relevant section of the \CRANpkg{caret} package documentation contains detailed information about this process \citep{kuhn2008building}.
 \subsection{Model evaluation in the training phase}
-Metrics such as Receiver Operating Characteristic (ROC) curves and Area Under the Curve (AUC) values evaluate the model's performance during training. These metrics provide insights into the model's ability to distinguish between different classes or categories, offering valuable information regarding its performance characteristics. While measuring the ROC curves, an argument called \texttt{direction} argument is given as input to the relevant function, and the default value of the \texttt{direction} is set to \texttt{auto}. Moreover, the cut-off point which determines AUC is controlled by the \texttt{cutoff.method} argument within the package. 34 methods are available to determine the cut-off point, accessible through the \CRANpkg{OptimalCutpoints} package in R \citep{lopez2014optimalcutpoints}.
+Metrics such as Receiver Operating Characteristic (ROC) curves and Area Under the Curve (AUC) values evaluate the model's performance during training. These metrics provide insights into the model's ability to distinguish between different classes or categories, offering valuable information regarding its performance characteristics. While measuring the ROC curves, an argument called \texttt{direction} argument is given as input to the relevant function, and the default value of the \texttt{direction} is set to \texttt{<}. Moreover, the cut-off point which determines AUC is controlled by the \texttt{cutoff.method} argument within the package. 34 methods are available to determine the cut-off point, accessible through the \CRANpkg{OptimalCutpoints} package in R \citep{lopez2014optimalcutpoints}.
 Now, we will provide examples of how to use each approach's specific functions separately. We selected the cutoff.method for each scenario as the \texttt{Youden Index} and specified the ROC curve's direction as \texttt{<}.\\
 Using the training data provided earlier, for a linear combination approach, the \texttt{linComb} function is employed with the \texttt{min\_max\_scale}. Standardization method and 5-fold cross-validation in the following manner:
 <<fig.height=4.8, fig.width=5>>=
@@ -229,7 +228,7 @@ fit.lin <- linComb(
   method = "scoring",
   resample = "cv",
   standardize = "min_max_scale",
-  ndigits = 2, direction = "auto",
+  ndigits = 2, direction = "<",
   cutoff.method = "Youden"
 )
 @
@@ -243,9 +242,9 @@ fit.nonlin <- nonlinComb(
   status = status,
   event = "needed",
   method = "lassoreg",
-  include.interact = "TRUE",
+  include.interact = TRUE,
   resample = "boot",
-  direction = "auto",
+  direction = "<",
   cutoff.method = "Youden"
 )
 @

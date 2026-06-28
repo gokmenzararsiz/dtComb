@@ -47,14 +47,14 @@ comb.score1 <- predict(score1, markers)
 score2 <- nonlinComb(
   markers = markers, status = status, event = "needed", include.interact = TRUE,
   method = "polyreg", resample = "repeatedcv", nfolds = 5,
-  nrepeats = 10, cutoff.method = "Youden", direction = "auto"
+  nrepeats = 10, cutoff.method = "Youden", direction = "<"
 )
 
 comb.score2 <- predict(score2, markers)
 
 score3 <- mathComb(
   markers = markers, status = status, event = event,
-  method = "distance", distance = "euclidean", direction = "auto",
+  method = "distance", distance = "euclidean", direction = "<",
   standardize = "tScore", cutoff.method = "Youden"
 )
 
@@ -62,6 +62,6 @@ comb.score3 <- predict(score3, markers)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }

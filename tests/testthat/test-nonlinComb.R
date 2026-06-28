@@ -16,7 +16,7 @@ Data3 <-
 Data3 <- Data3[-c(121:262), ]
 markers3 <- Data3[, 4:5]
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
-
+cutoff.method <- "Youden"
 ###############################################################################
 
 load("result_data/test_nonlinComb.rda")
@@ -146,7 +146,7 @@ test_that("nonlinComb functions ...", {
       status = status4,
       event = "M",
       method = "polyreg",
-      direction = direction,
+      direction = "<",
       standardize = "zScore",
       cutoff.method = cutoff.method
     ),
@@ -159,7 +159,7 @@ test_that("nonlinComb functions ...", {
       status = status3,
       event = "M",
       method = "ridgereg",
-      direction = direction,
+      direction = "<",
       standardize = "zScore",
       cutoff.method = cutoff.method
     ),
@@ -185,8 +185,8 @@ test_that("nonlinComb functions ...", {
       markers = markers3,
       status = status3,
       event = "M",
-      method = "asaddsa",
-      direction = "auto",
+      method = "ipsum",
+      direction = "<",
       standardize = "none",
       cutoff.method = "Youden"
     ),
@@ -199,9 +199,9 @@ test_that("nonlinComb functions ...", {
       status = status3,
       event = "M",
       method = "ridgereg",
-      direction = "auto",
+      direction = "<",
       resample = "cv",
-      standardize = "asdada",
+      standardize = "ipsum",
       cutoff.method = "Youden"
     ),
     "standardize should be one of 'min_max_scale', 'zScore', 'tScore', 'scale_mean_to_one', 'scale_sd_to_one'"
@@ -213,11 +213,11 @@ test_that("nonlinComb functions ...", {
       status = status2,
       event = "1",
       method = "ridgereg",
-      direction = "asdada",
+      direction = "ipsum",
       standardize = "none",
       cutoff.method = "Youden"
     ),
-    "direction should be one of 'auto', '<', '>'"
+    "direction should be one of '<', '>'"
   )
 
   expect_error(
@@ -226,9 +226,9 @@ test_that("nonlinComb functions ...", {
       status = status2,
       event = "1",
       method = "lassoreg",
-      direction = "auto",
+      direction = "<",
       standardize = "tScore",
-      cutoff.method = "sadda"
+      cutoff.method = "ipsum"
     ),
     "The entered cutoff.method is invalid"
   )
@@ -238,7 +238,7 @@ test_that("nonlinComb functions ...", {
       status = status2,
       event = "1",
       method = "splines",
-      resample = "sada",
+      resample = "ipsum",
       standardize = "min_max_scale",
       direction = "<",
       cutoff.method = "Youden"
@@ -284,7 +284,7 @@ markers3 <- Data3[, 4:5]
 status3[[12]] <- NA
 
 test_that("nonlinComb functions ...", {
-  expect_warning(
+  expect_error(
     nonlinComb(
       markers = markers3,
       status = status3,
@@ -294,7 +294,7 @@ test_that("nonlinComb functions ...", {
       standardize = "zScore",
       cutoff.method = "Youden"
     ),
-    "Rows with NA removed from the dataset since status include NA"
+    "status should not include missing values"
   )
 })
 
@@ -302,7 +302,7 @@ markers3[44, 1:2] <- NA
 status3 <- factor(Data3[, 2], levels = c("B", "M"))
 
 test_that("nonlinComb functions ...", {
-  expect_warning(
+  expect_error(
     nonlinComb(
       markers = markers3,
       status = status3,
@@ -312,6 +312,6 @@ test_that("nonlinComb functions ...", {
       standardize = "zScore",
       cutoff.method = "Youden"
     ),
-    "Rows with NA removed from the dataset since markers include NA"
+    "markers should not include missing values"
   )
 })

@@ -36,12 +36,12 @@
 #' @return A list of \code{numeric} ROC Curves, AUC statistics and Confusion
 #' matrices.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 
 rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NULL,
-                   direction = c("auto", "<", ">"), conf.level = 0.95,
+                   direction = c("<", ">"), conf.level = 0.95,
                    cutoff.method = c(
                      "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
                      "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
@@ -152,15 +152,15 @@ rocsum <- function(markers = NULL, comb.score = NULL, status = NULL, event = NUL
 
   cutoff.m1 <- OptimalCutpoints::optimal.cutpoints(colnames(data[1]), colnames(data[3]),
     tag.healthy = min(status),
-    methods = cutoff.method, data = data
+    methods = cutoff.method, direction = direction, data = data
   )
   cutoff.m2 <- OptimalCutpoints::optimal.cutpoints(colnames(data[2]), colnames(data[3]),
     tag.healthy = min(status),
-    methods = cutoff.method, data = data
+    methods = cutoff.method, direction = direction, data = data
   )
   cutoff.mc <- OptimalCutpoints::optimal.cutpoints(colnames(data[4]), colnames(data[3]),
     tag.healthy = min(status),
-    methods = cutoff.method, data = data
+    methods = cutoff.method, direction = direction, data = data
   )
 
   threshold.m1 <- cutoff.m1[[cutoff.method]]$Global$optimal.cutoff

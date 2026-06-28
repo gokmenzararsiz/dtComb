@@ -196,7 +196,7 @@
 #' @return A list of \code{numeric} linear combination scores calculated
 #' according to the given method and standardization option.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -225,7 +225,7 @@
 #' score2 <- linComb(
 #'   markers = markers, status = status, event = event,
 #'   method = "PT", resample = "none", standardize = "none", direction = "<",
-#'   cutoff.method = "Youden", show.result = "TRUE"
+#'   cutoff.method = "Youden", show.result = TRUE
 #' )
 #'
 #' score3 <- linComb(
@@ -258,7 +258,7 @@ linComb <- function(markers = NULL,
                       "zScore", "tScore", "scale_mean_to_one", "scale_sd_to_one"
                     ),
                     ndigits = 0, show.plot = TRUE,
-                    direction = c("auto", "<", ">"),
+                    direction = c("<", ">"),
                     conf.level = 0.95,
                     cutoff.method = c(
                       "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
@@ -271,73 +271,45 @@ linComb <- function(markers = NULL,
                       "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                       "ObservedPrev", "MeanPrev", "PrevalenceMatching"
                     ), show.result = FALSE, ...) {
-  methods <-
-    c(
-      "scoring",
-      "SL",
-      "logistic",
-      "minmax",
-      "PT",
-      "PCL",
-      "minimax",
-      "TS"
-    )
-
-  resamples <- c("none", "cv", "repeatedcv", "boot")
-
-  standardizes <-
-    c("none", "min_max_scale", "zScore", "tScore", "scale_mean_to_one", "scale_sd_to_one")
-
-  directions <- c("auto", "<", ">")
-
-  cutoff.methods <- c(
-    "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
-    "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
-    "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
-    "Youden", "MaxEfficiency", "Minimax", "MaxDOR",
-    "MaxKappa", "MinValueNPV", "MinValuePPV", "ValueNPV",
-    "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
-    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
-    "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
-    "ObservedPrev", "MeanPrev", "PrevalenceMatching"
+  params <- validateParameters(
+    markers = markers,
+    status = status,
+    event = event,
+    method = method,
+    direction = direction,
+    conf.level = conf.level,
+    cutoff.method = cutoff.method,
+    show.plot = show.plot,
+    show.result = show.result
   )
 
-  if (!is.data.frame(markers)) {
-    markers <- as.data.frame(markers)
-  }
+  markers <- params$markers
+  status <- params$status
+  event <- params$event
+  method <- params$method
+  direction <- params$direction
+  conf.level <- params$conf.level
+  cutoff.method <- params$cutoff.method
+  show.plot <- params$show.plot
+  show.result <- params$show.result
 
-  for (i in 1:ncol(markers)) {
-    if (!is.numeric(markers[, i])) {
-      stop("at least one variable is not numeric")
-    }
-  }
+  lin_params <- validateLinComb(
+    method = method,
+    resample = resample,
+    nfolds = nfolds,
+    nrepeats = nrepeats,
+    niters = niters,
+    standardize = standardize,
+    ndigits = ndigits
+  )
 
-  if (!ncol(markers) == 2) {
-    stop("the number of markers should be 2")
-  }
-
-  if (!is.factor(status)) {
-    status <- as.factor(status)
-  }
-
-  if (!length(levels(status)) == 2) {
-    stop("the number of status levels should be 2")
-  }
-
-  if (!(event %in% status)) {
-    stop("status does not include event")
-  }
-
-  levels(status)[levels(status) == "NA"] <- NA
-
-  if (nrow(markers) != length(status)) {
-    stop(
-      paste(
-        "the number of rows of markers is not equal to the number of",
-        "elements of the status"
-      )
-    )
-  }
+  method <- lin_params$method
+  resample <- lin_params$resample
+  nfolds <- lin_params$nfolds
+  nrepeats <- lin_params$nrepeats
+  niters <- lin_params$niters
+  standardize <- lin_params$standardize
+  ndigits <- lin_params$ndigits
 
   status_levels <- levels(status)
   if (status_levels[1] == event) {
@@ -347,91 +319,6 @@ linComb <- function(markers = NULL,
     status_levels[2] <- firstStatus
   }
   status <- factor(ifelse(status == event, 1, 0), ordered = TRUE)
-
-  if (length(which(is.na(markers))) > 0) {
-    comp <- complete.cases(markers)
-    markers <- markers[comp, ]
-    status <- status[comp]
-    warning(paste(
-      "Rows with NA removed from the dataset since markers",
-      "include NA"
-    ))
-  }
-
-  if (length(which(is.na(status))) > 0) {
-    comp <- complete.cases(status)
-    status <- status[comp]
-    markers <- markers[comp, ]
-    warning(paste(
-      "Rows with NA removed from the dataset since status",
-      "include NA"
-    ))
-  }
-
-  if (length(which(methods == method)) == 0 || length(method) != 1) {
-    stop(
-      paste(
-        "method should be one of 'scoring', 'SL', 'logistic', 'minmax',",
-        "'PT', 'PCL', 'minimax', 'TS'"
-      )
-    )
-  }
-
-  if (length(which(resamples == resample)) == 0) {
-    stop(paste("resample should be one of 'none', 'cv', 'repeatedcv', 'boot'"))
-  }
-
-  if (any(resample == "none")) {
-    resample <- "none"
-  }
-
-  if (any(resample == "cv")) {
-    nrepeats <- 1
-  }
-
-  if (length(which(standardizes == standardize)) == 0) {
-    stop(
-      paste(
-        "standardize should be one of 'min_max_scale', 'zScore', 'tScore',",
-        "'scale_mean_to_one', 'scale_sd_to_one'"
-      )
-    )
-  }
-
-  if (length(standardize) != 1) {
-    standardize <- "none"
-  }
-
-  if (length(which(directions == direction)) == 0) {
-    stop("direction should be one of 'auto', '<', '>'")
-  }
-
-  if (length(direction) != 1) {
-    warning("Direction is set to 'auto'")
-  }
-
-  if (length(which(cutoff.methods == cutoff.method)) == 0 ||
-    length(cutoff.method) != 1) {
-    stop("The entered cutoff.method is invalid")
-  }
-
-  if (method %in% c("minmax", "PCL") &&
-    (!standardize == "min_max_scale")) {
-    warning(
-      paste(
-        "The used combination method requires min_max_scale standardization.",
-        "All biomarker values are standardized to a scale between 0 and 1."
-      )
-    )
-    standardize <- "min_max_scale"
-  }
-  if (method %in% "PT" &&
-    (!standardize == "zScore")) {
-    warning(
-      paste("The used combination method requires zScore standardization.")
-    )
-    standardize <- "zScore"
-  }
 
   std.model <- std.train(markers, standardize)
   markers <- std.model$data
@@ -1375,7 +1262,7 @@ linComb <- function(markers = NULL,
 #'
 #' @return A \code{numeric} value for the estimated optimized value
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -1417,7 +1304,6 @@ helper_minmax <- function(lambda, neg.set, pos.set) {
 }
 
 
-
 #' @title Helper function for PCL method.
 #'
 #' @description The \code{helper_PCL} function estimates the optimized value of
@@ -1434,7 +1320,7 @@ helper_minmax <- function(lambda, neg.set, pos.set) {
 #'
 #' @return A \code{numeric} value for the estimated optimized value
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -1503,7 +1389,7 @@ helper_PCL <- function(lambda, neg.set, pos.set) {
 #' @return A \code{numeric} Optimized value calculated with combination scores
 #' using t
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -1556,7 +1442,7 @@ helper_minimax <- function(t, neg.set, pos.set, markers, status) {
 #' @return A \code{numeric} Optimized value calculated with combination scores
 #' using theta
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples
@@ -1601,7 +1487,7 @@ helper_TS <- function(theta, markers, status) {
 #'
 #' @return A \code{numeric} value for the estimated optimized value
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples

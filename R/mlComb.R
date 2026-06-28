@@ -19,20 +19,29 @@
 #' \bold{IMPORTANT}: See https://topepo.github.io/caret/available-models.html
 #' for further information about the methods used in this function.
 #'
-#' @param resample a \code{character} string that indicates the resampling
-#' method used while training the model. The available methods are "boot",
-#' "boot632", "optimism_boot", "boot_all", "cv", "repeatedcv", "LOOCV", "LGOCV",
-#' "none", "oob", "adaptive_cv", "adaptive_boot" and "adaptive_LGOCV". for
-#' details of these resampling methods see ?caret::trainControl
+#' @param resample A character string specifying the resampling method used while
+#' training the model. Available methods are \code{"boot"}, \code{"boot632"},
+#' \code{"optimism_boot"}, \code{"boot_all"}, \code{"cv"},
+#' \code{"repeatedcv"}, \code{"LOOCV"}, \code{"LGOCV"}, \code{"none"},
+#' \code{"oob"}, \code{"adaptive_cv"}, \code{"adaptive_boot"}, and
+#' \code{"adaptive_LGOCV"}. The \code{"timeslice"} method is not supported by
+#' \code{mlComb}. If \code{NULL}, \code{"none"} is used.
 #'
-#' @param niters a \code{numeric} value that indicates the number of
-#' bootstrapped resampling iterations (10, default)
+#' @param niters A positive integer indicating the number of bootstrap
+#' resampling iterations. Used for \code{"boot"}, \code{"boot632"},
+#' \code{"optimism_boot"}, \code{"boot_all"}, and \code{"adaptive_boot"}.
+#' Default is 10.
 #'
-#' @param nfolds a \code{numeric} value that indicates the number of folds for
-#' cross validation based resampling methods  (5, default)
+#' @param nfolds A positive integer. For \code{"cv"}, \code{"repeatedcv"},
+#' and \code{"adaptive_cv"}, it indicates the number of folds. For
+#' \code{"LGOCV"} and \code{"adaptive_LGOCV"}, it indicates the number of
+#' repeated training/test splits. Default is 5.
 #'
-#' @param nrepeats a \code{numeric} value that indicates the number of repeats
-#' for "repeatedcv" option of resampling methods (3, default)
+#' @param nrepeats A positive integer indicating the number of repeats for
+#' \code{"repeatedcv"}. Default is 3.
+#'
+#' @param p A numeric value between 0 and 1 specifying the training proportion
+#' used for \code{"LGOCV"} and \code{"adaptive_LGOCV"}. Default is 0.75.
 #'
 #' @param preProcess a \code{character} string that indicates the pre-processing
 #' options to be applied in the data before training the model. Available
@@ -44,9 +53,6 @@
 #' @param B a \code{numeric} value that is the number of bootstrap samples for
 #' bagging classifiers, "bagFDA", "bagFDAGCV", "bagEarth" and "bagEarthGCV".
 #' (25, default)
-#'
-#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
-#' plotted. Default is TRUE
 #'
 #' @param direction a \code{character} string determines in which direction the
 #' comparison will be made.  ">": if the predictor values for the control group
@@ -60,6 +66,9 @@
 #' @param cutoff.method  a \code{character} string determines the cutoff method
 #' for the ROC curve.
 #'
+#' @param show.plot a \code{logical}. If TRUE, a ROC curve is
+#' plotted. Default is TRUE
+#'
 #' @param show.result a \code{logical} string indicating whether the results
 #' should be printed to the console.
 #'
@@ -71,8 +80,11 @@
 #' comparison table for the AUC values of individual biomarkers and combination
 #' score obtained and the fitted model.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
+#'
+#' @seealso \code{\link{availableMethods}}, \code{caret::train},
+#' \code{caret::trainControl}
 #'
 #' @examples
 #' # call data
@@ -85,7 +97,7 @@
 #'
 #' model <- mlComb(
 #'   markers = markers, status = status, event = event,
-#'   method = "knn", resample = "repeatedcv", nfolds = 10, nrepeats = 5,
+#'   method = "knn", resample = "cv", nfolds = 5,
 #'   preProcess = c("center", "scale"), direction = "<", cutoff.method = "Youden"
 #' )
 #'
@@ -97,14 +109,15 @@ mlComb <- function(markers = NULL,
                    event = NULL,
                    method = NULL,
                    resample = NULL,
-                   niters = 5,
+                   niters = 10,
                    nfolds = 5,
                    nrepeats = 3,
                    preProcess = NULL,
                    show.plot = TRUE,
                    B = 25,
-                   direction = c("auto", "<", ">"),
+                   direction = c("<", ">"),
                    conf.level = 0.95,
+                   p = 0.75,
                    cutoff.method = c(
                      "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
                      "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
@@ -116,76 +129,44 @@ mlComb <- function(markers = NULL,
                      "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
                      "ObservedPrev", "MeanPrev", "PrevalenceMatching"
                    ), show.result = FALSE, ...) {
-  directions <- c("auto", "<", ">")
-
-  cutoff.methods <- c(
-    "CB", "MCT", "MinValueSp", "MinValueSe", "ValueSp",
-    "ValueSe", "MinValueSpSe", "MaxSp", "MaxSe",
-    "MaxSpSe", "MaxProdSpSe", "ROC01", "SpEqualSe",
-    "Youden", "MaxEfficiency", "Minimax", "MaxDOR",
-    "MaxKappa", "MinValueNPV", "MinValuePPV", "ValueNPV",
-    "ValuePPV", "MinValueNPVPPV", "PROC01", "NPVEqualPPV",
-    "MaxNPVPPV", "MaxSumNPVPPV", "MaxProdNPVPPV",
-    "ValueDLR.Negative", "ValueDLR.Positive", "MinPvalue",
-    "ObservedPrev", "MeanPrev", "PrevalenceMatching"
-  )
-
-  if (!is.data.frame(markers)) {
-    markers <- as.data.frame(markers)
-  }
-
-  for (i in 1:ncol(markers)) {
-    if (!is.numeric(markers[, i])) {
-      stop("at least one variable is not numeric")
-    }
-  }
-
-  if (!ncol(markers) == 2) {
-    stop("the number of markers should be 2")
-  }
-
-  if (!is.factor(status)) {
-    status <- as.factor(status)
-  }
-
-  if (!length(levels(status)) == 2) {
-    stop("the number of status levels should be 2")
-  }
-
-  if (!(event %in% status)) {
-    stop("status does not include event")
-  }
-
-  levels(status)[levels(status) == "NA"] <- NA
-
-  if (nrow(markers) != length(status)) {
-    stop(
-      paste(
-        "the number of rows of markers is not equal to the number of",
-        "elements of the status"
-      )
-    )
-  }
-
-  data <- cbind(status, markers)
-
   if (is.null(resample)) {
     resample <- "none"
   }
 
-  if (length(which(directions == direction)) == 0) {
-    stop("direction should be one of 'auto', '<', '>'")
-  }
+  params <- validateParameters(
+    markers = markers,
+    status = status,
+    event = event,
+    method = method,
+    direction = direction,
+    conf.level = conf.level,
+    cutoff.method = cutoff.method,
+    show.plot = show.plot,
+    show.result = show.result
+  )
 
-  if (length(direction) != 1) {
-    warning("Direction is set to 'auto'")
-  }
+  markers <- params$markers
+  status <- params$status
+  event <- params$event
+  method <- params$method
+  direction <- params$direction
+  conf.level <- params$conf.level
+  cutoff.method <- params$cutoff.method
+  show.plot <- params$show.plot
+  show.result <- params$show.result
 
-  if (length(which(cutoff.methods == cutoff.method)) == 0 ||
-    length(cutoff.method) != 1) {
-    stop("The entered cutoff.method is invalid")
-  }
+  validateMlComb(
+    niters = niters,
+    nfolds = nfolds,
+    nrepeats = nrepeats,
+    preProcess = preProcess,
+    B = B,
+    p = p,
+    resample = resample,
+    method = method
+  )
 
+  data <- cbind(status, markers)
 
   BMethods <- c("bagFDA", "bagFDAGCV", "bagEarth", "bagEarthGCV")
 
@@ -207,15 +188,8 @@ mlComb <- function(markers = NULL,
     "bartMachine"
   )
 
-  if (is.null(method) || !(method %in% allMethods[, 1])) {
-    stop(paste(
-      "The response given method is not available for mlComb function.",
-      "See availableMethods function for the list of methods available."
-    ))
-  }
-
   if (method %in% BMethods) {
-    if (any(resample == "repeatedcv")) {
+    if (resample %in% c("repeatedcv", "adaptive_cv")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -230,7 +204,7 @@ mlComb <- function(markers = NULL,
         B = B,
         ...
       )
-    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all")) {
+    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all", "adaptive_boot")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -249,29 +223,48 @@ mlComb <- function(markers = NULL,
         status ~ .,
         data = data,
         method = method,
+        trControl = caret::trainControl(
+          method = "none",
+          classProbs = TRUE
+        ),
         preProc = preProcess,
         B = B,
         ...
       )
     } else {
+      ctrl <- if (resample %in% c("LGOCV", "adaptive_LGOCV")) {
+        caret::trainControl(method = resample, number = nfolds, p = p, classProbs = TRUE)
+      } else if (identical(resample, "LOOCV")) {
+        caret::trainControl(method = resample, classProbs = TRUE)
+      } else if (resample == "oob") {
+        caret::trainControl(method = "oob", classProbs = TRUE)
+      } else {
+        caret::trainControl(method = resample, number = nfolds, classProbs = TRUE)
+      }
       modelFit <- caret::train(
         status ~ .,
         data = data,
         method = method,
-        trControl = caret::trainControl(
-          method = resample,
-          number = nfolds,
-          classProbs =  TRUE
-        ),
+        trControl = ctrl,
         preProc = preProcess,
         B = B,
         ...
       )
     }
 
-    score <- predict(modelFit, newdata = markers, type = "prob")
+    score <- tryCatch(
+      predict(modelFit, newdata = markers, type = "prob"),
+      error = function(e) {
+        stop(
+          paste(
+            "The selected method does not provide class probabilities.",
+            "Please choose a caret method that supports type = 'prob'."
+          )
+        )
+      }
+    )
   } else if (method %in% verboseMethods) {
-    if (any(resample == "repeatedcv")) {
+    if (resample %in% c("repeatedcv", "adaptive_cv")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -286,7 +279,7 @@ mlComb <- function(markers = NULL,
         verbose = FALSE,
         ...
       )
-    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all")) {
+    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all", "adaptive_boot")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -305,29 +298,48 @@ mlComb <- function(markers = NULL,
         status ~ .,
         data = data,
         method = method,
+        trControl = caret::trainControl(
+          method = "none",
+          classProbs = TRUE
+        ),
         preProc = preProcess,
         verbose = FALSE,
         ...
       )
     } else {
+      ctrl <- if (resample %in% c("LGOCV", "adaptive_LGOCV")) {
+        caret::trainControl(method = resample, number = nfolds, p = p, classProbs = TRUE)
+      } else if (identical(resample, "LOOCV")) {
+        caret::trainControl(method = resample, classProbs = TRUE)
+      } else if (resample == "oob") {
+        caret::trainControl(method = "oob", classProbs = TRUE)
+      } else {
+        caret::trainControl(method = resample, number = nfolds, classProbs = TRUE)
+      }
       modelFit <- caret::train(
         status ~ .,
         data = data,
         method = method,
-        trControl = caret::trainControl(
-          method = resample,
-          number = nfolds,
-          classProbs =  TRUE
-        ),
+        trControl = ctrl,
         preProc = preProcess,
         verbose = FALSE,
         ...
       )
     }
 
-    score <- predict(modelFit, newdata = markers, type = "prob")
+    score <- tryCatch(
+      predict(modelFit, newdata = markers, type = "prob"),
+      error = function(e) {
+        stop(
+          paste(
+            "The selected method does not provide class probabilities.",
+            "Please choose a caret method that supports type = 'prob'."
+          )
+        )
+      }
+    )
   } else {
-    if (any(resample == "repeatedcv")) {
+    if (resample %in% c("repeatedcv", "adaptive_cv")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -341,7 +353,7 @@ mlComb <- function(markers = NULL,
         preProc = preProcess,
         ...
       )
-    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all")) {
+    } else if (resample %in% c("boot", "boot632", "optimism_boot", "boot_all", "adaptive_boot")) {
       modelFit <- caret::train(
         status ~ .,
         data = data,
@@ -355,33 +367,54 @@ mlComb <- function(markers = NULL,
         ...
       )
     } else if (resample == "none") {
-      print(method)
-      modelFit <- caret::train(
-        status ~ .,
-        data = data,
-        method = method,
-        preProc = preProcess,
-        ...
-      )
-    } else {
       modelFit <- caret::train(
         status ~ .,
         data = data,
         method = method,
         trControl = caret::trainControl(
-          method = resample,
-          number = nfolds,
-          classProbs =  TRUE
+          method = "none",
+          classProbs = TRUE
         ),
+        preProc = preProcess,
+        ...
+      )
+    } else {
+      ctrl <- if (resample %in% c("LGOCV", "adaptive_LGOCV")) {
+        caret::trainControl(method = resample, number = nfolds, p = p, classProbs = TRUE)
+      } else if (identical(resample, "LOOCV")) {
+        caret::trainControl(method = resample, classProbs = TRUE)
+      } else if (resample == "oob") {
+        caret::trainControl(method = "oob", classProbs = TRUE)
+      } else {
+        caret::trainControl(method = resample, number = nfolds, classProbs = TRUE)
+      }
+      modelFit <- caret::train(
+        status ~ .,
+        data = data,
+        method = method,
+        trControl = ctrl,
         preProc = preProcess,
         ...
       )
     }
 
-    score <- predict(modelFit, newdata = markers, type = "prob")
+    score <- tryCatch(
+      predict(modelFit, newdata = markers, type = "prob"),
+      error = function(e) {
+        stop(
+          paste(
+            "The selected method does not provide class probabilities.",
+            "Please choose a caret method that supports type = 'prob'."
+          )
+        )
+      }
+    )
   }
 
-  comb.score <- as.numeric(score[, levels(status) == event])
+  if (!(event %in% colnames(score))) {
+    stop("The predicted probability table does not include the event class")
+  }
+  comb.score <- as.numeric(score[, event])
   status <- factor(ifelse(status == event, 1, 0), ordered = TRUE)
 
   allres <-
@@ -429,7 +462,7 @@ mlComb <- function(markers = NULL,
 #' @return \code{No return value} contains the method names and explanations of the
 #' machine-learning models available for the dtComb package.
 #'
-#' @author Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+#' @author Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 #' Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 #'
 #' @examples

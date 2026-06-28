@@ -49,7 +49,7 @@ plot.score2 <- plotComb(score2, status)
 
 score3 <- mathComb(
   markers = markers, status = status, event = event,
-  method = "distance", distance = "euclidean", direction = "auto",
+  method = "distance", distance = "euclidean", direction = "<",
   standardize = "tScore", cutoff.method = "Youden"
 )
 
@@ -57,6 +57,6 @@ plot.score3 <- plotComb(score3, status)
 
 }
 \author{
-Serra Ilayda Yerlitas, Serra Bersan Gengec, Necla Kochan,
+Serra Ilayda Yerlitas Tastan, Serra Bersan Gengec, Necla Kochan,
 Gozde Erturk Zararsiz, Selcuk Korkmaz, Gokmen Zararsiz
 }
